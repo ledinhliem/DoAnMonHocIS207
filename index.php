@@ -1,3 +1,5 @@
 <?php
 
-echo "Eco Commerce Website Running";
+require_once "routes/web.php";
+
+?>
