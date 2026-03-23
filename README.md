@@ -27,9 +27,9 @@
 4. Cấu hình `config/config.php`
 5. Bật Apache và MySQL
 6. Truy cập:
-   `http://localhost:8080/is207/index.php`
+   `http://localhost/is207/index.php`
 
 ## Route test
-- `http://localhost:8080/is207/index.php`
-- `http://localhost:8080/is207/index.php?url=home/index`
-- `http://localhost:8080/is207/index.php?url=admin/dashboard`
+- `http://localhost/is207/index.php`
+- `http://localhost/is207/index.php?url=home/index`
+- `http://localhost/is207/index.php?url=admin/dashboard`
