@@ -1,0 +1,484 @@
+<!DOCTYPE html>
+
+<html class="scroll-smooth" lang="vn">
+
+<head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <title>The Architecture of Conscious Living | Zentro</title>
+    <link
+    href="https://fonts.googleapis.com/css2?family=Epilogue:wght@400;600;700;800&amp;family=Be+Vietnam+Pro:wght@300;400;500;600&amp;display=swap"
+    rel="stylesheet" />
+  <link
+    href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap"
+    rel="stylesheet" />
+  <link
+    href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap"
+    rel="stylesheet" />
+  <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+  <script id="tailwind-config">
+    tailwind.config = {
+      darkMode: "class",
+      theme: {
+        extend: {
+          //  Bảng màu chung
+          colors: {
+            "tertiary": "#474845",
+            "on-surface-variant": "#44483e",
+            "secondary": "#775839",
+            "surface": "#f9faf2",
+            "tertiary-container": "#5e605c",
+            "surface-bright": "#f9faf2",
+            "outline-variant": "#c5c8ba",
+            "on-error": "#ffffff",
+            "surface-container-high": "#e7e9e1",
+            "on-primary-fixed": "#0f2000",
+            "error": "#ba1a1a",
+            "on-primary-fixed-variant": "#374d20",
+            "inverse-primary": "#b5cf95",
+            "on-secondary": "#ffffff",
+            "surface-container-lowest": "#ffffff",
+            "tertiary-fixed-dim": "#c6c7c2",
+            "secondary-fixed-dim": "#e8bf98",
+            "primary-fixed-dim": "#b5cf95",
+            "primary-fixed": "#d0ecaf",
+            "on-primary-container": "#c7e3a7",
+            "on-tertiary": "#ffffff",
+            "on-secondary-fixed-variant": "#5d4123",
+            "on-error-container": "#93000a",
+            "on-primary": "#ffffff",
+            "background": "#f9faf2",
+            "surface-tint": "#4e6535",
+            "surface-variant": "#e1e3dc",
+            "primary-container": "#4f6636",
+            "outline": "#75796d",
+            "surface-dim": "#d9dbd3",
+            "on-secondary-fixed": "#2c1701",
+            "on-background": "#191c18",
+            "inverse-on-surface": "#f0f1ea",
+            "surface-container-highest": "#e1e3dc",
+            "surface-container-low": "#f3f4ed",
+            "inverse-surface": "#2e312c",
+            "on-surface": "#191c18",
+            "error-container": "#ffdad6",
+            "on-tertiary-fixed-variant": "#454744",
+            "surface-container": "#edefe7",
+            "on-tertiary-container": "#dadad6",
+            "on-tertiary-fixed": "#1a1c19",
+            "tertiary-fixed": "#e3e3de",
+            "primary": "#384e21",
+            "on-secondary-container": "#7a5b3b",
+            "secondary-container": "#ffd5ae",
+            "secondary-fixed": "#ffdcbd"
+          },
+          // Phông chữ
+          fontFamily: {
+            "headline": ["Epilogue"],
+            "body": ["Be Vietnam Pro"],
+            "label": ["Be Vietnam Pro"]
+          },
+          borderRadius: { "DEFAULT": "0.25rem", "lg": "0.5rem", "xl": "0.75rem", "full": "9999px" },
+        },
+      },
+    }
+  </script>
+  <style>
+    .material-symbols-outlined {
+      font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+      display: inline-block;
+      line-height: 1;
+      text-transform: none;
+      letter-spacing: normal;
+      word-wrap: normal;
+      white-space: nowrap;
+      direction: ltr;
+    }
+
+    .glass-nav {
+      backdrop-filter: blur(12px);
+      background-color: rgba(249, 250, 242, 0.8);
+    }
+
+    .hero-gradient {
+      background: linear-gradient(to right, #384e21, #4f6636);
+    }
+  </style>
+</head>
+
+<body class="bg-surface text-on-surface font-body selection:bg-primary-fixed selection:text-on-primary-fixed">
+   <!-- Header -->
+  <header class="w-full sticky top-0 z-50 glass-nav shadow-[0_40px_40px_-15px_rgba(25,28,24,0.04)]">
+    <!-- Nội dung, format của header -->
+    <div class="flex justify-between items-center px-8 py-6 max-w-7xl mx-auto">
+      
+      <!-- Logo dán dô cái div này -->
+      <div class="text-2xl font-bold text-[#384e21] dark:text-[#b5cf95] uppercase tracking-widest font-headline">Zentro
+      </div>
+
+      <!-- Nội dung thanh điều hướng -->
+      <nav class="hidden md:flex gap-8 items-center">
+        <a class="text-[#384e21] dark:text-[#b5cf95] border-b-2 border-[#384e21] pb-1 font-['Epilogue'] tracking-tight transition-colors duration-300"
+          href="#">Shop</a>
+        <a class="text-[#191c18]/70 dark:text-stone-400 font-['Epilogue'] tracking-tight hover:text-[#4f6636] transition-colors duration-300"
+          href="#">Categories</a>
+        <a class="text-[#191c18]/70 dark:text-stone-400 font-['Epilogue'] tracking-tight hover:text-[#4f6636] transition-colors duration-300"
+          href="#">Blog</a>
+        <a class="text-[#191c18]/70 dark:text-stone-400 font-['Epilogue'] tracking-tight hover:text-[#4f6636] transition-colors duration-300"
+          href="#">History</a>
+      </nav>
+
+      <!-- Nhóm Icon -->
+      <div class="flex items-center gap-6">
+        <!-- Tìm kiếm -->
+        <button class="material-symbols-outlined text-[#384e21] active:scale-95 transition-transform"
+          data-icon="search">search</button>
+        <!-- Tài khoản -->
+        <button
+          class="material-symbols-outlined text-[#384e21] scale-95 active:opacity-80 transition-transform">account_circle</button>
+        <!-- Giỏ hàng -->
+          <div class="relative">
+          <button
+            class="material-symbols-outlined text-[#384e21] scale-95 active:opacity-80 transition-transform">shopping_cart</button>
+          <!-- Icon cho số đơn đang trong giỏ -->
+            <span
+            class="absolute -top-2 -right-2 bg-secondary text-on-secondary text-[10px] w-4 h-4 rounded-full flex items-center justify-center font-bold">2</span>
+        </div>
+        <!-- Icon menu cho mobile -->
+        <button class="md:hidden material-symbols-outlined text-[#384e21]">menu</button>
+      </div>
+
+    </div>
+  </header>
+
+    <main class="pt-20">
+        <!-- Banner tiêu đề -->
+        <header class="relative w-full h-[921px] flex items-end overflow-hidden">
+            <div class="absolute inset-0">
+                <img class="w-full h-full object-cover"
+                    data-alt="Modern sustainable architecture with floor-to-ceiling windows overlooking a misty forest, natural wood interior and soft morning light"
+                    src="https://lh3.googleusercontent.com/aida-public/AB6AXuD0vqyPMTsy0I7PGgFM7BZ9WICkOTJn4lrJU83JjKMtwtD9TST2PkeWQBw2JfGo9v15SxXSMkAYVr8SKk_17upQARw0usZYzlQs03avnezzPKV-42rcsmpxG8kU1vuC95A0wjSeRU1Xkk60hVv6LGcdBKEko9pGj0eVEmuS6ISp1y2XlQZHIZUVDi9cZI9tMWOgPdJnLpSbnIafZkY_jAokP2Gp-IL-JCz-ao8uo1LSYbfc5QpQvjWBvuJ9C94MYwBCCGzXFPgSUfU" />
+                <div class="absolute inset-0 bg-gradient-to-t from-on-surface/60 via-transparent to-transparent"></div>
+            </div>
+            <div class="relative z-10 w-full max-w-7xl mx-auto px-8 pb-16 md:pb-24">
+                <div class="max-w-3xl">
+                    <span
+                        class="inline-block px-4 py-1 rounded-full bg-primary-fixed text-on-primary-fixed text-sm font-bold uppercase tracking-widest mb-6">Sustainable
+                        Architecture</span>
+                    <h1
+                        class="text-5xl md:text-7xl lg:text-8xl font-black font-headline text-surface leading-[1.1] tracking-tight mb-8">
+                        The Architecture of Conscious Living
+                    </h1>
+                    <p class="text-xl md:text-2xl text-surface-container-highest font-light leading-relaxed max-w-2xl">
+                        Exploring how the spaces we inhabit shape our relationship with the planet and our well-being.
+                    </p>
+                </div>
+            </div>
+        </header>
+        <!-- Content -->
+        <article class="editorial-grid gap-y-12 md:gap-y-20 py-16 md:py-32">
+            <!-- Thông tin: tác giả, ngày đăng, thời gian đọc -->
+            <div class="flex flex-col md:flex-row md:items-center gap-8 py-8 border-y border-outline-variant/20 mb-8">
+                <div class="flex items-center gap-4">
+                    <div class="w-12 h-12 rounded-full overflow-hidden bg-surface-container-high">
+                        <img class="w-full h-full object-cover"
+                            data-alt="Portrait of a female architect in a minimalist white studio, soft professional lighting"
+                            src="https://lh3.googleusercontent.com/aida-public/AB6AXuBcXeBmO4Ce7cKbqu2KDa-c3VQTc3r05bocbD9LUlkap_f7-1G0MKT-hE9RktEOltY6iEohZeWId-jUj4FHecZOLV3UjiJ7QwfmddHpTnk35eAORgySPge5_WoTAbYKNwlaYNh9oZ7OxPhkQxNYn5jErmodp-8NzedlmzCpahU-IRhLv2CRLEfXdYLEeEay8XIfUGI3G4jJORyYTHqfggSO8fHv-3xL-JYXTl18sKvmcufbhmBY3_q_7MVsL-dUt7qaxtU67OiOM6k" />
+                    </div>
+                    <div>
+                        <p class="text-sm text-on-surface-variant font-medium">Written by</p>
+                        <p class="text-base font-bold text-primary font-headline">Elena Thorne</p>
+                    </div>
+                </div>
+                <div class="hidden md:block w-px h-10 bg-outline-variant/30"></div>
+                <div>
+                    <p class="text-sm text-on-surface-variant font-medium">Published on</p>
+                    <p class="text-base font-bold text-on-surface">October 24, 2024</p>
+                </div>
+                <div class="hidden md:block w-px h-10 bg-outline-variant/30"></div>
+                <div>
+                    <p class="text-sm text-on-surface-variant font-medium">Read time</p>
+                    <p class="text-base font-bold text-on-surface">12 min read</p>
+                </div>
+            </div>
+            <!-- Nội dung bài viết -->
+            <div class="space-y-8">
+                <p
+                    class="text-xl md:text-2xl leading-relaxed text-on-surface-variant first-letter:text-7xl first-letter:font-black first-letter:font-headline first-letter:mr-4 first-letter:float-left first-letter:text-primary">
+                    In the quiet corners of the Pacific Northwest, a new philosophy of habitation is taking root. It's
+                    not just about building houses; it's about crafting ecosystems that breathe, adapt, and eventually
+                    return to the earth. This is the architecture of conscious living—a movement that prioritizes
+                    tactile sustainability over industrial efficiency.
+                </p>
+                <p class="text-lg leading-relaxed text-on-surface-variant">
+                    For decades, modern design has been synonymous with the conquest of nature. We built glass towers
+                    that fought the sun and concrete fortresses that ignored the soil. Today, architects like the ones
+                    behind Zentro's latest projects are flipping the script. They're asking: What if our homes could
+                    regenerate the land instead of depleting it?
+                </p>
+            </div>
+            <!-- Quote -->
+            <div
+                class="wide py-12 px-8 bg-surface-container-low rounded-[2.5rem] my-8 flex flex-col items-center text-center">
+                <span class="material-symbols-outlined text-6xl text-primary-container mb-6"
+                    data-icon="format_quote">format_quote</span>
+                <blockquote class="text-3xl md:text-4xl font-headline font-bold text-primary leading-tight max-w-3xl">
+                    "Sustainability is no longer a feature we add to a building; it is the very soul of the space we
+                    occupy."
+                </blockquote>
+                <cite class="mt-8 not-italic text-on-surface-variant font-medium uppercase tracking-widest">— Julian
+                    Vane, Lead Designer</cite>
+            </div>
+            <!-- Embedded Image -->
+            <div class="wide space-y-4">
+                <div class="rounded-[2rem] overflow-hidden aspect-[16/9] bg-surface-container">
+                    <img class="w-full h-full object-cover"
+                        data-alt="Interior of a home featuring reclaimed timber beams, lime-plastered walls, and a large window overlooking a meadow"
+                        src="https://lh3.googleusercontent.com/aida-public/AB6AXuDSuwwvvFnyqZ780JQPv5kWS5OujBJVvDMMj6OO5XH7HgoOTMT0sgk0qqnhRb066Nf2VHDvPjTXk4cT07c3W-sY-EfvObiBj0hWkYSlLaH0JiGSw0nCIX_QhYZs_p53a6GIaoUqEEIlIXAQFsAe3pjFi7af5Va6xZhcc2y5A7WlPanBFsKPomit4hKChMUI7jB858avedlLMZIkhvUFyN40Z1WbF20cJFzxFUHrV7NyxmCgYwN0cQZk-orfekt-80PX4GYXdOuQlYk" />
+                </div>
+                <p class="text-sm text-on-surface-variant italic text-center font-medium">Fig 1.1: The integration of
+                    reclaimed Douglas Fir beams provides structural integrity with a 70% lower carbon footprint than
+                    steel.</p>
+            </div>
+            <!-- Long body text continues -->
+            <div class="space-y-8">
+                <h2 class="text-3xl md:text-4xl font-black font-headline text-primary mt-12 mb-6">The Materiality of
+                    Tomorrow</h2>
+                <p class="text-lg leading-relaxed text-on-surface-variant">
+                    The shift toward conscious living begins with tactile honesty. We are seeing a return to lime
+                    plasters, hempcrete, and cross-laminated timber. These materials don't just look natural; they
+                    behave naturally. They regulate humidity, filter toxins from the air, and provide a thermal mass
+                    that works with the seasons.
+                </p>
+                <p class="text-lg leading-relaxed text-on-surface-variant">
+                    In our Zentro projects, we've focused on "Low-Exergy" systems—designs that use high-quality energy
+                    for high-quality tasks and low-quality energy (like ambient ground heat) for heating our floors.
+                    It’s a sophisticated dance of thermodynamics and traditional craftsmanship.
+                </p>
+            </div>
+            <!-- Eco-Stats Chip Section -->
+            <div class="wide grid grid-cols-1 md:grid-cols-3 gap-6 my-12">
+                <div class="p-8 rounded-[2rem] bg-surface-container-high flex flex-col items-center text-center">
+                    <div class="w-16 h-16 rounded-full bg-primary/10 flex items-center justify-center mb-6">
+                        <span class="material-symbols-outlined text-primary text-3xl" data-icon="co2">co2</span>
+                    </div>
+                    <p class="text-4xl font-black font-headline text-primary mb-2">42%</p>
+                    <p class="text-sm font-bold uppercase tracking-widest text-on-surface-variant">CO2 Reduction</p>
+                    <p class="mt-4 text-sm text-on-surface-variant/80">Compared to traditional concrete and steel
+                        residential builds.</p>
+                </div>
+                <div class="p-8 rounded-[2rem] bg-surface-container-high flex flex-col items-center text-center">
+                    <div class="w-16 h-16 rounded-full bg-primary/10 flex items-center justify-center mb-6">
+                        <span class="material-symbols-outlined text-primary text-3xl"
+                            data-icon="water_drop">water_drop</span>
+                    </div>
+                    <p class="text-4xl font-black font-headline text-primary mb-2">12k L</p>
+                    <p class="text-sm font-bold uppercase tracking-widest text-on-surface-variant">Water Saved</p>
+                    <p class="mt-4 text-sm text-on-surface-variant/80">Through greywater recycling systems integrated
+                        into the foundation.</p>
+                </div>
+                <div class="p-8 rounded-[2rem] bg-surface-container-high flex flex-col items-center text-center">
+                    <div class="w-16 h-16 rounded-full bg-primary/10 flex items-center justify-center mb-6">
+                        <span class="material-symbols-outlined text-primary text-3xl"
+                            data-icon="energy_savings_leaf">energy_savings_leaf</span>
+                    </div>
+                    <p class="text-4xl font-black font-headline text-primary mb-2">0.0</p>
+                    <p class="text-sm font-bold uppercase tracking-widest text-on-surface-variant">Net Energy</p>
+                    <p class="mt-4 text-sm text-on-surface-variant/80">Achieved through passive solar design and
+                        integrated roof tiles.</p>
+                </div>
+            </div>
+            <!-- Giới thiệu sản phẩm -->
+            <div class="wide mt-32">
+                <div class="flex flex-col md:flex-row md:items-end justify-between mb-12 gap-6">
+                    <div>
+                        <span class="text-primary font-bold uppercase tracking-widest text-sm">Curated Living</span>
+                        <h3 class="text-4xl md:text-5xl font-black font-headline mt-2">Shop the Look</h3>
+                    </div>
+                    <a class="inline-flex items-center gap-2 text-primary font-bold hover:gap-4 transition-all"
+                        href="#">
+                        View Collection <span class="material-symbols-outlined">arrow_forward</span>
+                    </a>
+                </div>
+                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
+                    <!-- 1 -->
+                    <div class="group cursor-pointer">
+                        <div class="aspect-[3/4] rounded-2xl overflow-hidden bg-surface-container relative mb-4">
+                            <img class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                                data-alt="Minimalist solid oak chair with organic curved backrest on a concrete floor"
+                                src="https://lh3.googleusercontent.com/aida-public/AB6AXuBXE1Twi1EaF8qvzq4QRG2GB2gGcPRCKyEpfmGLj50QKpnlSaPOV20U-0xqlsn9R4IA5XIPw4Tw0xJR2JFAC0ey9RPU_MvYA_Vay9OAXrJ9YqIyGmSNYN-B3Mvo6n6fK8ResM4a2Tl8wIoS48TwY5FUjkyZhrJeMB_6wEhYRClnTto0Zc7zRMNgQfHr2gBjVt1f6FOl8sFPPMNablSm5Ss5qKN_t6Tfk-8pzPTTVLDXM9aQ12RSZSOoUAgdzX574r8pebGb7KStJ84" />
+                            <button
+                                class="absolute bottom-4 right-4 w-12 h-12 rounded-full bg-surface/90 backdrop-blur shadow-xl flex items-center justify-center text-primary opacity-0 group-hover:opacity-100 transition-opacity">
+                                <span class="material-symbols-outlined" data-icon="add">add</span>
+                            </button>
+                        </div>
+                        <h4 class="text-lg font-bold font-headline group-hover:text-primary transition-colors">Honed Oak
+                            Lounge Chair</h4>
+                        <p class="text-on-surface-variant">$1,240</p>
+                    </div>
+                    <!-- 2 -->
+                    <div class="group cursor-pointer">
+                        <div class="aspect-[3/4] rounded-2xl overflow-hidden bg-surface-container relative mb-4">
+                            <img class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                                data-alt="Modern pendant lamp made from recycled ocean plastic with a warm ambient glow"
+                                src="https://lh3.googleusercontent.com/aida-public/AB6AXuD-Qa2OrwtAXy8qZnVTeGD9ySgdVo7EAuBF-vMSm-kHbPLW2APnFu0wqxnA0JatfkeKMeGXlokGDoHTDonh_TaYla1KHFEvVlQvGLc7vAMzSi8hlUQVl1te2k-PDBbzefUoNOPnq-U6T4zmc86XMUPYIv5mHqLG67t4RXWtTU3ctj1qCEL3lxuHFTLoq_P-AutR4PDl-aGfTJkB-qGPCKWnH9uRD3Zo4gWsGWQHoyxGsHBgPdY_SzpIlMhJ16c9v1kayOY8FOLMrEE" />
+                            <button
+                                class="absolute bottom-4 right-4 w-12 h-12 rounded-full bg-surface/90 backdrop-blur shadow-xl flex items-center justify-center text-primary opacity-0 group-hover:opacity-100 transition-opacity">
+                                <span class="material-symbols-outlined" data-icon="add">add</span>
+                            </button>
+                        </div>
+                        <h4 class="text-lg font-bold font-headline group-hover:text-primary transition-colors">Aegean
+                            Pendant Light</h4>
+                        <p class="text-on-surface-variant">$480</p>
+                    </div>
+                    <!-- 3 -->
+                    <div class="group cursor-pointer">
+                        <div class="aspect-[3/4] rounded-2xl overflow-hidden bg-surface-container relative mb-4">
+                            <img class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                                data-alt="Handcrafted ceramic vase with a textured stone-like finish and a single dried branch"
+                                src="https://lh3.googleusercontent.com/aida-public/AB6AXuATFwe4_GcA8D9HK9AjVUdlc7R6-1HWwTiPCYLHcOTLL_gwl5mTfK-741ACcDb-fm182oVCfoEmIMb43aJhdkTlTOAaytYFPD2zk-DiubVLbDuOtiq5FI-jsjjIvtUwP4GW8NKJe7vEaZ_i2noLz3TOjM_FaxBL4eFi4UzBJnV_r1TKJ5CtOw5xVJdQu_-zluEueD-_VBgowQBclLAfFGLzae3DSu3A9nMpg-sKAjjiKHRJzB2HekUFBpFeOCeGa_BJ3r1gULTwIUw" />
+                            <button
+                                class="absolute bottom-4 right-4 w-12 h-12 rounded-full bg-surface/90 backdrop-blur shadow-xl flex items-center justify-center text-primary opacity-0 group-hover:opacity-100 transition-opacity">
+                                <span class="material-symbols-outlined" data-icon="add">add</span>
+                            </button>
+                        </div>
+                        <h4 class="text-lg font-bold font-headline group-hover:text-primary transition-colors">Terra
+                            Ceramic Vessel</h4>
+                        <p class="text-on-surface-variant">$185</p>
+                    </div>
+                    <!-- 4 -->
+                    <div class="group cursor-pointer">
+                        <div class="aspect-[3/4] rounded-2xl overflow-hidden bg-surface-container relative mb-4">
+                            <img class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                                data-alt="Sustainable cork flooring sample with a warm natural grain and rich texture"
+                                src="https://lh3.googleusercontent.com/aida-public/AB6AXuDG6Cp4izujZlix9Pl3DYYVWci0d1dcX_g0lJmZj2GiwwynkuXPQLQ3KYf7ZiwdOeQGjN6iHH9XFN_23BKduK2Q7uy2J4Zj46NC05fNWijE29sdyataKMmwXTGoVzbdtMBLJIETf17tm5YFycuhjtg6nfjFNUqJDPp7nCi8qKDe0qMgyLMxXc5rp7O08Cdt-BWnodqhF-C9ZX2fWemjTHAV4dpQHtGuG-NfkrQyaOFyrLnzT5N7SX0CGM3-OuAwiLL3GDvcXvvhvxA" />
+                            <button
+                                class="absolute bottom-4 right-4 w-12 h-12 rounded-full bg-surface/90 backdrop-blur shadow-xl flex items-center justify-center text-primary opacity-0 group-hover:opacity-100 transition-opacity">
+                                <span class="material-symbols-outlined" data-icon="add">add</span>
+                            </button>
+                        </div>
+                        <h4 class="text-lg font-bold font-headline group-hover:text-primary transition-colors">Floating
+                            Cork Plank</h4>
+                        <p class="text-on-surface-variant">$12/sqft</p>
+                    </div>
+                </div>
+            </div>
+            <!-- Xem thêm -->
+            <div class="wide mt-32 pt-24 border-t border-outline-variant/30">
+                <h3 class="text-4xl font-black font-headline mb-16">More from our Journal</h3>
+                <div class="grid grid-cols-1 md:grid-cols-12 gap-12">
+                    <div class="md:col-span-7 group cursor-pointer">
+                        <div class="aspect-[16/9] rounded-3xl overflow-hidden mb-6">
+                            <img class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700"
+                                data-alt="Close-up of human hands planting a small green seedling into rich dark earth"
+                                src="https://lh3.googleusercontent.com/aida-public/AB6AXuBp27mVnrZtkcWaIKcDjW6FtH0jP27xaAfHgGB0go7mvzswEoabcbTcKD9Xwb0PWFn1yjYAz8vFD8OmLI6dgX5ePXZkxvskXyDWwbgvZBik-o0ZHpUnMfPXk9Li3PH1c2tvSjSjbhZDpy8d3m6ovWpHxujGDS0yhuKYa-RtgrU3tnKSyc8oT6yZihg3p1lK9YR6YLMPYbKDl7WaIa2PqOZFOZfpd04MaF2_X0msDR72eYmWYbooROLBQHAj74OYN7mik3FjrSl6Kbc" />
+                        </div>
+                        <span class="text-secondary font-bold text-sm uppercase tracking-widest">Reforestation</span>
+                        <h4 class="text-3xl font-black font-headline mt-3 group-hover:text-primary transition-colors">
+                            How We Planted 100,000 Trees in 2024</h4>
+                        <p class="mt-4 text-on-surface-variant leading-relaxed line-clamp-2">A look back at our
+                            partnership with Eden Reforestation Projects and the communities we've touched.</p>
+                    </div>
+                    <div class="md:col-span-5 flex flex-col gap-12">
+                        <div class="flex gap-6 group cursor-pointer">
+                            <div class="w-32 h-32 flex-shrink-0 rounded-2xl overflow-hidden">
+                                <img class="w-full h-full object-cover"
+                                    data-alt="Collection of sustainable textile samples in earth tones like olive, sand, and clay"
+                                    src="https://lh3.googleusercontent.com/aida-public/AB6AXuBUBHlTKYX7lyZOl4sKGfJsLLGduQLXQkaYF2iV_T83xufHPAAjfMkVeufBKlDqPG85cCZ7iyEn3vX1NY8cFsmZZ5K1UjWLevbhZFOfQGVJ4TM6OKqpjKhe5XoK6Ty9HfNKWQBkDLCnKbR1aYfz8YQQtzJdkVT_VsQrtyhNEeduf57n8_KybfktzyA45_2vd6hI2ujIbDBgRgTrK_iddTu4gFuPW34hO5NiW5rjqk-kh5glrUAAgg8F-GJIMj4llmMNzgOoCejOiao" />
+                            </div>
+                            <div>
+                                <span
+                                    class="text-secondary font-bold text-xs uppercase tracking-widest">Materials</span>
+                                <h5
+                                    class="text-xl font-bold font-headline mt-1 leading-tight group-hover:text-primary transition-colors">
+                                    The Future of Textiles: Mycelium Leather</h5>
+                            </div>
+                        </div>
+                        <div class="flex gap-6 group cursor-pointer">
+                            <div class="w-32 h-32 flex-shrink-0 rounded-2xl overflow-hidden">
+                                <img class="w-full h-full object-cover"
+                                    data-alt="Aerial view of a circular community garden with paths radiating from a central point"
+                                    src="https://lh3.googleusercontent.com/aida-public/AB6AXuC5WkP0S3fW4BlpB-aiZv3tQqWNfjU7esMj8KQskqsZZiiDpihh5SvrXScSVBNpX8p3T_4oFNJiuiT2uiC6udQLKdwpRBNuL-p_2wU3csX3I4vnbJEDNlITPgUjVNQTMG0IPifw3DWd_UIK0whBTTmMh5Ee-hvJNCa7KB3ovBQHtVyGYCx51jXcjL84PIVUptn-qlaxkT-yJwuMTk-4PECa2zh9fhUFD0XAXpYjOowPC0Icvfqbj56S4wDYq8UALtcO0S_-sLHrwEA" />
+                            </div>
+                            <div>
+                                <span
+                                    class="text-secondary font-bold text-xs uppercase tracking-widest">Community</span>
+                                <h5
+                                    class="text-xl font-bold font-headline mt-1 leading-tight group-hover:text-primary transition-colors">
+                                    Circular Design in Urban Planning</h5>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!-- CTA đăng ký -->
+            <div class="wide mt-32">
+                <div
+                    class="bg-primary-container rounded-[3rem] p-8 md:p-20 relative overflow-hidden flex flex-col md:flex-row items-center gap-12">
+                    <div
+                        class="absolute top-0 right-0 w-64 h-64 bg-primary rounded-full blur-[100px] -mr-32 -mt-32 opacity-50">
+                    </div>
+                    <div class="relative z-10 md:w-1/2">
+                        <h3 class="text-4xl md:text-5xl font-black font-headline text-surface leading-tight mb-6">Join
+                            the Movement.</h3>
+                        <p class="text-primary-fixed-dim text-lg leading-relaxed">
+                            Receive our monthly journal on sustainable design, architectural innovations, and conscious
+                            living delivered to your inbox.
+                        </p>
+                    </div>
+                    <div class="relative z-10 md:w-1/2 w-full">
+                        <form class="flex flex-col sm:flex-row gap-4">
+                            <input
+                                class="flex-1 px-8 py-5 rounded-2xl bg-surface/10 border-none text-surface placeholder:text-surface/50 focus:ring-2 focus:ring-surface/30 transition-all text-lg"
+                                placeholder="Enter your email" type="email" />
+                            <button
+                                class="px-10 py-5 rounded-2xl bg-surface text-primary font-black font-headline hover:bg-primary-fixed transition-colors text-lg whitespace-nowrap">
+                                Subscribe
+                            </button>
+                        </form>
+                        <p class="text-xs text-primary-fixed-dim/60 mt-4 px-2">No spam. Only inspiration. Unsubscribe
+                            anytime.</p>
+                    </div>
+                </div>
+            </div>
+        </article>
+    </main>
+    <!-- Footer -->
+    <footer
+        class="w-full rounded-t-[2rem] mt-20 bg-[#edefe7] dark:bg-[#1c1d18] tonal-sculpting bg-[#f3f4ed] dark:bg-[#23261f]">
+        <div
+            class="flex flex-col items-center gap-8 py-12 px-6 w-full text-center font-['Be_Vietnam_Pro'] text-sm tracking-wide">
+            <div class="text-xl font-bold text-[#384e21] dark:text-[#b5cf95]">Zentro</div>
+            <div class="flex flex-wrap justify-center gap-x-8 gap-y-4">
+                <a class="text-[#44483d] dark:text-[#c5c8ba] hover:underline decoration-[#4f6636] underline-offset-4 opacity-80 hover:opacity-100 transition-opacity"
+                    href="#">Privacy Policy</a>
+                <a class="text-[#44483d] dark:text-[#c5c8ba] hover:underline decoration-[#4f6636] underline-offset-4 opacity-80 hover:opacity-100 transition-opacity"
+                    href="#">Terms of Service</a>
+                <a class="text-[#44483d] dark:text-[#c5c8ba] hover:underline decoration-[#4f6636] underline-offset-4 opacity-80 hover:opacity-100 transition-opacity"
+                    href="#">Sustainability Report</a>
+                <a class="text-[#44483d] dark:text-[#c5c8ba] hover:underline decoration-[#4f6636] underline-offset-4 opacity-80 hover:opacity-100 transition-opacity"
+                    href="#">Press Kit</a>
+                <a class="text-[#44483d] dark:text-[#c5c8ba] hover:underline decoration-[#4f6636] underline-offset-4 opacity-80 hover:opacity-100 transition-opacity"
+                    href="#">Contact Us</a>
+            </div>
+            <div class="flex gap-6 my-4">
+                <a class="w-10 h-10 rounded-full bg-surface-container-high flex items-center justify-center text-primary hover:bg-primary hover:text-surface transition-all"
+                    href="#">
+                    <span class="material-symbols-outlined text-lg">public</span>
+                </a>
+                <a class="w-10 h-10 rounded-full bg-surface-container-high flex items-center justify-center text-primary hover:bg-primary hover:text-surface transition-all"
+                    href="#">
+                    <span class="material-symbols-outlined text-lg">eco</span>
+                </a>
+                <a class="w-10 h-10 rounded-full bg-surface-container-high flex items-center justify-center text-primary hover:bg-primary hover:text-surface transition-all"
+                    href="#">
+                    <span class="material-symbols-outlined text-lg">psychology</span>
+                </a>
+            </div>
+            <p class="text-[#44483d] dark:text-[#c5c8ba] mt-4">
+                © 2024 Zentro Sustainable Living. Crafted for the Earth.
+            </p>
+        </div>
+    </footer>
+</body>
+
+</html>
