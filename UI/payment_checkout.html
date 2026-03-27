@@ -1,0 +1,393 @@
+<!DOCTYPE html>
+
+<html class="light" lang="vi">
+
+<head>
+  <meta charset="utf-8" />
+  <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+  <title>Checkout | Zentro Sustainable Living</title>
+  <link
+    href="https://fonts.googleapis.com/css2?family=Epilogue:wght@400;600;700;800&amp;family=Be+Vietnam+Pro:wght@300;400;500;600&amp;display=swap"
+    rel="stylesheet" />
+  <link
+    href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap"
+    rel="stylesheet" />
+  <link
+    href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap"
+    rel="stylesheet" />
+  <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+  <script id="tailwind-config">
+    tailwind.config = {
+      darkMode: "class",
+      theme: {
+        extend: {
+          //  Bảng màu chung
+          colors: {
+            "tertiary": "#474845",
+            "on-surface-variant": "#44483e",
+            "secondary": "#775839",
+            "surface": "#f9faf2",
+            "tertiary-container": "#5e605c",
+            "surface-bright": "#f9faf2",
+            "outline-variant": "#c5c8ba",
+            "on-error": "#ffffff",
+            "surface-container-high": "#e7e9e1",
+            "on-primary-fixed": "#0f2000",
+            "error": "#ba1a1a",
+            "on-primary-fixed-variant": "#374d20",
+            "inverse-primary": "#b5cf95",
+            "on-secondary": "#ffffff",
+            "surface-container-lowest": "#ffffff",
+            "tertiary-fixed-dim": "#c6c7c2",
+            "secondary-fixed-dim": "#e8bf98",
+            "primary-fixed-dim": "#b5cf95",
+            "primary-fixed": "#d0ecaf",
+            "on-primary-container": "#c7e3a7",
+            "on-tertiary": "#ffffff",
+            "on-secondary-fixed-variant": "#5d4123",
+            "on-error-container": "#93000a",
+            "on-primary": "#ffffff",
+            "background": "#f9faf2",
+            "surface-tint": "#4e6535",
+            "surface-variant": "#e1e3dc",
+            "primary-container": "#4f6636",
+            "outline": "#75796d",
+            "surface-dim": "#d9dbd3",
+            "on-secondary-fixed": "#2c1701",
+            "on-background": "#191c18",
+            "inverse-on-surface": "#f0f1ea",
+            "surface-container-highest": "#e1e3dc",
+            "surface-container-low": "#f3f4ed",
+            "inverse-surface": "#2e312c",
+            "on-surface": "#191c18",
+            "error-container": "#ffdad6",
+            "on-tertiary-fixed-variant": "#454744",
+            "surface-container": "#edefe7",
+            "on-tertiary-container": "#dadad6",
+            "on-tertiary-fixed": "#1a1c19",
+            "tertiary-fixed": "#e3e3de",
+            "primary": "#384e21",
+            "on-secondary-container": "#7a5b3b",
+            "secondary-container": "#ffd5ae",
+            "secondary-fixed": "#ffdcbd"
+          },
+          // Phông chữ
+          fontFamily: {
+            "headline": ["Epilogue"],
+            "body": ["Be Vietnam Pro"],
+            "label": ["Be Vietnam Pro"]
+          },
+          borderRadius: { "DEFAULT": "0.25rem", "lg": "0.5rem", "xl": "0.75rem", "full": "9999px" },
+        },
+      },
+    }
+  </script>
+  <style>
+    .material-symbols-outlined {
+      font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+      display: inline-block;
+      line-height: 1;
+      text-transform: none;
+      letter-spacing: normal;
+      word-wrap: normal;
+      white-space: nowrap;
+      direction: ltr;
+    }
+
+    .glass-nav {
+      backdrop-filter: blur(12px);
+      background-color: rgba(249, 250, 242, 0.8);
+    }
+
+    .hero-gradient {
+      background: linear-gradient(to right, #384e21, #4f6636);
+    }
+  </style>
+</head>
+
+<body class="bg-surface text-on-surface">
+  <!-- Header -->
+  <header class="w-full sticky top-0 z-50 glass-nav shadow-[0_40px_40px_-15px_rgba(25,28,24,0.04)]">
+    <!-- Nội dung, format của header -->
+    <div class="flex justify-between items-center px-8 py-6 max-w-7xl mx-auto">
+      
+      <!-- Logo dán dô cái div này -->
+      <div class="text-2xl font-bold text-[#384e21] dark:text-[#b5cf95] uppercase tracking-widest font-headline">Zentro
+      </div>
+
+      <!-- Nội dung thanh điều hướng -->
+      <nav class="hidden md:flex gap-8 items-center">
+        <a class="text-[#384e21] dark:text-[#b5cf95] border-b-2 border-[#384e21] pb-1 font-['Epilogue'] tracking-tight transition-colors duration-300"
+          href="#">Shop</a>
+        <a class="text-[#191c18]/70 dark:text-stone-400 font-['Epilogue'] tracking-tight hover:text-[#4f6636] transition-colors duration-300"
+          href="#">Categories</a>
+        <a class="text-[#191c18]/70 dark:text-stone-400 font-['Epilogue'] tracking-tight hover:text-[#4f6636] transition-colors duration-300"
+          href="#">Blog</a>
+        <a class="text-[#191c18]/70 dark:text-stone-400 font-['Epilogue'] tracking-tight hover:text-[#4f6636] transition-colors duration-300"
+          href="#">History</a>
+      </nav>
+
+      <!-- Nhóm Icon -->
+      <div class="flex items-center gap-6">
+        <!-- Tìm kiếm -->
+        <button class="material-symbols-outlined text-[#384e21] active:scale-95 transition-transform"
+          data-icon="search">search</button>
+        <!-- Tài khoản -->
+        <button
+          class="material-symbols-outlined text-[#384e21] scale-95 active:opacity-80 transition-transform">account_circle</button>
+        <!-- Giỏ hàng -->
+          <div class="relative">
+          <button
+            class="material-symbols-outlined text-[#384e21] scale-95 active:opacity-80 transition-transform">shopping_cart</button>
+          <!-- Icon cho số đơn đang trong giỏ -->
+            <span
+            class="absolute -top-2 -right-2 bg-secondary text-on-secondary text-[10px] w-4 h-4 rounded-full flex items-center justify-center font-bold">2</span>
+        </div>
+        <!-- Icon menu cho mobile -->
+        <button class="md:hidden material-symbols-outlined text-[#384e21]">menu</button>
+      </div>
+
+    </div>
+  </header>
+
+  <main class="max-w-7xl mx-auto px-8 py-12 md:py-20">
+    <div class="grid grid-cols-1 lg:grid-cols-12 gap-16 items-start">
+      <!-- Form Section -->
+      <div class="lg:col-span-7 space-y-12">
+        <header>
+          <h1 class="text-4xl md:text-5xl font-extrabold tracking-tight text-primary mb-4">Shipping Details</h1>
+          <p class="text-on-surface-variant body-lg max-w-lg">Complete your purchase with our carbon-neutral delivery
+            partners.</p>
+        </header>
+        <form class="space-y-10">
+          
+          <!-- Contact Information: Nhập mail -->
+          <section class="space-y-6">
+            <h2 class="text-xl font-bold flex items-center gap-2">
+              <span class="material-symbols-outlined text-primary" data-icon="mail">mail</span>
+              Contact Information
+            </h2>
+            <div class="grid grid-cols-1 gap-4">
+              <input
+                class="w-full px-6 py-4 rounded-lg bg-surface-container-high border-none focus:bg-surface-container-lowest focus:ring-1 focus:ring-primary/30 transition-all placeholder:text-on-surface-variant/50"
+                placeholder="Email Address" type="email" />
+              <label class="flex items-center gap-3 px-2">
+                <input class="rounded text-primary focus:ring-primary" type="checkbox" />
+                <span class="text-sm text-on-surface-variant">Keep me updated on sustainable living tips and exclusive
+                  offers.</span>
+              </label>
+            </div>
+          </section>
+
+          <!-- Shipping Address -->
+          <section class="space-y-6">
+            <h2 class="text-xl font-bold flex items-center gap-2">
+              <span class="material-symbols-outlined text-primary" data-icon="local_shipping">local_shipping</span>
+              Shipping Address
+            </h2>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <input
+                class="px-6 py-4 rounded-lg bg-surface-container-high border-none focus:bg-surface-container-lowest focus:ring-1 focus:ring-primary/30 transition-all"
+                placeholder="First Name" type="text" />
+              <input
+                class="px-6 py-4 rounded-lg bg-surface-container-high border-none focus:bg-surface-container-lowest focus:ring-1 focus:ring-primary/30 transition-all"
+                placeholder="Last Name" type="text" />
+              <input
+                class="md:col-span-2 px-6 py-4 rounded-lg bg-surface-container-high border-none focus:bg-surface-container-lowest focus:ring-1 focus:ring-primary/30 transition-all"
+                placeholder="Street Address" type="text" />
+              <input
+                class="px-6 py-4 rounded-lg bg-surface-container-high border-none focus:bg-surface-container-lowest focus:ring-1 focus:ring-primary/30 transition-all"
+                placeholder="City" type="text" />
+              <input
+                class="px-6 py-4 rounded-lg bg-surface-container-high border-none focus:bg-surface-container-lowest focus:ring-1 focus:ring-primary/30 transition-all"
+                placeholder="Postal Code" type="text" />
+            </div>
+          </section>
+
+          <!-- Sustainable Shipping Options -->
+          <section class="space-y-6">
+            <h2 class="text-xl font-bold flex items-center gap-2">
+              <span class="material-symbols-outlined text-primary" data-icon="eco">eco</span>
+              Delivery Method
+            </h2>
+            <div class="grid grid-cols-1 gap-4">
+              <label
+                class="group relative flex items-center justify-between p-6 rounded-xl bg-surface-container border-2 border-transparent hover:border-primary/20 cursor-pointer transition-all has-[:checked]:bg-surface-container-lowest has-[:checked]:border-primary">
+                <input checked="" class="hidden" name="shipping" type="radio" />
+                <div class="flex items-start gap-4">
+                  <span class="material-symbols-outlined text-primary-container p-2 bg-primary/10 rounded-full"
+                    data-icon="wind_power">wind_power</span>
+                  <div>
+                    <p class="font-bold text-on-surface">Carbon Neutral Standard</p>
+                    <p class="text-sm text-on-surface-variant">Delivered in 3-5 business days via EV fleet</p>
+                  </div>
+                </div>
+                <span class="font-bold text-primary">Free</span>
+              </label>
+              <label
+                class="group relative flex items-center justify-between p-6 rounded-xl bg-surface-container border-2 border-transparent hover:border-primary/20 cursor-pointer transition-all has-[:checked]:bg-surface-container-lowest has-[:checked]:border-primary">
+                <input class="hidden" name="shipping" type="radio" />
+                <div class="flex items-start gap-4">
+                  <span class="material-symbols-outlined text-secondary p-2 bg-secondary/10 rounded-full"
+                    data-icon="cycle">cycle</span>
+                  <div>
+                    <p class="font-bold text-on-surface">Zero-Waste Express</p>
+                    <p class="text-sm text-on-surface-variant">Next-day delivery in reusable packaging</p>
+                  </div>
+                </div>
+                <span class="font-bold text-primary">$12.00</span>
+              </label>
+            </div>
+          </section>
+        </form>
+      </div>
+      <!-- Order Summary Sidebar -->
+      <aside class="lg:col-span-5">
+        <div class="sticky top-32 p-8 md:p-10 rounded-xl bg-surface-container-low border-none space-y-8">
+          <h3 class="text-2xl font-bold tracking-tight">Order Summary</h3>
+          <!-- Cart Items -->
+          <div class="space-y-6">
+            <div class="flex items-center gap-4">
+              <div class="w-20 h-20 bg-surface-container-highest rounded-lg overflow-hidden flex-shrink-0">
+                <img class="w-full h-full object-cover"
+                  data-alt="artisanal hand-woven organic cotton throw blanket in soft olive green texture"
+                  src="https://lh3.googleusercontent.com/aida-public/AB6AXuBDahNG9D2_Ct4PIJbBxMhT3JhZMZIqXnmdinLezL9fOqI2gdE-QP_cPYjSwi2UA-C93Jxau8HXl1n94mNx5jg-riJRzAvKElatMBWtXXQ6C62sW1ys6P1EJhjFE_u54tYJL5ZUJrhbULcrLrR5hG5-qH-BKO_J59_FLyVvt3ro9g0wyfuDbokhFf3p2QM6eGMbxbdJrQBchYHI7VFXIORoDOIJuK0CCU5yln5Y1e5N3fKM9ItzmgZS0Do_eBNIQe6vJwsAK6z3ajE" />
+              </div>
+              <div class="flex-grow">
+                <p class="font-bold text-on-surface">Woven Moss Throw</p>
+                <p class="text-sm text-on-surface-variant">Organic Cotton · Sage</p>
+                <p class="text-sm font-medium mt-1">Qty: 1</p>
+              </div>
+              <span class="font-bold text-primary">$85.00</span>
+            </div>
+            <div class="flex items-center gap-4">
+              <div class="w-20 h-20 bg-surface-container-highest rounded-lg overflow-hidden flex-shrink-0">
+                <img class="w-full h-full object-cover"
+                  data-alt="recycled glass apothecary jar with natural cork lid filled with bath salts"
+                  src="https://lh3.googleusercontent.com/aida-public/AB6AXuDU-kYrzEDR0WTGmx-kwllKARO_X5H50SAJvGUtBGt7pFP49b_5AE-KkQzypAGYCxnHmHG9RY7tiKUXThRZxowWssn4llLVnJjc-1z1ktttlccWoFZFrzww_Skr-QkqES6KMsLNsF52onptaVlgOnB5HbSr6l8jGadtl1c6DBlP1rlKbic4kG-j2QNE1X5CaRHsA3ygtUOLF0_29CnQfNwwni1LXB8H7pX_CAdOaHg7_YeFILvArJim6m8ZEKR9EobU2GaivF6qEhg" />
+              </div>
+              <div class="flex-grow">
+                <p class="font-bold text-on-surface">Recycled Glass Jar</p>
+                <p class="text-sm text-on-surface-variant">Hand-blown · 500ml</p>
+                <p class="text-sm font-medium mt-1">Qty: 2</p>
+              </div>
+              <span class="font-bold text-primary">$48.00</span>
+            </div>
+          </div>
+          
+          <!-- Promo Code -->
+          <div class="flex gap-2">
+            <input
+              class="flex-grow px-4 py-3 rounded-lg bg-surface-container-highest border-none focus:ring-1 focus:ring-primary/30"
+              placeholder="Promo Code" type="text" />
+            <button
+              class="px-6 py-3 bg-secondary-container text-on-secondary-container rounded-lg font-bold hover:opacity-90 transition-opacity">Apply</button>
+          </div>
+          <!-- Totals -->
+          <div class="space-y-4 pt-6 border-t border-outline-variant/30">
+            <div class="flex justify-between text-on-surface-variant">
+              <span>Subtotal</span>
+              <span>$133.00</span>
+            </div>
+            <div class="flex justify-between text-on-surface-variant">
+              <span>Shipping</span>
+              <span class="text-primary-container font-medium">Free</span>
+            </div>
+            <div class="flex justify-between text-on-surface-variant">
+              <span>Estimated Tax</span>
+              <span>$10.64</span>
+            </div>
+            <div class="flex justify-between text-xl font-bold text-on-surface pt-4">
+              <span>Total</span>
+              <span>$143.64</span>
+            </div>
+          </div>
+          <!-- Nút xác nhận -> Chuyển sang payment_details.html -->
+          <div class="p-6 rounded-xl flex items-center gap-4">
+            <button
+              class="w-full md:w-auto px-12 py-5 bg-primary text-on-primary rounded-full font-bold text-lg hover:bg-primary-container transition-all shadow-lg hover:shadow-primary/20 flex items-center justify-center gap-3"
+              type="button">
+              Continue to Payment
+              <span class="material-symbols-outlined" data-icon="arrow_forward">arrow_forward</span>
+            </button>
+          </div>
+        </div>
+      </aside>
+    </div>
+  </main>
+  <!-- Footer -->
+  <footer
+    class="w-full pt-16 pb-8 bg-[#edefe7] dark:bg-stone-800 text-[#384e21] dark:text-[#b5cf95] font-['Be_Vietnam_Pro'] text-sm">
+    <div class="grid grid-cols-2 md:grid-cols-4 gap-12 px-8 max-w-7xl mx-auto">
+      <div class="col-span-2 md:col-span-1">
+        <!-- Logo -->
+        <div class="text-xl font-bold text-[#384e21] mb-6 font-headline tracking-widest uppercase">Zentro</div>
+        <!-- Mô tả -->
+        <p class="text-[#191c18]/60 leading-relaxed mb-6">Sustainable living, simplified. We bring together the world's
+          most ethical brands in one place.</p>
+        <!-- Icon điều hướng -->
+        <div class="flex gap-4">
+          <a class="material-symbols-outlined opacity-100 hover:opacity-80 transition-opacity" href="#">public</a>
+          <a class="material-symbols-outlined opacity-100 hover:opacity-80 transition-opacity"
+            href="#">nest_eco_leaf</a>
+          <a class="material-symbols-outlined opacity-100 hover:opacity-80 transition-opacity"
+            href="#">volunteer_activism</a>
+        </div>
+      </div>
+      <!-- Danh mục -->
+      <div>
+        <h4 class="font-bold text-[#384e21] mb-6">The Shop</h4>
+        <ul class="space-y-4">
+          <li><a class="text-[#191c18]/60 hover:underline decoration-[#384e21]/30 underline-offset-4" href="#">Home
+              Decor</a></li>
+          <li><a class="text-[#191c18]/60 hover:underline decoration-[#384e21]/30 underline-offset-4"
+              href="#">Skincare</a></li>
+          <li><a class="text-[#191c18]/60 hover:underline decoration-[#384e21]/30 underline-offset-4"
+              href="#">Fashion</a></li>
+          <li><a class="text-[#191c18]/60 hover:underline decoration-[#384e21]/30 underline-offset-4" href="#">Zero
+              Waste</a></li>
+        </ul>
+      </div>
+      <!-- SEO -->
+      <div>
+        <h4 class="font-bold text-[#384e21] mb-6">About Us</h4>
+        <ul class="space-y-4">
+          <li><a class="text-[#191c18]/60 hover:underline decoration-[#384e21]/30 underline-offset-4" href="#">Our
+              Story</a></li>
+          <li><a class="text-[#191c18]/60 hover:underline decoration-[#384e21]/30 underline-offset-4"
+              href="#">Sustainability</a></li>
+          <li><a class="text-[#191c18]/60 hover:underline decoration-[#384e21]/30 underline-offset-4" href="#">Blog</a>
+          </li>
+          <li><a class="text-[#191c18]/60 hover:underline decoration-[#384e21]/30 underline-offset-4"
+              href="#">Careers</a></li>
+        </ul>
+      </div>
+      <!--Contact -->
+      <div>
+        <h4 class="font-bold text-[#384e21] mb-6">Contact</h4>
+        <ul class="space-y-4">
+          <li><a class="text-[#191c18]/60 hover:underline decoration-[#384e21]/30 underline-offset-4"
+              href="#">Shipping</a></li>
+          <li><a class="text-[#191c18]/60 hover:underline decoration-[#384e21]/30 underline-offset-4" href="#">Privacy
+              Policy</a></li>
+          <li><a class="text-[#191c18]/60 hover:underline decoration-[#384e21]/30 underline-offset-4"
+              href="#">Instagram</a></li>
+          <li><a class="text-[#191c18]/60 hover:underline decoration-[#384e21]/30 underline-offset-4"
+              href="#">LinkedIn</a></li>
+        </ul>
+      </div>
+    </div>
+    <!-- Pháp lý -->
+    <div
+      class="max-w-7xl mx-auto px-8 mt-16 pt-8 border-t border-primary/10 flex flex-col md:flex-row justify-between gap-4">
+      <div class="text-[#191c18]/60">© 2024 Zentro Sustainable Living. Built for the Earth.</div>
+      <div class="flex gap-6">
+        <a class="text-[#191c18]/60 hover:text-primary transition-colors" href="#">Terms</a>
+        <a class="text-[#191c18]/60 hover:text-primary transition-colors" href="#">Privacy</a>
+        <a class="text-[#191c18]/60 hover:text-primary transition-colors" href="#">Cookies</a>
+      </div>
+    </div>
+  </footer>
+</body>
+
+</html>
