@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Máy chủ: 127.0.0.1
--- Thời gian đã tạo: Th3 27, 2026 lúc 09:02 AM
+-- Thời gian đã tạo: Th3 28, 2026 lúc 09:41 AM
 -- Phiên bản máy phục vụ: 10.4.32-MariaDB
 -- Phiên bản PHP: 8.2.12
 
@@ -385,18 +385,6 @@ CREATE TABLE `vatlieu` (
   `MoTa` text DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
--- --------------------------------------------------------
-
---
--- Cấu trúc bảng cho bảng `yeuthich`
---
-
-CREATE TABLE `yeuthich` (
-  `MaNguoiDung` int(11) NOT NULL,
-  `MaSanPham` int(11) NOT NULL,
-  `NgayThem` datetime DEFAULT current_timestamp()
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
-
 --
 -- Chỉ mục cho các bảng đã đổ
 --
@@ -560,13 +548,6 @@ ALTER TABLE `thuonghieu`
 --
 ALTER TABLE `vatlieu`
   ADD PRIMARY KEY (`MaVatLieu`);
-
---
--- Chỉ mục cho bảng `yeuthich`
---
-ALTER TABLE `yeuthich`
-  ADD PRIMARY KEY (`MaNguoiDung`,`MaSanPham`),
-  ADD KEY `MaSanPham` (`MaSanPham`);
 
 --
 -- AUTO_INCREMENT cho các bảng đã đổ
@@ -778,13 +759,6 @@ ALTER TABLE `sanpham`
 ALTER TABLE `sanpham_chungnhan`
   ADD CONSTRAINT `sanpham_chungnhan_ibfk_1` FOREIGN KEY (`MaSanPham`) REFERENCES `sanpham` (`MaSanPham`) ON DELETE CASCADE,
   ADD CONSTRAINT `sanpham_chungnhan_ibfk_2` FOREIGN KEY (`MaChungNhan`) REFERENCES `chungnhan` (`MaChungNhan`) ON DELETE CASCADE;
-
---
--- Các ràng buộc cho bảng `yeuthich`
---
-ALTER TABLE `yeuthich`
-  ADD CONSTRAINT `yeuthich_ibfk_1` FOREIGN KEY (`MaNguoiDung`) REFERENCES `nguoidung` (`MaNguoiDung`) ON DELETE CASCADE,
-  ADD CONSTRAINT `yeuthich_ibfk_2` FOREIGN KEY (`MaSanPham`) REFERENCES `sanpham` (`MaSanPham`) ON DELETE CASCADE;
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
