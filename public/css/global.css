@@ -1,0 +1,56 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    /* Khai báo bảng màu Zentro */
+    --primary: #384e21;
+    --primary-container: #4f6636;
+    --primary-fixed: #d0ecaf;
+    --surface: #f9faf2;
+    --surface-container-high: #e7e9e1;
+    --on-surface: #191c18;
+    --on-surface-variant: #44483e;
+    --outline-variant: #c5c8ba;
+    --secondary-container: #ffd5ae;
+    --on-secondary-container: #7a5b3b;
+  }
+
+  html, body {
+    height: 100%;
+    margin: 0;
+    background-color: var(--surface);
+    font-family: 'Be Vietnam Pro', sans-serif;
+    color: var(--on-surface);
+  }
+}
+
+@layer components {
+  /* 1. CLASS căn chính giữa màn hình */
+  .centering-wrapper {
+    @apply w-full flex flex-col items-center justify-center px-6;
+    /* Trừ đi chiều cao Header/Footer (khoảng 160px) để không bị cuộn trang */
+    min-height: calc(100vh - 160px); 
+  }
+
+  /* 2. Dùng cho mọi ô nhập liệu */
+  .zentro-input {
+    @apply w-full p-4 bg-[#e7e9e1] border-none rounded-xl outline-none transition-all;
+    @apply focus:ring-2 focus:ring-[#384e21]/20 focus:bg-white;
+  }
+
+  /* 3.  Nút bấm màu xanh  */
+  .zentro-button {
+    @apply w-full py-4 bg-[#384e21] text-white font-bold rounded-xl text-base transition-all;
+    @apply shadow-md hover:bg-[#4f6636] active:scale-[0.98] hover:shadow-lg;
+  }
+
+  /* 4. ĐỊNH NGHĨA LẠI CÁC MÀU TAILWIND */
+  .text-primary { color: var(--primary); }
+  .bg-primary { background-color: var(--primary); }
+  .bg-primary-fixed { background-color: var(--primary-fixed); }
+  .bg-surface-container-high { background-color: var(--surface-container-high); }
+  .text-on-surface-variant { color: var(--on-surface-variant); }
+  .bg-secondary-container { background-color: var(--secondary-container); }
+}
