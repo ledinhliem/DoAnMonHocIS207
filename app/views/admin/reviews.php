@@ -1,3 +1,339 @@
-<?php require_once __DIR__ . '/../layouts/admin_header.php'; ?>
-<h1>Quản lý đánh giá</h1>
-<?php require_once __DIR__ . '/../layouts/admin_footer.php'; ?>
+<?php include __DIR__ . '/../layouts/admin_header.php'; ?>
+
+<aside class="h-screen w-64 fixed left-0 top-0 bg-[#edefe7] dark:bg-stone-800 border-r border-[#c5c8ba]/20 shadow-[40px_0_40px_-15px_rgba(25,28,24,0.04)] flex flex-col py-8 z-40">
+    <div class="px-6 mb-10">
+        <h1 class="font-['Epilogue'] font-black text-[#384e21] text-2xl tracking-tighter">Zentro</h1>
+        <p class="text-[10px] uppercase tracking-[0.2em] text-on-surface-variant font-bold mt-1">Eco-Management Suite</p>
+    </div>
+
+    <nav class="flex-1 space-y-1">
+        <a class="text-[#191c18]/60 hover:bg-[#e1e3dc] dark:hover:bg-stone-700 mx-2 my-1 px-4 py-3 rounded-lg flex items-center gap-3 transition-all hover:translate-x-1 duration-200" href="#">
+            <span class="material-symbols-outlined" data-icon="dashboard">dashboard</span>
+            <span class="font-medium text-sm">Dashboard</span>
+        </a>
+
+        <a class="text-[#191c18]/60 hover:bg-[#e1e3dc] dark:hover:bg-stone-700 mx-2 my-1 px-4 py-3 rounded-lg flex items-center gap-3 transition-all hover:translate-x-1 duration-200" href="index.php?url=admin/inventory">
+            <span class="material-symbols-outlined" data-icon="inventory_2">inventory_2</span>
+            <span class="font-medium text-sm">Inventory</span>
+        </a>
+
+        <a class="text-[#191c18]/60 hover:bg-[#e1e3dc] dark:hover:bg-stone-700 mx-2 my-1 px-4 py-3 rounded-lg flex items-center gap-3 transition-all hover:translate-x-1 duration-200" href="#">
+            <span class="material-symbols-outlined" data-icon="local_shipping">local_shipping</span>
+            <span class="font-medium text-sm">Suppliers</span>
+        </a>
+
+        <a class="text-[#191c18]/60 hover:bg-[#e1e3dc] dark:hover:bg-stone-700 mx-2 my-1 px-4 py-3 rounded-lg flex items-center gap-3 transition-all hover:translate-x-1 duration-200" href="#">
+            <span class="material-symbols-outlined" data-icon="eco">eco</span>
+            <span class="font-medium text-sm">Products</span>
+        </a>
+
+        <a class="text-[#191c18]/60 hover:bg-[#e1e3dc] dark:hover:bg-stone-700 mx-2 my-1 px-4 py-3 rounded-lg flex items-center gap-3 transition-all hover:translate-x-1 duration-200" href="#">
+            <span class="material-symbols-outlined" data-icon="shopping_basket">shopping_basket</span>
+            <span class="font-medium text-sm">Orders</span>
+        </a>
+
+        <a class="bg-[#384e21] text-white rounded-lg mx-2 my-1 px-4 py-3 flex items-center gap-3 active:scale-98 transition-transform" href="#">
+            <span class="material-symbols-outlined" data-icon="rate_review" style="font-variation-settings: 'FILL' 1;">rate_review</span>
+            <span class="font-medium text-sm">Reviews</span>
+        </a>
+
+        <a class="text-[#191c18]/60 hover:bg-[#e1e3dc] dark:hover:bg-stone-700 mx-2 my-1 px-4 py-3 rounded-lg flex items-center gap-3 transition-all hover:translate-x-1 duration-200" href="#">
+            <span class="material-symbols-outlined" data-icon="article">article</span>
+            <span class="font-medium text-sm">Blog</span>
+        </a>
+
+        <a class="text-[#191c18]/60 hover:bg-[#e1e3dc] dark:hover:bg-stone-700 mx-2 my-1 px-4 py-3 rounded-lg flex items-center gap-3 transition-all hover:translate-x-1 duration-200" href="#">
+            <span class="material-symbols-outlined" data-icon="settings">settings</span>
+            <span class="font-medium text-sm">Settings</span>
+        </a>
+    </nav>
+
+    <div class="px-6 mt-auto pt-8 border-t border-[#c5c8ba]/20">
+        <div class="flex items-center gap-3 mb-6">
+            <div class="w-10 h-10 rounded-full bg-primary-container flex items-center justify-center text-on-primary-container font-bold overflow-hidden">
+                <img alt="Admin User Profile" class="w-full h-full object-cover" data-alt="professional headshot of a confident female administrator in a sustainable office environment" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCBk3wfsUs_cn9X2dz9ylSjH798GLpVQ4waoMNV5Q7SPLluIYbZ0oHkka8LAM6HjNSLSnT-GkUBATd2Kg8lS-8a70XDw929VOP2QwxmiM24Espy7DKKDm2kdzD0OS6b5v11IjZIi8uw2azekhfMcLBjFwdFlAGUKqQp4wCKpFFZEr4GqqPXpaQiJLp3aZpdpFpBHlfVCPWejIs3AMdf25XiM1Pm1NALeMf-VnmWtoigU6cWnrmhhXnn7K7hqTDgolZiAEjiaUBZjVw"/>
+            </div>
+            <div>
+                <p class="text-xs font-bold text-on-surface">Zentro Admin</p>
+                <p class="text-[10px] text-on-surface-variant">Review Moderator</p>
+            </div>
+        </div>
+
+        <button class="w-full bg-secondary-container text-on-secondary-container py-2.5 rounded-lg text-xs font-bold hover:bg-opacity-90 transition-all flex items-center justify-center gap-2">
+            <span class="material-symbols-outlined text-sm" data-icon="file_download">file_download</span>
+            Export Reports
+        </button>
+    </div>
+</aside>
+
+<main class="ml-64 p-12 min-h-screen">
+    <header class="mb-12 flex justify-between items-end">
+        <div>
+            <nav class="flex items-center gap-2 text-on-surface-variant text-sm mb-4">
+                <span>Admin</span>
+                <span class="material-symbols-outlined text-xs" data-icon="chevron_right">chevron_right</span>
+                <span class="text-primary font-medium">DANHGIA</span>
+            </nav>
+            <h2 class="text-5xl font-black tracking-tighter text-primary">Review Moderation</h2>
+            <p class="text-on-surface-variant mt-2 text-lg">Maintain the integrity of the Zentro community experience.</p>
+        </div>
+
+        <div class="flex gap-4">
+            <div class="bg-surface-container-high px-6 py-3 rounded-xl flex items-center gap-3">
+                <span class="text-primary font-bold text-2xl">4.8</span>
+                <div class="h-8 w-[1px] bg-outline-variant/30"></div>
+                <div>
+                    <div class="flex text-primary">
+                        <span class="material-symbols-outlined text-xs" data-icon="star" style="font-variation-settings: 'FILL' 1;">star</span>
+                        <span class="material-symbols-outlined text-xs" data-icon="star" style="font-variation-settings: 'FILL' 1;">star</span>
+                        <span class="material-symbols-outlined text-xs" data-icon="star" style="font-variation-settings: 'FILL' 1;">star</span>
+                        <span class="material-symbols-outlined text-xs" data-icon="star" style="font-variation-settings: 'FILL' 1;">star</span>
+                        <span class="material-symbols-outlined text-xs" data-icon="star" style="font-variation-settings: 'FILL' 1;">star</span>
+                    </div>
+                    <p class="text-[10px] font-bold text-on-surface-variant uppercase tracking-wider">Average Rating</p>
+                </div>
+            </div>
+
+            <div class="bg-surface-container-high px-6 py-3 rounded-xl flex items-center gap-3">
+                <span class="text-primary font-bold text-2xl">12</span>
+                <div class="h-8 w-[1px] bg-outline-variant/30"></div>
+                <p class="text-[10px] font-bold text-on-surface-variant uppercase tracking-wider leading-tight">Pending<br/>Moderation</p>
+            </div>
+        </div>
+    </header>
+
+    <section class="grid grid-cols-12 gap-8">
+        <div class="col-span-12 lg:col-span-8 space-y-6">
+            <div class="flex items-center justify-between mb-4">
+                <div class="flex gap-2">
+                    <button class="px-4 py-2 bg-primary text-on-primary rounded-full text-sm font-medium">All Reviews</button>
+                    <button class="px-4 py-2 bg-surface-container-high text-on-surface-variant rounded-full text-sm font-medium hover:bg-surface-variant transition-colors">Pending</button>
+                    <button class="px-4 py-2 bg-surface-container-high text-on-surface-variant rounded-full text-sm font-medium hover:bg-surface-variant transition-colors">Flagged</button>
+                </div>
+
+                <div class="relative">
+                    <input class="bg-surface-container-high border-none rounded-full pl-10 pr-4 py-2 text-sm focus:ring-2 focus:ring-primary/20 w-64 transition-all" placeholder="Search customer or content..." type="text"/>
+                    <span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-on-surface-variant" data-icon="search">search</span>
+                </div>
+            </div>
+
+            <div class="space-y-4">
+                <div class="bg-surface-container-lowest p-8 rounded-2xl shadow-sm hover:shadow-md transition-shadow relative overflow-hidden group">
+                    <div class="absolute top-0 right-0 w-1.5 h-full bg-primary-fixed-dim opacity-0 group-hover:opacity-100 transition-opacity"></div>
+                    <div class="flex justify-between items-start mb-6">
+                        <div class="flex items-center gap-4">
+                            <div class="w-12 h-12 rounded-full overflow-hidden">
+                                <img alt="Customer Avatar" class="w-full h-full object-cover" data-alt="portrait of a young man smiling in a bright airy studio, clean aesthetic" src="https://lh3.googleusercontent.com/aida-public/AB6AXuA8BbBuEr3q0F2lLDlObnIR6Lgwc9jbsdodiWhyITD-1b0tAqqkWZa7n2O1hMeJ2cQX2vUXDpiZqKbX-lPpHCHmxddmHEbjhNOA0eyPmOsgxOlo7tmhR3hCrdKYdcb1Vie6aY1QcXJ65GDAb3WvXGygjDkPvt47lGNoS6kwnE92rdQn4fmgCKZHq0666egAw81Q_tur4SQl9OcZfbhRXhVFJV6h5zXchdfRPcKFImWsd4_RHJ3kUjp0pyTDxnk9siVMtsz7SCTwRdk"/>
+                            </div>
+                            <div>
+                                <h4 class="font-bold text-lg text-on-surface">Ethan Rivers</h4>
+                                <p class="text-xs text-on-surface-variant">Verified Purchase • 2 hours ago</p>
+                            </div>
+                        </div>
+
+                        <div class="flex text-[#4e6535]">
+                            <span class="material-symbols-outlined" data-icon="star" style="font-variation-settings: 'FILL' 1;">star</span>
+                            <span class="material-symbols-outlined" data-icon="star" style="font-variation-settings: 'FILL' 1;">star</span>
+                            <span class="material-symbols-outlined" data-icon="star" style="font-variation-settings: 'FILL' 1;">star</span>
+                            <span class="material-symbols-outlined" data-icon="star" style="font-variation-settings: 'FILL' 1;">star</span>
+                            <span class="material-symbols-outlined" data-icon="star" style="font-variation-settings: 'FILL' 1;">star</span>
+                        </div>
+                    </div>
+
+                    <div class="mb-6">
+                        <p class="font-bold text-primary mb-2">Sustainable Bamboo Bedding Set</p>
+                        <p class="text-on-surface-variant leading-relaxed text-sm">Absolutely in love with the texture of this bedding. It's so much softer than I expected and knowing it's sustainably sourced makes sleep that much better. The packaging was also completely plastic-free which I really appreciate.</p>
+                    </div>
+
+                    <div class="flex items-center justify-between pt-6 border-t border-outline-variant/10">
+                        <div class="flex gap-4">
+                            <button class="flex items-center gap-2 text-primary text-sm font-bold hover:underline underline-offset-4">
+                                <span class="material-symbols-outlined text-sm" data-icon="check_circle">check_circle</span>
+                                Approve
+                            </button>
+                            <button class="flex items-center gap-2 text-on-surface-variant text-sm font-bold hover:underline underline-offset-4">
+                                <span class="material-symbols-outlined text-sm" data-icon="reply">reply</span>
+                                Reply
+                            </button>
+                            <button class="flex items-center gap-2 text-error text-sm font-bold hover:underline underline-offset-4">
+                                <span class="material-symbols-outlined text-sm" data-icon="delete">delete</span>
+                                Delete
+                            </button>
+                        </div>
+                        <span class="bg-primary-fixed-dim/20 text-primary-container px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider">New Review</span>
+                    </div>
+                </div>
+
+                <div class="bg-surface-container-lowest p-8 rounded-2xl shadow-sm hover:shadow-md transition-shadow relative overflow-hidden group">
+                    <div class="absolute top-0 right-0 w-1.5 h-full bg-error/20 opacity-100 transition-opacity"></div>
+                    <div class="flex justify-between items-start mb-6">
+                        <div class="flex items-center gap-4">
+                            <div class="w-12 h-12 rounded-full overflow-hidden">
+                                <img alt="Customer Avatar" class="w-full h-full object-cover" data-alt="vibrant portrait of a woman with a natural look and soft background blur" src="https://lh3.googleusercontent.com/aida-public/AB6AXuC9QmvobrkCyik5qlP8cGj0NbZpgibAahm1fS9tqn7hmDMsEvqR6kgtDDaVxX-1x_iRQtIJ9Lhe6KN-yj5ETVJtRFhCx6Od9XCuKeArzFw3bfi6tjuJVyn4gzxeMdYWY21Ip7qFRkadM1bUrMmlbzu-DStcQvYPsy9Pxgow6P0_6EW3GM4xO2E3mCP-_SJ70bd4tKi_A8HovIyBUAL_iAeNiXNPUVKtV-2kLUz0S1k49_SURp4_Vbckb7m7ypqVO1AJYK97l4OXajo"/>
+                            </div>
+                            <div>
+                                <h4 class="font-bold text-lg text-on-surface">Maya Chen</h4>
+                                <p class="text-xs text-on-surface-variant">Verified Purchase • 5 hours ago</p>
+                            </div>
+                        </div>
+
+                        <div class="flex text-[#4e6535]">
+                            <span class="material-symbols-outlined" data-icon="star" style="font-variation-settings: 'FILL' 1;">star</span>
+                            <span class="material-symbols-outlined" data-icon="star" style="font-variation-settings: 'FILL' 0;">star</span>
+                            <span class="material-symbols-outlined" data-icon="star" style="font-variation-settings: 'FILL' 0;">star</span>
+                            <span class="material-symbols-outlined" data-icon="star" style="font-variation-settings: 'FILL' 0;">star</span>
+                            <span class="material-symbols-outlined" data-icon="star" style="font-variation-settings: 'FILL' 0;">star</span>
+                        </div>
+                    </div>
+
+                    <div class="mb-6">
+                        <p class="font-bold text-primary mb-2">Artisan Terracotta Vase</p>
+                        <p class="text-error bg-error-container/30 p-4 rounded-xl text-sm italic mb-4">
+                            Flagged: Potential inappropriate language or spam content.
+                        </p>
+                        <p class="text-on-surface-variant leading-relaxed text-sm">I received this item and it was broken. This is ridiculous, I want my money back immediately. [Filtered Content] is terrible service!</p>
+                    </div>
+
+                    <div class="flex items-center justify-between pt-6 border-t border-outline-variant/10">
+                        <div class="flex gap-4">
+                            <button class="flex items-center gap-2 text-on-surface-variant text-sm font-bold hover:underline underline-offset-4">
+                                <span class="material-symbols-outlined text-sm" data-icon="check_circle">check_circle</span>
+                                Approve Anyway
+                            </button>
+                            <button class="flex items-center gap-2 text-primary text-sm font-bold hover:underline underline-offset-4">
+                                <span class="material-symbols-outlined text-sm" data-icon="contact_support">contact_support</span>
+                                Contact Customer
+                            </button>
+                            <button class="flex items-center gap-2 text-error text-sm font-bold hover:underline underline-offset-4">
+                                <span class="material-symbols-outlined text-sm" data-icon="delete_forever">delete_forever</span>
+                                Delete Permanently
+                            </button>
+                        </div>
+                        <span class="bg-error/10 text-error px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider">Flagged</span>
+                    </div>
+                </div>
+
+                <div class="bg-surface-container-lowest p-8 rounded-2xl shadow-sm hover:shadow-md transition-shadow relative overflow-hidden group">
+                    <div class="flex justify-between items-start mb-6">
+                        <div class="flex items-center gap-4">
+                            <div class="w-12 h-12 rounded-full overflow-hidden">
+                                <img alt="Customer Avatar" class="w-full h-full object-cover" data-alt="portrait of a man with a friendly expression in outdoor natural lighting" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDDslEyvVa9eLCFK5Z4HowJPhRGryveqUsqdOir3MtJfqsCeQY_tUaaTHw7mKhnJdwnwegE_S_DtCq7Hej2UE_ZckjSr_YZsf2LyxtpC1Q2XlCnVivr2bNhsJRYKDUX9kCMYQaudWqu7Qngu6CgaczNTTW121T1yVz5sHiigwEKI73_Y-S9B_s3di1-IL1B-oASlfW83vESyLCQEjLPEcdmbSWmqVAD2-dRrOEE5-9_Un9N9F-z0aZh7LKo0HMFxEcpVkdUyn2_Zjc"/>
+                            </div>
+                            <div>
+                                <h4 class="font-bold text-lg text-on-surface">Lucas Thorne</h4>
+                                <p class="text-xs text-on-surface-variant">Verified Purchase • Yesterday</p>
+                            </div>
+                        </div>
+
+                        <div class="flex text-[#4e6535]">
+                            <span class="material-symbols-outlined" data-icon="star" style="font-variation-settings: 'FILL' 1;">star</span>
+                            <span class="material-symbols-outlined" data-icon="star" style="font-variation-settings: 'FILL' 1;">star</span>
+                            <span class="material-symbols-outlined" data-icon="star" style="font-variation-settings: 'FILL' 1;">star</span>
+                            <span class="material-symbols-outlined" data-icon="star" style="font-variation-settings: 'FILL' 1;">star</span>
+                            <span class="material-symbols-outlined" data-icon="star" style="font-variation-settings: 'FILL' 0;">star</span>
+                        </div>
+                    </div>
+
+                    <div class="mb-6">
+                        <p class="font-bold text-primary mb-2">Recycled Glass Water Pitcher</p>
+                        <p class="text-on-surface-variant leading-relaxed text-sm">Elegant and functional. Small bubble in the glass but it adds character. Great piece.</p>
+                    </div>
+
+                    <div class="bg-surface-container-low p-5 rounded-xl border border-outline-variant/10">
+                        <div class="flex items-center gap-2 mb-2">
+                            <span class="material-symbols-outlined text-primary text-sm" data-icon="subdirectory_arrow_right">subdirectory_arrow_right</span>
+                            <span class="text-[10px] font-black uppercase text-primary tracking-widest">Zentro Team Response</span>
+                        </div>
+                        <p class="text-sm text-on-surface">Hi Lucas, thank you for your feedback! The bubbles are indeed a natural signature of the hand-blown recycled glass process. We're glad you love it!</p>
+                    </div>
+
+                    <div class="flex items-center justify-between pt-6 mt-6 border-t border-outline-variant/10">
+                        <div class="flex gap-4">
+                            <button class="flex items-center gap-2 text-on-surface-variant text-sm font-bold hover:underline underline-offset-4">
+                                <span class="material-symbols-outlined text-sm" data-icon="edit">edit</span>
+                                Edit Response
+                            </button>
+                            <button class="flex items-center gap-2 text-error text-sm font-bold hover:underline underline-offset-4">
+                                <span class="material-symbols-outlined text-sm" data-icon="delete">delete</span>
+                                Delete
+                            </button>
+                        </div>
+                        <span class="bg-surface-variant text-on-surface-variant px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider">Replied</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <aside class="col-span-12 lg:col-span-4 space-y-8">
+            <div class="bg-surface-container-high p-8 rounded-3xl">
+                <h3 class="text-xl font-bold text-primary mb-6">Moderation Stats</h3>
+                <div class="space-y-6">
+                    <div>
+                        <div class="flex justify-between text-sm font-bold mb-2">
+                            <span>Approval Rate</span>
+                            <span>92%</span>
+                        </div>
+                        <div class="w-full h-2 bg-surface rounded-full overflow-hidden">
+                            <div class="bg-primary h-full" style="width: 92%"></div>
+                        </div>
+                    </div>
+                    <div>
+                        <div class="flex justify-between text-sm font-bold mb-2">
+                            <span>Response Time</span>
+                            <span>4.2 hrs</span>
+                        </div>
+                        <div class="w-full h-2 bg-surface rounded-full overflow-hidden">
+                            <div class="bg-primary-container h-full" style="width: 75%"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="mt-8 pt-8 border-t border-outline-variant/20 grid grid-cols-2 gap-4">
+                    <div class="text-center">
+                        <p class="text-2xl font-black text-primary">1.2k</p>
+                        <p class="text-[10px] font-bold uppercase text-on-surface-variant tracking-wider">Total Reviews</p>
+                    </div>
+                    <div class="text-center">
+                        <p class="text-2xl font-black text-primary">85%</p>
+                        <p class="text-[10px] font-bold uppercase text-on-surface-variant tracking-wider">Response Rate</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="bg-primary p-8 rounded-3xl text-on-primary">
+                <h3 class="text-xl font-bold mb-4">Moderation Policy</h3>
+                <p class="text-sm opacity-80 leading-relaxed mb-6">Always maintain a professional, helpful tone. Flag content that contains personal data, hate speech, or spam. Aim to respond to 3-star and below reviews within 24 hours.</p>
+                <button class="w-full py-3 bg-white/10 hover:bg-white/20 transition-colors border border-white/20 rounded-xl font-bold text-sm flex items-center justify-center gap-2">
+                    <span class="material-symbols-outlined" data-icon="menu_book">menu_book</span>
+                    Read Full Guidelines
+                </button>
+            </div>
+
+            <div class="bg-surface-container p-8 rounded-3xl">
+                <h3 class="text-xl font-bold text-primary mb-6">Trending Tags</h3>
+                <div class="flex flex-wrap gap-2">
+                    <span class="px-3 py-1 bg-surface-container-lowest rounded-full text-xs font-medium text-on-surface">#FastShipping</span>
+                    <span class="px-3 py-1 bg-surface-container-lowest rounded-full text-xs font-medium text-on-surface">#BambooTexture</span>
+                    <span class="px-3 py-1 bg-surface-container-lowest rounded-full text-xs font-medium text-on-surface">#GiftPackaging</span>
+                    <span class="px-3 py-1 bg-surface-container-lowest rounded-full text-xs font-medium text-on-surface">#EcoFriendly</span>
+                    <span class="px-3 py-1 bg-surface-container-lowest rounded-full text-xs font-medium text-on-surface">#ArrivedBroken</span>
+                    <span class="px-3 py-1 bg-surface-container-lowest rounded-full text-xs font-medium text-on-surface">#StitchingQuality</span>
+                </div>
+            </div>
+        </aside>
+    </section>
+</main>
+
+<footer class="ml-64 bg-[#f3f4ed] dark:bg-stone-900 border-t border-[#c5c8ba]/10 py-12 px-12 flex flex-col md:flex-row justify-between items-center mt-auto">
+    <div class="mb-6 md:mb-0">
+        <h3 class="font-['Epilogue'] font-bold text-[#384e21] text-xl">Zentro</h3>
+        <p class="font-['Be_Vietnam_Pro'] text-sm tracking-wide text-[#191c18]/50 mt-1">© 2024 Zentro Sustainable Living. Crafted for the conscious.</p>
+    </div>
+    <div class="flex gap-8">
+        <a class="font-['Be_Vietnam_Pro'] text-sm tracking-wide text-[#191c18]/50 hover:text-[#384e21] underline underline-offset-4 transition-all" href="#">Privacy Policy</a>
+        <a class="font-['Be_Vietnam_Pro'] text-sm tracking-wide text-[#191c18]/50 hover:text-[#384e21] underline underline-offset-4 transition-all" href="#">Terms of Service</a>
+        <a class="font-['Be_Vietnam_Pro'] text-sm tracking-wide text-[#191c18]/50 hover:text-[#384e21] underline underline-offset-4 transition-all" href="#">Support</a>
+    </div>
+</footer>
+
+<?php include __DIR__ . '/../layouts/admin_footer.php'; ?>
