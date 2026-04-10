@@ -4,13 +4,13 @@ class HomeController extends Controller
 {
     public function index()
     {
-        $userModel = $this->model('User');
-        $users = $userModel->getAllUsers();
+        // Khởi tạo Model nếu bạn muốn lấy dữ liệu user (tùy chọn)
+        // $userModel = $this->model('User');
+        // $users = $userModel->getAllUsers();
 
         $data = [
-            'title' => 'Trang chủ',
-            'message' => 'MVC core đã chạy thành công.',
-            'users' => $users
+            'title' => 'Trang chủ - Zentro',
+            'message' => 'MVC core đã chạy thành công.'
         ];
 
         $this->view('home/index', $data);

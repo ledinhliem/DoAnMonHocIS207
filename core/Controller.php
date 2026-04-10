@@ -2,6 +2,7 @@
 
 class Controller
 {
+    // Hàm gọi Model
     public function model($model)
     {
         $modelFile = APP_PATH . 'models/' . $model . '.php';
@@ -14,6 +15,7 @@ class Controller
         die("Model {$model} không tồn tại.");
     }
 
+    // Hàm gọi View
     public function view($view, $data = [])
     {
         $viewFile = APP_PATH . 'views/' . $view . '.php';
@@ -22,7 +24,7 @@ class Controller
             extract($data);
             require_once $viewFile;
         } else {
-            die("View {$view} không tồn tại.");
+            die("View {$view} không tồn tại tại đường dẫn: " . $viewFile);
         }
     }
 }
