@@ -4,20 +4,33 @@
     <!-- Nội dung sản phẩm -->
     <div class="grid grid-cols-1 lg:grid-cols-12 gap-16 items-start">
       
-      <!-- Ảnh sản phẩm (chia ra 8 column) -->
+      <!-- Ảnh sản phẩm (chia ra có thumbnail và preview) -->
       <div class="lg:col-span-7 grid grid-cols-2 gap-4 md:gap-6">
+        <div class="col-span-2 space-y-4">
         <?php if (!empty($images)): ?>
-            <div class="col-span-2 aspect-[4/5] overflow-hidden rounded-xl bg-surface-container-low">
-              <img class="w-full h-full object-cover" src="<?= BASE_URL . $images[0]['DuongDan'] ?>" />
-            </div>
-            <?php foreach (array_slice($images, 1) as $img): ?>
-                <div class="aspect-square overflow-hidden rounded-xl bg-surface-container-low">
-                  <img class="w-full h-full object-cover" src="<?= BASE_URL . $img['DuongDan'] ?>" />
+            <?php foreach ($images as $index => $img): ?>
+                <div class="thumbnail-item cursor-pointer aspect-square overflow-hidden rounded-lg border-2 <?= $index === 0 ? 'border-primary' : 'border-transparent' ?> hover:border-primary transition-all bg-surface-container-low">
+                    <img class="w-full h-full object-cover" 
+                         src="<?= BASE_URL . $img['DuongDan'] ?>" 
+                         data-full="<?= BASE_URL . $img['DuongDan'] ?>"
+                         alt="Thumbnail <?= $index ?>">
                 </div>
             <?php endforeach; ?>
-        <?php else: ?>
-            <div class="col-span-2 aspect-[4/5] bg-gray-200 flex items-center justify-center">No Image</div>
         <?php endif; ?>
+    </div>
+
+    <div class="col-span-10">
+        <div class="main-preview aspect-[4/5] overflow-hidden rounded-xl bg-surface-container-low group relative">
+            <?php if (!empty($images)): ?>
+                <img id="main-image" 
+                     class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105" 
+                     src="<?= BASE_URL . $images[0]['DuongDan'] ?>" 
+                     alt="<?= $product['TenSanPham'] ?>" />
+            <?php else: ?>
+                <div class="w-full h-full bg-gray-200 flex items-center justify-center">No Image</div>
+            <?php endif; ?>
+        </div>
+    </div>
       </div>
 
       <!-- Chi  sản phẩm (chia ra 5 column) -->
@@ -116,5 +129,6 @@
       </div>
     </section>
   </main>
-
+  
+  <script src="<?= BASE_URL ?>public/assets/js/product.js"></script>
 <?php include __DIR__ . '/../layouts/footer.php'; ?>
