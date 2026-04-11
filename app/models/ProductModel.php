@@ -19,4 +19,13 @@ class ProductModel extends Model {
         $sql = "SELECT DuongDan FROM hinhanhsanpham WHERE MaSanPham = ?";
         return $this->db->query($sql, [$id])->fetchAll();
     }
+
+    public function getReviews($productId) {
+    $sql = "SELECT d.*, n.HoTen 
+            FROM danhgia d
+            JOIN nguoidung n ON d.MaNguoiDung = n.MaNguoiDung
+            WHERE d.MaSanPham = ? AND d.TrangThai = 1
+            ORDER BY d.NgayDanhGia DESC";
+    return $this->db->query($sql, [$productId])->fetchAll();
+    }
 }

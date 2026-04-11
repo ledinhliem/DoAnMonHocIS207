@@ -1,4 +1,4 @@
-document.addEventListener('DOMContentLoaded', function() {
+document.addEventListener('DOMContentLoaded', function () {
     const mainImage = document.getElementById('main-image');
     const thumbnails = document.querySelectorAll('.thumbnail-item');
 
@@ -8,8 +8,8 @@ document.addEventListener('DOMContentLoaded', function() {
         const img = thumb.querySelector('img');
         const fullSrc = img.getAttribute('data-full');
 
-        // 1. Xử lý Click để đổi ảnh
-        thumb.addEventListener('click', function() {
+        // Xử lý Click để đổi ảnh
+        thumb.addEventListener('click', function () {
             // Đổi src ảnh chính
             mainImage.src = fullSrc;
 
@@ -20,16 +20,45 @@ document.addEventListener('DOMContentLoaded', function() {
             this.classList.add('border-primary');
         });
 
-        // 2. Hiệu ứng Hover (Tùy chọn: đổi ảnh tạm thời hoặc chỉ hiệu ứng border)
-        thumb.addEventListener('mouseenter', function() {
+        // Hiệu ứng Hover (Tùy chọn: đổi ảnh tạm thời hoặc chỉ hiệu ứng border)
+        thumb.addEventListener('mouseenter', function () {
             this.style.opacity = "0.8";
         });
 
-        thumb.addEventListener('mouseleave', function() {
+        thumb.addEventListener('mouseleave', function () {
             this.style.opacity = "1";
         });
     });
 
-    // 3. Hiệu ứng Zoom nhẹ khi hover vào ảnh chính (đã thêm qua Tailwind class group-hover:scale-105)
-    // Nếu bạn muốn làm kính lúp (Zoom chi tiết), cần thêm thư viện hoặc code phức tạp hơn.
+    // XỬ LÝ CHUYỂN TAB MÔ TẢ / ĐÁNH GIÁ
+    const tabBtns = document.querySelectorAll('.tab-btn');
+    const tabContents = document.querySelectorAll('.tab-content');
+
+    tabBtns.forEach(btn => {
+        btn.addEventListener('click', () => {
+            // Lấy id của tab cần hiển thị (description hoặc reviews)
+            const target = btn.getAttribute('data-tab');
+
+            // Xử lý đổi trạng thái Active của Button
+            tabBtns.forEach(b => {
+                // Xóa trạng thái active cũ
+                b.classList.remove('border-primary', 'text-primary');
+                b.classList.add('border-transparent', 'text-outline');
+            });
+            // Thêm trạng thái active cho nút vừa click
+            btn.classList.add('border-primary', 'text-primary');
+            btn.classList.remove('border-transparent', 'text-outline');
+
+            //Xử lý ẩn/hiện nội dung Tab
+            tabContents.forEach(content => {
+                if (content.id === target) {
+                    content.classList.remove('hidden');
+                    content.classList.add('block');
+                } else {
+                    content.classList.remove('block');
+                    content.classList.add('hidden');
+                }
+            });
+        });
+    });
 });

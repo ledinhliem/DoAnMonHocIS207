@@ -128,7 +128,49 @@
          </div>
       </div>
     </section>
+
+  <!-- Tab Mô Tả, Đánh giá -->
+  <section class="mt-20 border-t border-outline-variant/20 pt-16">
+    <div class="flex justify-center gap-12 mb-12">
+        <button class="tab-btn active text-2xl font-headline font-bold pb-2 border-b-2 border-primary transition-all" data-tab="description">
+            Mô tả sản phẩm
+        </button>
+        <button class="tab-btn text-2xl font-headline font-bold pb-2 border-b-2 border-transparent text-outline hover:text-primary transition-all" data-tab="reviews">
+            Đánh giá khách hàng
+        </button>
+    </div>
+
+    <div class="max-w-4xl mx-auto">
+        <div id="reviews" class="tab-content hidden animate-fadeIn">
+          <div class="space-y-6">
+            <?php if (!empty($reviews)): ?>
+              <?php foreach ($reviews as $review): ?>
+                <div class="bg-surface-container-lowest p-6 rounded-xl border border-outline-variant/10">
+                    <div class="flex justify-between items-start mb-4">
+                        <div>
+                            <h4 class="font-bold text-primary"><?= $review['HoTen'] ?></h4>
+                            <div class="flex text-yellow-500 text-sm">
+                                <?= str_repeat('★', $review['SoSao']) ?><?= str_repeat('☆', 5 - $review['SoSao']) ?>
+                            </div>
+                        </div>
+                        <span class="text-xs text-outline"><?= date('d/m/Y', strtotime($review['NgayDanhGia'])) ?></span>
+                    </div>
+                    <p class="text-on-surface-variant font-body"><?= nl2br($review['NoiDung']) ?></p>
+                </div>
+              <?php endforeach; ?>
+            <?php else: ?>
+              <div class="text-center py-10">
+                <p class="text-on-surface-variant italic mb-4">Chưa có đánh giá nào cho sản phẩm này.</p>
+                <button class="bg-secondary text-on-secondary px-8 py-3 rounded-full font-bold hover:opacity-90">
+                    Viết đánh giá đầu tiên
+                </button>
+              </div>
+            <?php endif; ?>
+          </div>
+        </div>
+    </div>
+    </section>
   </main>
-  
+
   <script src="<?= BASE_URL ?>public/assets/js/product.js"></script>
 <?php include __DIR__ . '/../layouts/footer.php'; ?>

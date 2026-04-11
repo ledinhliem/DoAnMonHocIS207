@@ -18,12 +18,14 @@ class ProductController extends Controller
 
         $variants = $productModel->getVariants($id);
         $images = $productModel->getProductImages($id);
+        $reviews = $productModel->getReviews($id);
 
         $this->view('product/detail', [
             'title' => $product['TenSanPham'],
             'product' => $product,
             'variants' => $variants,
             'images' => $images
+            'reviews' => $reviews // Truyền biến reviews sang view
         ]);
     }
 
