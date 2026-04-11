@@ -62,7 +62,7 @@
           dive into regenerative design and circular manufacturing.
         </p>
         <div class="pt-4">
-          <a href="<?= BASE_URL ?>?url=blog/detail" class="flex items-center space-x-3 text-primary font-bold group">
+          <a href="<?= BASE_URL ?>?url=blog/detail&id=1" class="flex items-center space-x-3 text-primary font-bold group">
             <span class="border-b-2 border-primary pb-1 group-hover:pr-4 transition-all">Read Full Article</span>
             <span class="material-symbols-outlined text-sm">arrow_forward</span>
           </a>
@@ -72,7 +72,7 @@
     <!-- Article Grid -->
     <section class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-x-8 gap-y-16 mb-24">
       <!-- 1 -->
-      <article class="flex flex-col space-y-5">
+      <article class="flex flex-col space-y-5 cursor-pointer" onclick="window.location.href='<?= BASE_URL ?>?url=blog/detail&id=1'">
         <div class="overflow-hidden rounded-xl bg-surface-container-low aspect-square">
           <img class="w-full h-full object-cover hover:scale-110 transition-transform duration-500"
             data-alt="Overhead view of a lush vegetable garden with vibrant green leaves and dark soil, soft natural daylight highlighting textures."
@@ -90,7 +90,7 @@
         </div>
       </article>
       <!-- 2 -->
-      <article class="flex flex-col space-y-5">
+      <article class="flex flex-col space-y-5 cursor-pointer" onclick="window.location.href='<?= BASE_URL ?>?url=blog/detail&id=2'">
         <div class="overflow-hidden rounded-xl bg-surface-container-low aspect-square">
           <img class="w-full h-full object-cover hover:scale-110 transition-transform duration-500"
             data-alt="Close-up of high-quality organic linen fabric in a warm beige tone, showcasing the natural weave and tactile texture."
@@ -108,7 +108,7 @@
         </div>
       </article>
       <!-- 3 -->
-      <article class="flex flex-col space-y-5">
+      <article class="flex flex-col space-y-5 cursor-pointer" onclick="window.location.href='<?= BASE_URL ?>?url=blog/detail&id=3'">
         <div class="overflow-hidden rounded-xl bg-surface-container-low aspect-square">
           <img class="w-full h-full object-cover hover:scale-110 transition-transform duration-500"
             data-alt="Artisanal ceramic cups on a rustic stone table with soft morning shadows and a small green sprig in the background."
@@ -147,7 +147,7 @@
     <!-- Second Row of Articles -->
     <section class="grid grid-cols-1 md:grid-cols-2 gap-12 mt-24">
       <!-- Horizontal Card Pattern -->
-      <div class="flex flex-col md:flex-row gap-6 items-center">
+      <div class="flex flex-col md:flex-row gap-6 items-center cursor-pointer" onclick="window.location.href='<?= BASE_URL ?>?url=blog/detail&id=4'">
         <div class="w-full md:w-1/2 aspect-video overflow-hidden rounded-xl">
           <img class="w-full h-full object-cover"
             data-alt="Sunlight hitting a glass bottle filled with clear water next to a green houseplant, creating beautiful caustic reflections."
@@ -160,7 +160,7 @@
             resource on our planet.</p>
         </div>
       </div>
-      <div class="flex flex-col md:flex-row gap-6 items-center">
+      <div class="flex flex-col md:flex-row gap-6 items-center cursor-pointer" onclick="window.location.href='<?= BASE_URL ?>?url=blog/detail&id=5'">
         <div class="w-full md:w-1/2 aspect-video overflow-hidden rounded-xl">
           <img class="w-full h-full object-cover"
             data-alt="Hand holding a small green sprout with soil, symbolizing growth and renewal in a minimalist composition."

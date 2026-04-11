@@ -3,6 +3,9 @@
 <main class="pt-20">
     <!-- Banner tiêu đề -->
     <header class="relative w-full h-[921px] flex items-end overflow-hidden">
+        <h1 style="display:none">
+            <?= $blog['title'] ?? 'Blog detail' ?>
+        </h1>
         <div class="absolute inset-0">
             <img class="w-full h-full object-cover"
                 data-alt="Modern sustainable architecture with floor-to-ceiling windows overlooking a misty forest, natural wood interior and soft morning light"
@@ -236,8 +239,7 @@
                                 src="https://lh3.googleusercontent.com/aida-public/AB6AXuBUBHlTKYX7lyZOl4sKGfJsLLGduQLXQkaYF2iV_T83xufHPAAjfMkVeufBKlDqPG85cCZ7iyEn3vX1NY8cFsmZZ5K1UjWLevbhZFOfQGVJ4TM6OKqpjKhe5XoK6Ty9HfNKWQBkDLCnKbR1aYfz8YQQtzJdkVT_VsQrtyhNEeduf57n8_KybfktzyA45_2vd6hI2ujIbDBgRgTrK_iddTu4gFuPW34hO5NiW5rjqk-kh5glrUAAgg8F-GJIMj4llmMNzgOoCejOiao" />
                         </div>
                         <div>
-                            <span
-                                class="text-secondary font-bold text-xs uppercase tracking-widest">Materials</span>
+                            <span class="text-secondary font-bold text-xs uppercase tracking-widest">Materials</span>
                             <h5
                                 class="text-xl font-bold font-headline mt-1 leading-tight group-hover:text-primary transition-colors">
                                 The Future of Textiles: Mycelium Leather</h5>
@@ -250,8 +252,7 @@
                                 src="https://lh3.googleusercontent.com/aida-public/AB6AXuC5WkP0S3fW4BlpB-aiZv3tQqWNfjU7esMj8KQskqsZZiiDpihh5SvrXScSVBNpX8p3T_4oFNJiuiT2uiC6udQLKdwpRBNuL-p_2wU3csX3I4vnbJEDNlITPgUjVNQTMG0IPifw3DWd_UIK0whBTTmMh5Ee-hvJNCa7KB3ovBQHtVyGYCx51jXcjL84PIVUptn-qlaxkT-yJwuMTk-4PECa2zh9fhUFD0XAXpYjOowPC0Icvfqbj56S4wDYq8UALtcO0S_-sLHrwEA" />
                         </div>
                         <div>
-                            <span
-                                class="text-secondary font-bold text-xs uppercase tracking-widest">Community</span>
+                            <span class="text-secondary font-bold text-xs uppercase tracking-widest">Community</span>
                             <h5
                                 class="text-xl font-bold font-headline mt-1 leading-tight group-hover:text-primary transition-colors">
                                 Circular Design in Urban Planning</h5>

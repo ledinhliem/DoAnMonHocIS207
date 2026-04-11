@@ -1,5 +1,6 @@
 <?php
 class ProductModel extends Model {
+
     public function getProductById($id) {
         $sql = "SELECT s.*, d.TenDanhMuc, t.TenThuongHieu, v.TenVatLieu 
                 FROM sanpham s
@@ -7,25 +8,37 @@ class ProductModel extends Model {
                 LEFT JOIN thuonghieu t ON s.MaThuongHieu = t.MaThuongHieu
                 LEFT JOIN vatlieu v ON s.MaVatLieu = v.MaVatLieu
                 WHERE s.MaSanPham = ?";
-        return $this->db->query($sql, [$id])->fetch();
+
+        $stmt = $this->db->prepare($sql);
+        $stmt->execute([$id]);
+        return $stmt->fetch(PDO::FETCH_ASSOC);
     }
 
     public function getVariants($id) {
         $sql = "SELECT * FROM bienthesanpham WHERE MaSanPham = ?";
-        return $this->db->query($sql, [$id])->fetchAll();
+
+        $stmt = $this->db->prepare($sql);
+        $stmt->execute([$id]);
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
 
     public function getProductImages($id) {
         $sql = "SELECT DuongDan FROM hinhanhsanpham WHERE MaSanPham = ?";
-        return $this->db->query($sql, [$id])->fetchAll();
+
+        $stmt = $this->db->prepare($sql);
+        $stmt->execute([$id]);
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
 
     public function getReviews($productId) {
-    $sql = "SELECT d.*, n.HoTen 
-            FROM danhgia d
-            JOIN nguoidung n ON d.MaNguoiDung = n.MaNguoiDung
-            WHERE d.MaSanPham = ? AND d.TrangThai = 1
-            ORDER BY d.NgayDanhGia DESC";
-    return $this->db->query($sql, [$productId])->fetchAll();
+        $sql = "SELECT d.*, n.HoTen 
+                FROM danhgia d
+                JOIN nguoidung n ON d.MaNguoiDung = n.MaNguoiDung
+                WHERE d.MaSanPham = ? AND d.TrangThai = 1
+                ORDER BY d.NgayDanhGia DESC";
+
+        $stmt = $this->db->prepare($sql);
+        $stmt->execute([$productId]);
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
 }

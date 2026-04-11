@@ -21,7 +21,7 @@ class Router
             case 'product/detail':
                 require_once __DIR__ . '/../app/controllers/ProductController.php';
                 $controller = new ProductController();
-                $controller->detail();
+                $controller->detail($_GET['id'] ?? null);
                 break;
 
             case 'product/search':
