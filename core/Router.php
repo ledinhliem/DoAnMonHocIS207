@@ -3,7 +3,7 @@
     {
         public function dispatch()
         {
-            $url = $_GET['url'] ?? '';
+           $url = urldecode($_GET['url'] ?? '');
 
             switch ($url) {
                 case '':

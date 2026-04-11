@@ -1,55 +1,133 @@
 // Product page JavaScript
-document.addEventListener('DOMContentLoaded', function () {
-    console.log('Product page loaded');
 
-    const clickableItems = document.querySelectorAll('[onclick*="window.location.href"]');
+let allProducts = [];
 
-    clickableItems.forEach(item => {
-        item.addEventListener('click', function (e) {
-            if (e.target.closest('button')) return;
+document.addEventListener("DOMContentLoaded", function () {
+  console.log("Product page loaded");
 
-            const onclickValue = this.getAttribute('onclick');
+  // =============================
+  // LẤY PRODUCT
+  // =============================
+  const productElements = document.querySelectorAll("section.grid > div");
 
-            if (onclickValue) {
-                const match = onclickValue.match(/'(.*?)'/);
-                if (match && match[1]) {
-                    window.location.href = match[1];
-                }
-            }
-        });
+  allProducts = Array.from(productElements).map((el, index) => ({
+    element: el,
+    name: el.innerText.toLowerCase(),
+    index: index,
+  }));
+
+  // =============================
+  // CLICK CARD
+  // =============================
+  document.querySelectorAll('[onclick*="window.location.href"]').forEach(item => {
+    item.addEventListener("click", function (e) {
+      if (e.target.closest("button")) return;
+
+      const match = this.getAttribute("onclick")?.match(/'(.*?)'/);
+      if (match) window.location.href = match[1];
     });
+  });
 
-    const filterButtons = document.querySelectorAll('.filter-btn');
-    filterButtons.forEach(button => {
-        button.addEventListener('click', function () {
-            this.classList.toggle('active');
-            console.log('Filter toggled:', this.textContent);
-            updateProductDisplay();
-        });
+  // =============================
+  // CATEGORY (FIX CHUẨN)
+  // =============================
+  const categoryContainer = document.querySelector("h2 + div"); // ngay dưới "Categories"
+
+  if (categoryContainer) {
+    const categories = categoryContainer.querySelectorAll("div");
+
+    categories.forEach((cat, index) => {
+      cat.addEventListener("click", function () {
+        categories.forEach(c => c.classList.remove("active"));
+        this.classList.add("active");
+
+        console.log("Category clicked:", this.innerText);
+
+        // lưu index để filter
+        this.dataset.index = index;
+
+        updateProductDisplay();
+      });
     });
+  }
 
-    const sortSelect = document.querySelector('.sort-select');
-    if (sortSelect) {
-        sortSelect.addEventListener('change', function () {
-            console.log('Sort changed to:', this.value);
-            updateProductDisplay();
-        });
-    }
+  // =============================
+  // ECO CHECKBOX
+  // =============================
+  document.querySelectorAll('input[type="checkbox"]').forEach(cb => {
+    cb.addEventListener("change", () => {
+      console.log("Checkbox changed");
+      updateProductDisplay();
+    });
+  });
 
-    const priceRange = document.querySelector('.price-range');
-    if (priceRange) {
-        priceRange.addEventListener('input', function () {
-            console.log('Price range changed to:', this.value);
-            updateProductDisplay();
-        });
-    }
+  // =============================
+  // PRICE
+  // =============================
+  const priceRange = document.querySelector('input[type="range"]');
+
+  if (priceRange) {
+    priceRange.addEventListener("input", function () {
+      console.log("Price:", this.value);
+      updateProductDisplay();
+    });
+  }
+
+  // =============================
+  // SORT (FIX CHUẨN)
+  // =============================
+  const sortBox = document.querySelector("[class*='rounded']");
+
+  if (sortBox) {
+    sortBox.addEventListener("click", function () {
+      this.dataset.sort = this.dataset.sort === "asc" ? "desc" : "asc";
+      console.log("Sort:", this.dataset.sort);
+      updateProductDisplay();
+    });
+  }
 });
 
-function addToCart(productId) {
-    console.log('Adding product to cart:', productId);
-    alert('Product added to cart! (Mock functionality)');
-}
-
+// =============================
+// FILTER + SORT
+// =============================
 function updateProductDisplay() {
-    console.log('Updating product display based on filters');
+  let filtered = [...allProducts];
+
+  // CATEGORY
+  const activeCat = document.querySelector(".active");
+  if (activeCat) {
+    const index = [...activeCat.parentNode.children].indexOf(activeCat);
+    filtered = filtered.filter(p => p.index % 4 === index);
+  }
+
+  // ECO (fake)
+  const checked = document.querySelectorAll('input[type="checkbox"]:checked');
+  if (checked.length > 0) {
+    filtered = filtered.filter((_, i) => i % 2 === 0);
+  }
+
+  // PRICE (fake)
+  const price = document.querySelector('input[type="range"]')?.value;
+  if (price) {
+    filtered = filtered.filter((_, i) => i * 50 <= price);
+  }
+
+  // SORT
+  const sortType = document.querySelector("[class*='rounded']")?.dataset.sort;
+
+  if (sortType === "asc") {
+    filtered.sort((a, b) => a.name.localeCompare(b.name));
+  }
+
+  if (sortType === "desc") {
+    filtered.sort((a, b) => b.name.localeCompare(a.name));
+  }
+
+  // HIỂN THỊ
+  allProducts.forEach(p => p.element.style.display = "none");
+  filtered.forEach(p => p.element.style.display = "block");
+
+  // reorder
+  const container = document.querySelector("section.grid");
+  filtered.forEach(p => container.appendChild(p.element));
 }

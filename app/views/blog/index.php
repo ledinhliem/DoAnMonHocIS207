@@ -62,7 +62,7 @@
           dive into regenerative design and circular manufacturing.
         </p>
         <div class="pt-4">
-          <a href="<?= BASE_URL ?>?url=blog/detail" class="flex items-center space-x-3 text-primary font-bold group">
+          <a href="<?= BASE_URL ?>?url=blog/detail&id=1" class="flex items-center space-x-3 text-primary font-bold group">
             <span class="border-b-2 border-primary pb-1 group-hover:pr-4 transition-all">Read Full Article</span>
             <span class="material-symbols-outlined text-sm">arrow_forward</span>
           </a>
