@@ -1,128 +1,92 @@
+<?php $currentPage = 'products'; ?>
 <?php include __DIR__ . '/../layouts/admin_header.php'; ?>
 
-<!-- SideNavBar -->
-<aside class="h-screen w-64 fixed left-0 top-0 bg-[#edefe7] dark:bg-stone-800 border-r border-[#c5c8ba]/20 shadow-[40px_0_40px_-15px_rgba(25,28,24,0.04)] flex flex-col py-8 z-40">
-    <div class="px-6 mb-10">
-        <h1 class="font-['Epilogue'] font-black text-[#384e21] text-2xl tracking-tighter">Zentro Admin</h1>
-        <p class="text-xs text-[#191c18]/60 mt-1 uppercase tracking-widest font-bold">Eco-Management Suite</p>
-    </div>
-
-    <nav class="flex-1 space-y-1">
-        <a class="text-[#191c18]/60 hover:bg-[#e1e3dc] dark:hover:bg-stone-700 mx-2 my-1 px-4 py-3 rounded-lg flex items-center gap-3 transition-all hover:translate-x-1 duration-200" href="#">
-            <span class="material-symbols-outlined">dashboard</span>
-            <span class="font-['Be_Vietnam_Pro'] font-medium text-sm">Dashboard</span>
-        </a>
-
-        <a class="text-[#191c18]/60 hover:bg-[#e1e3dc] dark:hover:bg-stone-700 mx-2 my-1 px-4 py-3 rounded-lg flex items-center gap-3 transition-all hover:translate-x-1 duration-200" href="#">
-            <span class="material-symbols-outlined">inventory_2</span>
-            <span class="font-['Be_Vietnam_Pro'] font-medium text-sm">Inventory</span>
-        </a>
-
-        <a class="text-[#191c18]/60 hover:bg-[#e1e3dc] dark:hover:bg-stone-700 mx-2 my-1 px-4 py-3 rounded-lg flex items-center gap-3 transition-all hover:translate-x-1 duration-200" href="#">
-            <span class="material-symbols-outlined">local_shipping</span>
-            <span class="font-['Be_Vietnam_Pro'] font-medium text-sm">Suppliers</span>
-        </a>
-
-        <a class="bg-[#384e21] text-white rounded-lg mx-2 my-1 px-4 py-3 flex items-center gap-3 active:scale-98 transition-transform" href="#">
-            <span class="material-symbols-outlined">eco</span>
-            <span class="font-['Be_Vietnam_Pro'] font-medium text-sm">Products</span>
-        </a>
-
-        <a class="text-[#191c18]/60 hover:bg-[#e1e3dc] dark:hover:bg-stone-700 mx-2 my-1 px-4 py-3 rounded-lg flex items-center gap-3 transition-all hover:translate-x-1 duration-200" href="#">
-            <span class="material-symbols-outlined">shopping_basket</span>
-            <span class="font-['Be_Vietnam_Pro'] font-medium text-sm">Orders</span>
-        </a>
-
-        <a class="text-[#191c18]/60 hover:bg-[#e1e3dc] dark:hover:bg-stone-700 mx-2 my-1 px-4 py-3 rounded-lg flex items-center gap-3 transition-all hover:translate-x-1 duration-200" href="#">
-            <span class="material-symbols-outlined">rate_review</span>
-            <span class="font-['Be_Vietnam_Pro'] font-medium text-sm">Reviews</span>
-        </a>
-
-        <a class="text-[#191c18]/60 hover:bg-[#e1e3dc] dark:hover:bg-stone-700 mx-2 my-1 px-4 py-3 rounded-lg flex items-center gap-3 transition-all hover:translate-x-1 duration-200" href="#">
-            <span class="material-symbols-outlined">article</span>
-            <span class="font-['Be_Vietnam_Pro'] font-medium text-sm">Blog</span>
-        </a>
-
-        <a class="text-[#191c18]/60 hover:bg-[#e1e3dc] dark:hover:bg-stone-700 mx-2 my-1 px-4 py-3 rounded-lg flex items-center gap-3 transition-all hover:translate-x-1 duration-200" href="#">
-            <span class="material-symbols-outlined">settings</span>
-            <span class="font-['Be_Vietnam_Pro'] font-medium text-sm">Settings</span>
-        </a>
-    </nav>
-
-    <div class="px-6 pt-6 border-t border-[#c5c8ba]/20 mt-auto">
-        <div class="flex items-center gap-3 mb-6">
-            <div class="w-10 h-10 rounded-full bg-primary-fixed flex items-center justify-center text-on-primary-fixed font-bold">AZ</div>
-            <div>
-                <p class="text-sm font-bold text-[#384e21]">Admin User</p>
-                <p class="text-xs text-on-surface-variant">Super Admin</p>
-            </div>
-        </div>
-        <button class="w-full bg-secondary-container text-on-secondary-container px-4 py-2 rounded-lg text-sm font-bold hover:opacity-90 transition-opacity">
-            Export Reports
-        </button>
-    </div>
-</aside>
-
-<!-- Main Content -->
-<main class="ml-64 p-8 lg:p-12">
-    <!-- Header Section -->
+<div class="p-8 lg:p-12 min-h-screen">
     <header class="flex flex-col md:flex-row justify-between items-start md:items-end gap-6 mb-12">
         <div>
             <h2 class="text-5xl font-black text-primary tracking-tighter mb-2">Products</h2>
-            <p class="text-on-surface-variant text-lg max-w-xl">Manage your sustainable catalog. Track inventory levels, refine categories, and update product details.</p>
+            <p class="text-on-surface-variant text-lg max-w-xl">
+                Manage your sustainable catalog. Track inventory levels, refine categories, and update product details.
+            </p>
         </div>
-        <button class="flex items-center gap-2 bg-primary text-on-primary px-8 py-4 rounded-lg font-bold text-lg hover:bg-primary-container transition-colors shadow-lg shadow-primary/10">
+
+        <button
+            type="button"
+            onclick="alert('Add New Product mock modal')"
+            class="flex items-center gap-2 bg-primary text-on-primary px-8 py-4 rounded-lg font-bold text-lg hover:bg-primary-container transition-colors shadow-lg shadow-primary/10"
+        >
             <span class="material-symbols-outlined">add</span>
             Add New Product
         </button>
     </header>
 
-    <!-- Search & Filter Controls -->
     <section class="bg-surface-container-low rounded-xl p-6 mb-10 flex flex-col lg:flex-row gap-6 items-center shadow-sm">
         <div class="relative w-full lg:flex-1">
             <span class="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-outline">search</span>
-            <input class="w-full pl-12 pr-4 py-3 bg-surface-container-lowest border-none rounded-lg focus:ring-2 focus:ring-primary/20 text-on-surface placeholder:text-outline/60" placeholder="Search by name, SKU, or keyword..." type="text"/>
+            <input
+                id="product-search"
+                oninput="filterProducts()"
+                class="w-full pl-12 pr-4 py-3 bg-surface-container-lowest border-none rounded-lg focus:ring-2 focus:ring-primary/20 text-on-surface placeholder:text-outline/60"
+                placeholder="Search by name, SKU, or keyword..."
+                type="text"
+            />
         </div>
 
         <div class="flex flex-wrap gap-4 w-full lg:w-auto">
             <div class="relative group min-w-[180px]">
                 <label class="block text-[10px] font-bold text-outline uppercase tracking-widest absolute top-2 left-4 z-10">DANHMUC</label>
-                <select class="w-full pt-6 pb-2 px-4 bg-surface-container-lowest border-none rounded-lg focus:ring-2 focus:ring-primary/20 appearance-none text-on-surface font-medium cursor-pointer">
-                    <option>All Categories</option>
-                    <option>Kitchenware</option>
-                    <option>Personal Care</option>
-                    <option>Home Decor</option>
-                    <option>Textiles</option>
+                <select
+                    id="product-category-filter"
+                    onchange="filterProducts()"
+                    class="w-full pt-6 pb-2 px-4 bg-surface-container-lowest border-none rounded-lg focus:ring-2 focus:ring-primary/20 appearance-none text-on-surface font-medium cursor-pointer"
+                >
+                    <option value="all">All Categories</option>
+                    <option value="Kitchenware">Kitchenware</option>
+                    <option value="Personal Care">Personal Care</option>
+                    <option value="Home Decor">Home Decor</option>
+                    <option value="Textiles">Textiles</option>
                 </select>
                 <span class="material-symbols-outlined absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none text-outline">expand_more</span>
             </div>
 
             <div class="relative group min-w-[180px]">
                 <label class="block text-[10px] font-bold text-outline uppercase tracking-widest absolute top-2 left-4 z-10">THUONGHIEU</label>
-                <select class="w-full pt-6 pb-2 px-4 bg-surface-container-lowest border-none rounded-lg focus:ring-2 focus:ring-primary/20 appearance-none text-on-surface font-medium cursor-pointer">
-                    <option>All Brands</option>
-                    <option>EcoLife</option>
-                    <option>BambooWay</option>
-                    <option>PureEarth</option>
-                    <option>Zentro Basics</option>
+                <select
+                    id="product-brand-filter"
+                    onchange="filterProducts()"
+                    class="w-full pt-6 pb-2 px-4 bg-surface-container-lowest border-none rounded-lg focus:ring-2 focus:ring-primary/20 appearance-none text-on-surface font-medium cursor-pointer"
+                >
+                    <option value="all">All Brands</option>
+                    <option value="EcoLife">EcoLife</option>
+                    <option value="BambooWay">BambooWay</option>
+                    <option value="PureEarth">PureEarth</option>
+                    <option value="Zentro Basics">Zentro Basics</option>
                 </select>
                 <span class="material-symbols-outlined absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none text-outline">expand_more</span>
             </div>
 
-            <button class="bg-surface-container-high text-on-surface-variant px-6 py-3 rounded-lg flex items-center gap-2 hover:bg-surface-variant transition-colors">
+            <button
+                type="button"
+                onclick="alert('Advanced filter mock UI')"
+                class="bg-surface-container-high text-on-surface-variant px-6 py-3 rounded-lg flex items-center gap-2 hover:bg-surface-variant transition-colors"
+            >
                 <span class="material-symbols-outlined">tune</span>
                 Advanced
             </button>
         </div>
     </section>
 
-    <!-- Product Grid (Asymmetric Bento Style) -->
-    <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-8">
-        <!-- Featured Product Card (Large) -->
-        <article class="col-span-1 md:col-span-2 bg-surface-container-lowest rounded-xl overflow-hidden shadow-sm hover:shadow-md transition-shadow group">
+    <div id="product-grid" class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-8">
+        <article
+            class="product-card col-span-1 md:col-span-2 bg-surface-container-lowest rounded-xl overflow-hidden shadow-sm hover:shadow-md transition-shadow group"
+            data-name="Handcrafted Artisan Stoneware Set"
+            data-sku="STN-992-H"
+            data-brand="PureEarth"
+            data-category="Home Decor"
+        >
             <div class="flex flex-col lg:flex-row h-full">
                 <div class="lg:w-2/5 relative h-64 lg:h-auto overflow-hidden">
-                    <img alt="Premium Ceramic Set" class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" data-alt="Modern organic ceramic vase set on a textured beige surface with soft natural shadows and minimal aesthetic" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAgQToHppMJ63_0BTRPQFKS5pWO6Tckfg6GO6hYdmb6bQzIkXP6WGqRm-aBrsDPHaNwZkBSzv4GsanUggF5Tw9ARComH5SdiS7ZbMRQrwJAXA_APNy2tr9d7PJ8wkxzniRsb2PzUR7dMo9-J7jfEQWKz5Id5hoA2O5OwZERcZFqccxciccK6UPqPe1DAppuOKqidYMQAdOM3vi4EThPdo7rSHkhm6OFWhAlmjDISrKRe94ykX00oefrQRF6WMp5eShs5ssyv5P2gBg"/>
+                    <img alt="Premium Ceramic Set" class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAgQToHppMJ63_0BTRPQFKS5pWO6Tckfg6GO6hYdmb6bQzIkXP6WGqRm-aBrsDPHaNwZkBSzv4GsanUggF5Tw9ARComH5SdiS7ZbMRQrwJAXA_APNy2tr9d7PJ8wkxzniRsb2PzUR7dMo9-J7jfEQWKz5Id5hoA2O5OwZERcZFqccxciccK6UPqPe1DAppuOKqidYMQAdOM3vi4EThPdo7rSHkhm6OFWhAlmjDISrKRe94ykX00oefrQRF6WMp5eShs5ssyv5P2gBg"/>
                     <div class="absolute top-4 left-4 bg-primary text-on-primary text-[10px] font-black uppercase px-3 py-1 rounded-full tracking-widest">Featured</div>
                 </div>
 
@@ -131,13 +95,19 @@
                         <div class="flex justify-between items-start mb-4">
                             <span class="text-sm font-bold text-secondary tracking-wide">THUONGHIEU: PureEarth</span>
                             <div class="flex gap-2">
-                                <button class="p-2 text-outline hover:text-primary transition-colors"><span class="material-symbols-outlined text-xl">edit</span></button>
-                                <button class="p-2 text-outline hover:text-error transition-colors"><span class="material-symbols-outlined text-xl">delete</span></button>
+                                <button type="button" onclick="alert('Edit product: Handcrafted Artisan Stoneware Set')" class="p-2 text-outline hover:text-primary transition-colors">
+                                    <span class="material-symbols-outlined text-xl">edit</span>
+                                </button>
+                                <button type="button" onclick="alert('Delete product: Handcrafted Artisan Stoneware Set')" class="p-2 text-outline hover:text-error transition-colors">
+                                    <span class="material-symbols-outlined text-xl">delete</span>
+                                </button>
                             </div>
                         </div>
 
                         <h3 class="text-3xl font-bold text-on-surface mb-2 leading-tight">Handcrafted Artisan Stoneware Set</h3>
-                        <p class="text-on-surface-variant mb-6 leading-relaxed">Sustainably sourced clay with lead-free glazing. Each piece is unique and carbon-neutral in production.</p>
+                        <p class="text-on-surface-variant mb-6 leading-relaxed">
+                            Sustainably sourced clay with lead-free glazing. Each piece is unique and carbon-neutral in production.
+                        </p>
 
                         <div class="flex items-center gap-4">
                             <div class="bg-surface-tint/10 px-4 py-2 rounded-full flex items-center gap-2">
@@ -156,13 +126,22 @@
             </div>
         </article>
 
-        <!-- Standard Product Card 1 -->
-        <article class="bg-surface-container-lowest rounded-xl p-6 shadow-sm hover:shadow-md transition-shadow group flex flex-col">
+        <article
+            class="product-card bg-surface-container-lowest rounded-xl p-6 shadow-sm hover:shadow-md transition-shadow group flex flex-col"
+            data-name="French Linen Pillowcases"
+            data-sku="TXT-145-L"
+            data-brand="EcoLife"
+            data-category="Textiles"
+        >
             <div class="relative h-48 rounded-lg overflow-hidden mb-6">
-                <img alt="Organic Linen" class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" data-alt="Folded natural linen bedding in soft olive green and cream colors arranged neatly on a wooden shelf" src="https://lh3.googleusercontent.com/aida-public/AB6AXuA0u96TsaHprBbvKbmqjBKcsT2eqGiKNrT3JJvJQdmzlrpsJM8dhCH6csIMJFpAbc31ZYllaa62f9qERmlpMt-EtyiL8cYxBESbDLIoWlE54j9BB-h6fTxw-rGEz0MfzTXA6qeHZ3qyzXPXuyRbRh55Nstg7nQe_JT5fmIPsy33ihHdTiiiAimu-gA1fwgYkDf40NBPxzfneOjqj23lQF9fhVrxgfDcuU4g4XdWlrPJxK9mUbXlRjcTma8blMCwsUBJ-cQexrawHWY"/>
+                <img alt="Organic Linen" class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" src="https://lh3.googleusercontent.com/aida-public/AB6AXuA0u96TsaHprBbvKbmqjBKcsT2eqGiKNrT3JJvJQdmzlrpsJM8dhCH6csIMJFpAbc31ZYllaa62f9qERmlpMt-EtyiL8cYxBESbDLIoWlE54j9BB-h6fTxw-rGEz0MfzTXA6qeHZ3qyzXPXuyRbRh55Nstg7nQe_JT5fmIPsy33ihHdTiiiAimu-gA1fwgYkDf40NBPxzfneOjqj23lQF9fhVrxgfDcuU4g4XdWlrPJxK9mUbXlRjcTma8blMCwsUBJ-cQexrawHWY"/>
                 <div class="absolute top-3 right-3 flex flex-col gap-2">
-                    <button class="bg-white/90 backdrop-blur-md p-2 rounded-full shadow-sm text-outline hover:text-primary transition-colors"><span class="material-symbols-outlined text-lg">edit</span></button>
-                    <button class="bg-white/90 backdrop-blur-md p-2 rounded-full shadow-sm text-outline hover:text-error transition-colors"><span class="material-symbols-outlined text-lg">delete</span></button>
+                    <button type="button" onclick="alert('Edit product: French Linen Pillowcases')" class="bg-white/90 backdrop-blur-md p-2 rounded-full shadow-sm text-outline hover:text-primary transition-colors">
+                        <span class="material-symbols-outlined text-lg">edit</span>
+                    </button>
+                    <button type="button" onclick="alert('Delete product: French Linen Pillowcases')" class="bg-white/90 backdrop-blur-md p-2 rounded-full shadow-sm text-outline hover:text-error transition-colors">
+                        <span class="material-symbols-outlined text-lg">delete</span>
+                    </button>
                 </div>
             </div>
 
@@ -185,13 +164,22 @@
             </div>
         </article>
 
-        <!-- Standard Product Card 2 -->
-        <article class="bg-surface-container-lowest rounded-xl p-6 shadow-sm hover:shadow-md transition-shadow group flex flex-col">
+        <article
+            class="product-card bg-surface-container-lowest rounded-xl p-6 shadow-sm hover:shadow-md transition-shadow group flex flex-col"
+            data-name="Zero-Waste Bathroom Kit"
+            data-sku="PCR-220-B"
+            data-brand="BambooWay"
+            data-category="Personal Care"
+        >
             <div class="relative h-48 rounded-lg overflow-hidden mb-6">
-                <img alt="Bamboo Kits" class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" data-alt="Assortment of bamboo toothbrushes and organic cotton pads in a minimalist glass jar on a white marble background" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBNrOz17zPq_2prQQ92fW3_0yTXSyoLDt8cNMDgE8WSLuexJAblpIU1DKC_5p2yw_t1tKhrm7LaB6mgHMaH7G2pv1lmkchwjFtQgnOkBq_Ia6BETA5gS4NE2Rh2bpjElYxCOhaDDF-kNbt9QQqBJLMEbVxK9cPkPhdOyTfItHu9jwyUU3DAXgUaxOz_gsiL7GuRmX-DxkzdIXnFIZy_vD6BmJb7hFHshGp9GElpVGAoAwi-Ms0RfDvlFms8AMpyOlNKiTsKSzS4wM0"/>
+                <img alt="Bamboo Kits" class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBNrOz17zPq_2prQQ92fW3_0yTXSyoLDt8cNMDgE8WSLuexJAblpIU1DKC_5p2yw_t1tKhrm7LaB6mgHMaH7G2pv1lmkchwjFtQgnOkBq_Ia6BETA5gS4NE2Rh2bpjElYxCOhaDDF-kNbt9QQqBJLMEbVxK9cPkPhdOyTfItHu9jwyUU3DAXgUaxOz_gsiL7GuRmX-DxkzdIXnFIZy_vD6BmJb7hFHshGp9GElpVGAoAwi-Ms0RfDvlFms8AMpyOlNKiTsKSzS4wM0"/>
                 <div class="absolute top-3 right-3 flex flex-col gap-2">
-                    <button class="bg-white/90 backdrop-blur-md p-2 rounded-full shadow-sm text-outline hover:text-primary transition-colors"><span class="material-symbols-outlined text-lg">edit</span></button>
-                    <button class="bg-white/90 backdrop-blur-md p-2 rounded-full shadow-sm text-outline hover:text-error transition-colors"><span class="material-symbols-outlined text-lg">delete</span></button>
+                    <button type="button" onclick="alert('Edit product: Zero-Waste Bathroom Kit')" class="bg-white/90 backdrop-blur-md p-2 rounded-full shadow-sm text-outline hover:text-primary transition-colors">
+                        <span class="material-symbols-outlined text-lg">edit</span>
+                    </button>
+                    <button type="button" onclick="alert('Delete product: Zero-Waste Bathroom Kit')" class="bg-white/90 backdrop-blur-md p-2 rounded-full shadow-sm text-outline hover:text-error transition-colors">
+                        <span class="material-symbols-outlined text-lg">delete</span>
+                    </button>
                 </div>
             </div>
 
@@ -214,13 +202,22 @@
             </div>
         </article>
 
-        <!-- Standard Product Card 3 -->
-        <article class="bg-surface-container-lowest rounded-xl p-6 shadow-sm hover:shadow-md transition-shadow group flex flex-col">
+        <article
+            class="product-card bg-surface-container-lowest rounded-xl p-6 shadow-sm hover:shadow-md transition-shadow group flex flex-col"
+            data-name="Borosilicate Glass Jars"
+            data-sku="KIT-310-G"
+            data-brand="Zentro Basics"
+            data-category="Kitchenware"
+        >
             <div class="relative h-48 rounded-lg overflow-hidden mb-6">
-                <img alt="Storage Containers" class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" data-alt="Modern eco-friendly restaurant kitchen showing reusable storage containers and bamboo utensils in soft bright lighting" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAXSg-1jLCyhf6K5tqYzl77k8cQStCjgXIEvwvpo21lLK3AdZFcFxw3aFNdr0_FHgDhBbRLYzG9__YUKJ0Zm2n9pny6QOcfO08JKxDJi-jzkqTUXzBBueSNthpqnHjW63FjvBJKeGT42VfgJYK70ic0YLIJPV5P4MoRFRk7AIsSzlBIBK2nHxJ-G5RUxcDgGFPGGBics4TcpOkBKgVLfAE2vE4d1OV_vY-9rvcv5_HrEH7IzaS9Bf8XHOFvxcwnav2QwHuijEbu2XA"/>
+                <img alt="Storage Containers" class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAXSg-1jLCyhf6K5tqYzl77k8cQStCjgXIEvwvpo21lLK3AdZFcFxw3aFNdr0_FHgDhBbRLYzG9__YUKJ0Zm2n9pny6QOcfO08JKxDJi-jzkqTUXzBBueSNthpqnHjW63FjvBJKeGT42VfgJYK70ic0YLIJPV5P4MoRFRk7AIsSzlBIBK2nHxJ-G5RUxcDgGFPGGBics4TcpOkBKgVLfAE2vE4d1OV_vY-9rvcv5_HrEH7IzaS9Bf8XHOFvxcwnav2QwHuijEbu2XA"/>
                 <div class="absolute top-3 right-3 flex flex-col gap-2">
-                    <button class="bg-white/90 backdrop-blur-md p-2 rounded-full shadow-sm text-outline hover:text-primary transition-colors"><span class="material-symbols-outlined text-lg">edit</span></button>
-                    <button class="bg-white/90 backdrop-blur-md p-2 rounded-full shadow-sm text-outline hover:text-error transition-colors"><span class="material-symbols-outlined text-lg">delete</span></button>
+                    <button type="button" onclick="alert('Edit product: Borosilicate Glass Jars')" class="bg-white/90 backdrop-blur-md p-2 rounded-full shadow-sm text-outline hover:text-primary transition-colors">
+                        <span class="material-symbols-outlined text-lg">edit</span>
+                    </button>
+                    <button type="button" onclick="alert('Delete product: Borosilicate Glass Jars')" class="bg-white/90 backdrop-blur-md p-2 rounded-full shadow-sm text-outline hover:text-error transition-colors">
+                        <span class="material-symbols-outlined text-lg">delete</span>
+                    </button>
                 </div>
             </div>
 
@@ -243,13 +240,22 @@
             </div>
         </article>
 
-        <!-- Standard Product Card 4 -->
-        <article class="bg-surface-container-lowest rounded-xl p-6 shadow-sm hover:shadow-md transition-shadow group flex flex-col">
+        <article
+            class="product-card bg-surface-container-lowest rounded-xl p-6 shadow-sm hover:shadow-md transition-shadow group flex flex-col"
+            data-name="Organic Canvas Tote"
+            data-sku="TXT-412-C"
+            data-brand="PureEarth"
+            data-category="Textiles"
+        >
             <div class="relative h-48 rounded-lg overflow-hidden mb-6">
-                <img alt="Shopping Bags" class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" data-alt="Reusable shopping bags made of natural organic cotton hanging on a wooden hook against a white textured wall" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBWWeng4jf7e9NMwtXVI7ZmHztbmZ5VXuEBdkv0KGuPv-oYjVWDP_2arwfcbRewZTYP_sCC3aSa57EgY7zy9JyOR-TrBDU5yEqFYppzVSeiitPiStwnk6USGFSBZ3budPh-ehhWp_OcRKRUm-71jtrqmZPkS6ZmsvwwPHHQEtWXMf9ML6XxWz4M_1lja8_i28HGvx0mSmfGOmpfFm0gd_4o1bRvxdOhb_Kh_SkTsY8sCDc1gf0ArAPasdFfLLlJPAx6zo2XEW4-WnI"/>
+                <img alt="Shopping Bags" class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBWWeng4jf7e9NMwtXVI7ZmHztbmZ5VXuEBdkv0KGuPv-oYjVWDP_2arwfcbRewZTYP_sCC3aSa57EgY7zy9JyOR-TrBDU5yEqFYppzVSeiitPiStwnk6USGFSBZ3budPh-ehhWp_OcRKRUm-71jtrqmZPkS6ZmsvwwPHHQEtWXMf9ML6XxWz4M_1lja8_i28HGvx0mSmfGOmpfFm0gd_4o1bRvxdOhb_Kh_SkTsY8sCDc1gf0ArAPasdFfLLlJPAx6zo2XEW4-WnI"/>
                 <div class="absolute top-3 right-3 flex flex-col gap-2">
-                    <button class="bg-white/90 backdrop-blur-md p-2 rounded-full shadow-sm text-outline hover:text-primary transition-colors"><span class="material-symbols-outlined text-lg">edit</span></button>
-                    <button class="bg-white/90 backdrop-blur-md p-2 rounded-full shadow-sm text-outline hover:text-error transition-colors"><span class="material-symbols-outlined text-lg">delete</span></button>
+                    <button type="button" onclick="alert('Edit product: Organic Canvas Tote')" class="bg-white/90 backdrop-blur-md p-2 rounded-full shadow-sm text-outline hover:text-primary transition-colors">
+                        <span class="material-symbols-outlined text-lg">edit</span>
+                    </button>
+                    <button type="button" onclick="alert('Delete product: Organic Canvas Tote')" class="bg-white/90 backdrop-blur-md p-2 rounded-full shadow-sm text-outline hover:text-error transition-colors">
+                        <span class="material-symbols-outlined text-lg">delete</span>
+                    </button>
                 </div>
             </div>
 
@@ -273,35 +279,75 @@
         </article>
     </div>
 
-    <!-- Pagination -->
     <div class="mt-16 flex justify-center">
         <nav class="inline-flex items-center gap-1 bg-surface-container rounded-full px-2 py-2">
-            <button class="w-10 h-10 flex items-center justify-center rounded-full text-outline hover:bg-surface-variant transition-colors">
+            <button type="button" onclick="changeProductPage('prev')" class="w-10 h-10 flex items-center justify-center rounded-full text-outline hover:bg-surface-variant transition-colors">
                 <span class="material-symbols-outlined">chevron_left</span>
             </button>
-            <button class="w-10 h-10 flex items-center justify-center rounded-full bg-primary text-on-primary font-bold text-sm">1</button>
-            <button class="w-10 h-10 flex items-center justify-center rounded-full text-on-surface font-bold text-sm hover:bg-surface-variant">2</button>
-            <button class="w-10 h-10 flex items-center justify-center rounded-full text-on-surface font-bold text-sm hover:bg-surface-variant">3</button>
+            <button type="button" onclick="setProductPage(1)" class="product-page-btn w-10 h-10 flex items-center justify-center rounded-full bg-primary text-on-primary font-bold text-sm">1</button>
+            <button type="button" onclick="setProductPage(2)" class="product-page-btn w-10 h-10 flex items-center justify-center rounded-full text-on-surface font-bold text-sm hover:bg-surface-variant">2</button>
+            <button type="button" onclick="setProductPage(3)" class="product-page-btn w-10 h-10 flex items-center justify-center rounded-full text-on-surface font-bold text-sm hover:bg-surface-variant">3</button>
             <span class="px-2 text-outline">...</span>
-            <button class="w-10 h-10 flex items-center justify-center rounded-full text-on-surface font-bold text-sm hover:bg-surface-variant">12</button>
-            <button class="w-10 h-10 flex items-center justify-center rounded-full text-outline hover:bg-surface-variant transition-colors">
+            <button type="button" onclick="setProductPage(12)" class="product-page-btn w-10 h-10 flex items-center justify-center rounded-full text-on-surface font-bold text-sm hover:bg-surface-variant">12</button>
+            <button type="button" onclick="changeProductPage('next')" class="w-10 h-10 flex items-center justify-center rounded-full text-outline hover:bg-surface-variant transition-colors">
                 <span class="material-symbols-outlined">chevron_right</span>
             </button>
         </nav>
     </div>
-</main>
+</div>
 
-<!-- Footer -->
-<footer class="ml-64 flex flex-col md:flex-row justify-between items-center px-12 py-12 mt-20 border-t border-[#c5c8ba]/10 bg-surface-container-low text-primary">
-    <div class="mb-6 md:mb-0">
-        <h4 class="font-['Epilogue'] font-bold text-[#384e21] text-xl">Zentro</h4>
-        <p class="font-['Be_Vietnam_Pro'] text-sm tracking-wide text-[#191c18]/50 mt-1">© 2024 Zentro Sustainable Living. Crafted for the conscious.</p>
-    </div>
-    <div class="flex gap-8">
-        <a class="font-['Be_Vietnam_Pro'] text-sm tracking-wide text-[#191c18]/50 hover:text-[#384e21] underline underline-offset-4 transition-opacity opacity-80 hover:opacity-100" href="#">Privacy Policy</a>
-        <a class="font-['Be_Vietnam_Pro'] text-sm tracking-wide text-[#191c18]/50 hover:text-[#384e21] underline underline-offset-4 transition-opacity opacity-80 hover:opacity-100" href="#">Terms of Service</a>
-        <a class="font-['Be_Vietnam_Pro'] text-sm tracking-wide text-[#191c18]/50 hover:text-[#384e21] underline underline-offset-4 transition-opacity opacity-80 hover:opacity-100" href="#">Contact Us</a>
-    </div>
-</footer>
+<script>
+    let currentProductPage = 1;
+
+    function filterProducts() {
+        const keyword = document.getElementById('product-search').value.toLowerCase().trim();
+        const category = document.getElementById('product-category-filter').value;
+        const brand = document.getElementById('product-brand-filter').value;
+        const cards = document.querySelectorAll('.product-card');
+
+        cards.forEach(card => {
+            const name = card.dataset.name.toLowerCase();
+            const sku = card.dataset.sku.toLowerCase();
+            const cardCategory = card.dataset.category;
+            const cardBrand = card.dataset.brand;
+
+            const matchKeyword = name.includes(keyword) || sku.includes(keyword);
+            const matchCategory = category === 'all' || cardCategory === category;
+            const matchBrand = brand === 'all' || cardBrand === brand;
+
+            if (matchKeyword && matchCategory && matchBrand) {
+                card.style.display = '';
+            } else {
+                card.style.display = 'none';
+            }
+        });
+    }
+
+    function setProductPage(page) {
+        currentProductPage = page;
+        document.querySelectorAll('.product-page-btn').forEach(btn => {
+            btn.classList.remove('bg-primary', 'text-on-primary');
+            btn.classList.add('text-on-surface');
+        });
+
+        const targetBtn = Array.from(document.querySelectorAll('.product-page-btn')).find(btn => btn.textContent.trim() == page);
+        if (targetBtn) {
+            targetBtn.classList.remove('text-on-surface');
+            targetBtn.classList.add('bg-primary', 'text-on-primary');
+        }
+
+        alert('Switched to page ' + page + ' (mock pagination)');
+    }
+
+    function changeProductPage(direction) {
+        if (direction === 'prev' && currentProductPage > 1) {
+            setProductPage(currentProductPage - 1);
+        } else if (direction === 'next' && currentProductPage < 12) {
+            setProductPage(currentProductPage + 1);
+        } else {
+            alert('No more pages');
+        }
+    }
+</script>
 
 <?php include __DIR__ . '/../layouts/admin_footer.php'; ?>
