@@ -46,8 +46,8 @@
         <h1 class="text-5xl md:text-6xl font-headline font-bold text-primary leading-tight mb-4">
             <?= $product['TenSanPham'] ?>
         </h1>
-        <p class="text-2xl font-body font-medium text-on-surface-variant mb-8">
-            <?= number_format($variants[0]['GiaTien'] ?? 0, 0, ',', '.') ?> VNĐ
+        <p id="display-price" class="text-2xl font-body font-medium text-on-surface-variant mb-8">
+          <?= number_format($variants[0]['GiaTien'] ?? 0, 0, ',', '.') ?> VNĐ
         </p>
 
         <div class="space-y-10">
@@ -62,7 +62,12 @@
             <span class="block text-sm font-label font-bold text-on-surface mb-4 uppercase tracking-wider">Màu sắc</span>
             <div class="flex gap-3">
               <?php foreach($colors as $color): ?>
-                <button class="px-4 py-2 border rounded-md hover:bg-primary hover:text-white"><?= $color ?></button>
+                <button type="button" 
+                  class="variant-btn px-4 py-2 border rounded-md transition-all border-outline-variant hover:border-primary"
+                  data-type="MauSac" 
+                  data-value="<?= $color ?>">
+                  <?= $color ?>
+                </button>
               <?php endforeach; ?>
             </div>
           </div>
@@ -73,7 +78,12 @@
             <span class="block text-sm font-label font-bold text-on-surface mb-4 uppercase tracking-wider">Kích thước</span>
             <div class="flex gap-3">
               <?php foreach($sizes as $size): ?>
-                <button class="px-6 py-3 rounded-lg border border-outline-variant text-sm font-medium hover:border-primary"><?= $size ?></button>
+                <button type="button" 
+                  class="variant-btn px-6 py-3 rounded-lg border border-outline-variant text-sm font-medium transition-all hover:border-primary"
+                  data-type="KichThuoc" 
+                  data-value="<?= $size ?>">
+                  <?= $size ?>
+                </button>
               <?php endforeach; ?>
             </div>
           </div>
@@ -81,10 +91,12 @@
           <!-- Nút thêm giỏ -->
           <div class="pt-4 flex flex-col gap-4">
             <form action="<?= BASE_URL ?>?url=cart/add" method="POST">
-                <input type="hidden" name="ma_san_pham" value="<?= $product['MaSanPham'] ?>">
-                <button type="submit" class="w-full bg-primary text-on-primary py-5 rounded-lg font-bold text-lg hover:bg-primary-container transition-all active:scale-95">
-                  Thêm vào giỏ hàng
-                </button>
+              <input type="hidden" name="ma_san_pham" value="<?= $product['MaSanPham'] ?>">
+              <input type="hidden" name="ma_bien_the" id="selected-variant-id" value="<?= $variants[0]['MaBienThe'] ?? '' ?>">
+    
+              <button type="submit" class="w-full bg-primary ...">
+                Thêm vào giỏ hàng
+              </button>
             </form>
           </div>
 
@@ -171,6 +183,10 @@
     </div>
     </section>
   </main>
+  
+  <script>
+    window.productVariants = <?= json_encode($variants) ?>;
+  </script>
 
   <script src="<?= BASE_URL ?>public/assets/js/product.js"></script>
 <?php include __DIR__ . '/../layouts/footer.php'; ?>

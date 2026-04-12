@@ -24,7 +24,7 @@ class ProductController extends Controller
             'title' => $product['TenSanPham'],
             'product' => $product,
             'variants' => $variants,
-            'images' => $images
+            'images' => $images,
             'reviews' => $reviews // Truyền biến reviews sang view
         ]);
     }

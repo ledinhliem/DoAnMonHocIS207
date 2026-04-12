@@ -61,4 +61,65 @@ document.addEventListener('DOMContentLoaded', function () {
             });
         });
     });
+
+    // XỬ LÝ CHỌN BIẾN THỂ (SIZE/MÀU) 
+    const variants = window.productVariants || [];
+
+    let selectedColor = variants.length > 0 ? variants[0].MauSac : null;
+    let selectedSize = variants.length > 0 ? variants[0].KichThuoc : null;
+
+    const variantBtns = document.querySelectorAll('.variant-btn');
+    const priceDisplay = document.getElementById('display-price');
+    const variantInput = document.getElementById('selected-variant-id');
+
+    function updateVariantUI() {
+        // B1: Cập nhật trạng thái hiển thị của các nút bấm
+        variantBtns.forEach(btn => {
+            const type = btn.getAttribute('data-type');
+            const val = btn.getAttribute('data-value');
+            
+            // Highlight nút nếu khớp với giá trị đang chọn
+            if ((type === 'MauSac' && val === selectedColor) || (type === 'KichThuoc' && val === selectedSize)) {
+                btn.classList.add('bg-primary', 'text-white', 'border-primary');
+                btn.classList.remove('border-outline-variant');
+            } else {
+                btn.classList.remove('bg-primary', 'text-white', 'border-primary');
+                btn.classList.add('border-outline-variant');
+            }
+        });
+
+        // B2: Tìm biến thể khớp với cả Màu và Size đã chọn trong mảng dữ liệu
+        const match = variants.find(v => v.MauSac === selectedColor && v.KichThuoc === selectedSize);
+        
+        if (match) {
+            // Cập nhật giá hiển thị trên giao diện
+            if (priceDisplay) {
+                const formattedPrice = new Intl.NumberFormat('vi-VN').format(match.GiaTien);
+                priceDisplay.innerText = `${formattedPrice} VNĐ`;
+            }
+            
+            // Cập nhật mã biến thể vào input ẩn để gửi đi khi thêm vào giỏ hàng
+            if (variantInput) {
+                variantInput.value = match.MaBienThe;
+            }
+        }
+    }
+
+    // Gán sự kiện click cho tất cả các nút Màu và Size
+    variantBtns.forEach(btn => {
+        btn.addEventListener('click', function() {
+            const type = this.getAttribute('data-type');
+            const value = this.getAttribute('data-value');
+
+            if (type === 'MauSac') selectedColor = value;
+            if (type === 'KichThuoc') selectedSize = value;
+
+            updateVariantUI();
+        });
+    });
+
+    // Gọi hàm lần đầu để thiết lập trạng thái mặc định
+    if (variants.length > 0) {
+        updateVariantUI();
+    }
 });
