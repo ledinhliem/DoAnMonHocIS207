@@ -11,14 +11,14 @@
                 </p>
             </div>
 
-            <form class="space-y-8">
+            <form id="checkout-form" class="space-y-8">
                 <section class="space-y-4">
                     <h2 class="text-xl font-bold flex items-center gap-2">
                         <span class="material-symbols-outlined text-primary">mail</span>
                         Contact Information
                     </h2>
                     <div class="space-y-4">
-                        <input class="w-full px-6 py-4 rounded-lg bg-surface-container-high border-none focus:ring-2 focus:ring-primary/20" placeholder="Email Address" type="email" />
+                        <input name="email" data-required="true" class="w-full px-6 py-4 rounded-lg bg-surface-container-high border-none" placeholder="Email Address" type="email" />
                         <label class="flex items-center gap-3 px-2">
                             <input class="rounded text-primary focus:ring-primary" type="checkbox" />
                             <span class="text-sm text-on-surface-variant">Keep me updated on sustainable living tips and offers.</span>
@@ -32,11 +32,12 @@
                         Shipping Address
                     </h2>
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                        <input class="px-6 py-4 rounded-lg bg-surface-container-high border-none" placeholder="First Name" type="text" />
-                        <input class="px-6 py-4 rounded-lg bg-surface-container-high border-none" placeholder="Last Name" type="text" />
-                        <input class="md:col-span-2 px-6 py-4 rounded-lg bg-surface-container-high border-none" placeholder="Street Address" type="text" />
-                        <input class="px-6 py-4 rounded-lg bg-surface-container-high border-none" placeholder="City" type="text" />
-                        <input class="px-6 py-4 rounded-lg bg-surface-container-high border-none" placeholder="Postal Code" type="text" />
+                        <input name="first_name" data-required="true" class="px-6 py-4 rounded-lg bg-surface-container-high border-none" placeholder="First Name" type="text" />
+                        <input name="last_name" data-required="true" class="px-6 py-4 rounded-lg bg-surface-container-high border-none" placeholder="Last Name" type="text" />
+                        <input name="address" data-required="true" class="md:col-span-2 px-6 py-4 rounded-lg bg-surface-container-high border-none" placeholder="Street Address" type="text" />
+                        <input name="city" data-required="true" class="px-6 py-4 rounded-lg bg-surface-container-high border-none" placeholder="City" type="text" />
+                        <input name="postal_code" data-required="true" class="px-6 py-4 rounded-lg bg-surface-container-high border-none" placeholder="Postal Code" type="text" />
+                        <input name="phone" data-required="true" class="md:col-span-2 px-6 py-4 rounded-lg bg-surface-container-high border-none" placeholder="Phone Number" type="text" />
                     </div>
                 </section>
 
@@ -47,9 +48,9 @@
                     </h2>
 
                     <div class="space-y-4">
-                        <label class="flex items-center justify-between p-6 rounded-xl bg-surface-container border-2 border-primary">
+                        <label class="shipping-card flex items-center justify-between p-6 rounded-xl bg-surface-container border-2 border-primary cursor-pointer">
                             <div class="flex items-start gap-4">
-                                <span class="material-symbols-outlined text-primary p-2 bg-primary/10 rounded-full">wind_power</span>
+                                <input type="radio" name="shipping_method" value="standard" data-cost="0" class="mt-1" checked>
                                 <div>
                                     <p class="font-bold">Carbon Neutral Standard</p>
                                     <p class="text-sm text-on-surface-variant">Delivered in 3-5 business days via EV fleet</p>
@@ -58,15 +59,54 @@
                             <span class="font-bold text-primary">Free</span>
                         </label>
 
-                        <label class="flex items-center justify-between p-6 rounded-xl bg-surface-container border border-outline-variant/20">
+                        <label class="shipping-card flex items-center justify-between p-6 rounded-xl bg-surface-container border border-outline-variant/20 cursor-pointer">
                             <div class="flex items-start gap-4">
-                                <span class="material-symbols-outlined text-secondary p-2 bg-secondary/10 rounded-full">cycle</span>
+                                <input type="radio" name="shipping_method" value="express" data-cost="12" class="mt-1">
                                 <div>
                                     <p class="font-bold">Zero-Waste Express</p>
                                     <p class="text-sm text-on-surface-variant">Next-day delivery in reusable packaging</p>
                                 </div>
                             </div>
                             <span class="font-bold text-primary">$12.00</span>
+                        </label>
+                    </div>
+                </section>
+
+                <section class="space-y-4">
+                    <h2 class="text-xl font-bold flex items-center gap-2">
+                        <span class="material-symbols-outlined text-primary">payments</span>
+                        Payment Method
+                    </h2>
+
+                    <div class="space-y-4">
+                        <label class="payment-card flex items-center justify-between p-6 rounded-xl bg-surface-container border border-outline-variant/20 cursor-pointer">
+                            <div class="flex items-start gap-4">
+                                <input type="radio" name="payment_method" value="cod" data-next="<?= BASE_URL ?>?url=order/success" class="mt-1" checked>
+                                <div>
+                                    <p class="font-bold">Cash on Delivery</p>
+                                    <p class="text-sm text-on-surface-variant">Thanh toán khi nhận hàng</p>
+                                </div>
+                            </div>
+                        </label>
+
+                        <label class="payment-card flex items-center justify-between p-6 rounded-xl bg-surface-container border border-outline-variant/20 cursor-pointer">
+                            <div class="flex items-start gap-4">
+                                <input type="radio" name="payment_method" value="bank_transfer" data-next="<?= BASE_URL ?>?url=order/transfer" class="mt-1">
+                                <div>
+                                    <p class="font-bold">Bank Transfer</p>
+                                    <p class="text-sm text-on-surface-variant">Chuyển khoản ngân hàng</p>
+                                </div>
+                            </div>
+                        </label>
+
+                        <label class="payment-card flex items-center justify-between p-6 rounded-xl bg-surface-container border border-outline-variant/20 cursor-pointer">
+                            <div class="flex items-start gap-4">
+                                <input type="radio" name="payment_method" value="card" data-next="<?= BASE_URL ?>?url=order/payment" class="mt-1">
+                                <div>
+                                    <p class="font-bold">Card Payment</p>
+                                    <p class="text-sm text-on-surface-variant">Thanh toán bằng thẻ</p>
+                                </div>
+                            </div>
                         </label>
                     </div>
                 </section>
@@ -105,34 +145,35 @@
 
                 <div class="flex gap-2">
                     <input class="flex-1 px-4 py-3 rounded-lg bg-surface-container-highest border-none" placeholder="Promo Code" type="text" />
-                    <button class="px-6 py-3 bg-secondary-container text-on-secondary-container rounded-lg font-bold">Apply</button>
+                    <button class="px-6 py-3 bg-secondary-container text-on-secondary-container rounded-lg font-bold" type="button">Apply</button>
                 </div>
 
                 <div class="space-y-4 pt-6 border-t border-outline-variant/30">
                     <div class="flex justify-between text-on-surface-variant">
                         <span>Subtotal</span>
-                        <span>$133.00</span>
+                        <span data-checkout-subtotal>$133.00</span>
                     </div>
                     <div class="flex justify-between text-on-surface-variant">
                         <span>Shipping</span>
-                        <span class="text-primary font-medium">Free</span>
+                        <span data-checkout-shipping class="text-primary font-medium">Free</span>
                     </div>
                     <div class="flex justify-between text-on-surface-variant">
                         <span>Estimated Tax</span>
-                        <span>$10.64</span>
+                        <span data-checkout-tax>$10.64</span>
                     </div>
                     <div class="flex justify-between text-xl font-bold pt-4 font-headline">
                         <span>Total</span>
-                        <span>$143.64</span>
+                        <span data-checkout-total>$143.64</span>
                     </div>
                 </div>
 
-                <a href="<?= BASE_URL ?>?url=order/success" class="block w-full text-center px-12 py-5 bg-primary text-on-primary rounded-full font-bold text-lg hover:bg-primary-container transition-all shadow-lg">
+                <button type="submit" form="checkout-form" class="block w-full text-center px-12 py-5 bg-primary text-on-primary rounded-full font-bold text-lg hover:bg-primary-container transition-all shadow-lg">
                     Continue to Payment
-                </a>
+                </button>
             </div>
         </aside>
     </div>
 </section>
 
+<script src="<?= BASE_URL ?>/public/assets/js/order.js"></script>
 <?php require_once __DIR__ . '/../layouts/footer.php'; ?>

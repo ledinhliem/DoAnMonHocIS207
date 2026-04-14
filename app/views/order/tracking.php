@@ -1,324 +1,169 @@
-<?php $base = BASE_URL; ?>
-<!DOCTYPE html>
-<html class="light" lang="en">
-<head>
-    <meta charset="utf-8" />
-    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
-    <title>Track Your Journey | Zentro</title>
-    <link href="https://fonts.googleapis.com/css2?family=Epilogue:wght@400;600;700;800&amp;family=Be+Vietnam+Pro:wght@300;400;500;600&amp;display=swap" rel="stylesheet" />
-    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet" />
-    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet" />
-    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
-    <script id="tailwind-config">
-    tailwind.config = {
-      darkMode: "class",
-      theme: {
-        extend: {
-          colors: {
-            "tertiary": "#474845",
-            "on-surface-variant": "#44483e",
-            "secondary": "#775839",
-            "surface": "#f9faf2",
-            "tertiary-container": "#5e605c",
-            "surface-bright": "#f9faf2",
-            "outline-variant": "#c5c8ba",
-            "on-error": "#ffffff",
-            "surface-container-high": "#e7e9e1",
-            "on-primary-fixed": "#0f2000",
-            "error": "#ba1a1a",
-            "on-primary-fixed-variant": "#374d20",
-            "inverse-primary": "#b5cf95",
-            "on-secondary": "#ffffff",
-            "surface-container-lowest": "#ffffff",
-            "tertiary-fixed-dim": "#c6c7c2",
-            "secondary-fixed-dim": "#e8bf98",
-            "primary-fixed-dim": "#b5cf95",
-            "primary-fixed": "#d0ecaf",
-            "on-primary-container": "#c7e3a7",
-            "on-tertiary": "#ffffff",
-            "on-secondary-fixed-variant": "#5d4123",
-            "on-error-container": "#93000a",
-            "on-primary": "#ffffff",
-            "background": "#f9faf2",
-            "surface-tint": "#4e6535",
-            "surface-variant": "#e1e3dc",
-            "primary-container": "#4f6636",
-            "outline": "#75796d",
-            "surface-dim": "#d9dbd3",
-            "on-secondary-fixed": "#2c1701",
-            "on-background": "#191c18",
-            "inverse-on-surface": "#f0f1ea",
-            "surface-container-highest": "#e1e3dc",
-            "surface-container-low": "#f3f4ed",
-            "inverse-surface": "#2e312c",
-            "on-surface": "#191c18",
-            "error-container": "#ffdad6",
-            "on-tertiary-fixed-variant": "#454744",
-            "surface-container": "#edefe7",
-            "on-tertiary-container": "#dadad6",
-            "on-tertiary-fixed": "#1a1c19",
-            "tertiary-fixed": "#e3e3de",
-            "primary": "#384e21",
-            "on-secondary-container": "#7a5b3b",
-            "secondary-container": "#ffd5ae",
-            "secondary-fixed": "#ffdcbd"
-          },
-          fontFamily: {
-            "headline": ["Epilogue"],
-            "body": ["Be Vietnam Pro"],
-            "label": ["Be Vietnam Pro"]
-          },
-          borderRadius: { "DEFAULT": "0.25rem", "lg": "0.5rem", "xl": "0.75rem", "full": "9999px" },
-        },
-      },
-    }
-    </script>
-    <style>
-      .material-symbols-outlined {
-        font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
-        display: inline-block;
-        line-height: 1;
-        text-transform: none;
-        letter-spacing: normal;
-        word-wrap: normal;
-        white-space: nowrap;
-        direction: ltr;
-      }
-      .glass-nav {
-        backdrop-filter: blur(12px);
-        background-color: rgba(249, 250, 242, 0.8);
-      }
-      .hero-gradient {
-        background: linear-gradient(to right, #384e21, #4f6636);
-      }
-    </style>
-</head>
+<?php $title = 'Track Your Order'; ?>
+<?php require_once __DIR__ . '/../layouts/header.php'; ?>
 
-<body class="bg-background text-on-background font-body selection:bg-primary-fixed-dim">
-  <header class="w-full sticky top-0 z-50 glass-nav shadow-[0_40px_40px_-15px_rgba(25,28,24,0.04)]">
-    <div class="flex justify-between items-center px-8 py-6 max-w-7xl mx-auto">
-      <div class="text-2xl font-bold text-[#384e21] dark:text-[#b5cf95] uppercase tracking-widest font-headline">Zentro</div>
-
-      <nav class="hidden md:flex gap-8 items-center">
-        <a class="text-[#384e21] dark:text-[#b5cf95] border-b-2 border-[#384e21] pb-1 font-['Epilogue'] tracking-tight transition-colors duration-300" href="<?= $base ?>">Shop</a>
-        <a class="text-[#191c18]/70 dark:text-stone-400 font-['Epilogue'] tracking-tight hover:text-[#4f6636] transition-colors duration-300" href="#">Categories</a>
-        <a class="text-[#191c18]/70 dark:text-stone-400 font-['Epilogue'] tracking-tight hover:text-[#4f6636] transition-colors duration-300" href="<?= $base ?>?url=blog">Blog</a>
-        <a class="text-[#191c18]/70 dark:text-stone-400 font-['Epilogue'] tracking-tight hover:text-[#4f6636] transition-colors duration-300" href="<?= $base ?>?url=order/history">History</a>
-      </nav>
-
-      <div class="flex items-center gap-6">
-        <button class="material-symbols-outlined text-[#384e21] active:scale-95 transition-transform" data-icon="search">search</button>
-        <a href="<?= $base ?>?url=profile" class="material-symbols-outlined text-[#384e21] scale-95 active:opacity-80 transition-transform">account_circle</a>
-        <div class="relative">
-          <a href="<?= $base ?>?url=cart" class="material-symbols-outlined text-[#384e21] scale-95 active:opacity-80 transition-transform">shopping_cart</a>
-          <span class="absolute -top-2 -right-2 bg-secondary text-on-secondary text-[10px] w-4 h-4 rounded-full flex items-center justify-center font-bold">2</span>
-        </div>
-        <button class="md:hidden material-symbols-outlined text-[#384e21]">menu</button>
-      </div>
-    </div>
-  </header>
-
-  <main class="max-w-screen-2xl mx-auto px-6 md:px-8 py-12 md:py-20">
+<main class="max-w-screen-2xl mx-auto px-6 md:px-8 py-12 md:py-20">
     <section class="mb-16">
-      <h1 class="font-headline text-5xl md:text-7xl font-extrabold text-primary tracking-tight mb-4 leading-tight">
-        Your package is <br /><span class="text-primary/70">en route to you.</span>
-      </h1>
-      <div class="flex flex-wrap items-center gap-4 text-on-surface-variant font-medium">
-        <span class="bg-surface-container px-4 py-2 rounded-full border border-outline-variant/30">Order #ZN-884210</span>
-        <span class="flex items-center gap-2">
-          <span class="material-symbols-outlined text-primary text-sm" style="font-variation-settings: 'FILL' 1;">eco</span>
-          Carbon-Neutral Shipping Verified
-        </span>
-      </div>
+        <h1 class="font-headline text-5xl md:text-7xl font-extrabold text-primary tracking-tight mb-4 leading-tight">
+            Your package is <br /><span class="text-primary/70">en route to you.</span>
+        </h1>
+
+        <div class="flex flex-wrap items-center gap-4 text-on-surface-variant font-medium">
+            <span class="bg-surface-container px-4 py-2 rounded-full border border-outline-variant/30">Order #ZN-884210</span>
+            <span class="flex items-center gap-2">
+                <span class="material-symbols-outlined text-primary text-sm" style="font-variation-settings: 'FILL' 1;">eco</span>
+                Carbon-Neutral Shipping Verified
+            </span>
+        </div>
     </section>
 
     <div class="grid grid-cols-1 lg:grid-cols-12 gap-8">
-      <div class="lg:col-span-8 space-y-8">
-        <div class="bg-surface-container-lowest p-8 md:p-12 rounded-xl border border-outline-variant/20">
-          <h2 class="font-headline text-2xl font-bold mb-12">Journey Status</h2>
-          <div class="relative">
-            <div class="absolute top-4 left-4 right-4 h-1 bg-surface-container-high rounded-full">
-              <div class="absolute top-0 left-0 w-2/3 h-full bg-primary rounded-full"></div>
+        <div class="lg:col-span-8 space-y-8">
+            <div class="bg-surface-container-lowest p-8 md:p-12 rounded-xl border border-outline-variant/20">
+                <h2 class="font-headline text-2xl font-bold mb-12">Journey Status</h2>
+
+                <div class="relative">
+                    <div class="absolute top-4 left-4 right-4 h-1 bg-surface-container-high rounded-full">
+                        <div class="absolute top-0 left-0 w-2/3 h-full bg-primary rounded-full"></div>
+                    </div>
+
+                    <div class="relative flex justify-between">
+                        <div class="flex flex-col items-center gap-4 text-center group">
+                            <div class="w-8 h-8 rounded-full bg-primary flex items-center justify-center text-white z-10 transition-transform group-hover:scale-110">
+                                <span class="material-symbols-outlined text-sm" style="font-variation-settings: 'FILL' 1;">check</span>
+                            </div>
+                            <div>
+                                <p class="font-bold text-on-surface text-sm">Consciously Packed</p>
+                                <p class="text-on-surface-variant text-xs mt-1">Oct 12, 09:15 AM</p>
+                            </div>
+                        </div>
+
+                        <div class="flex flex-col items-center gap-4 text-center group">
+                            <div class="w-8 h-8 rounded-full bg-primary flex items-center justify-center text-white z-10 transition-transform group-hover:scale-110">
+                                <span class="material-symbols-outlined text-sm" style="font-variation-settings: 'FILL' 1;">check</span>
+                            </div>
+                            <div>
+                                <p class="font-bold text-on-surface text-sm">Sorted & Ready</p>
+                                <p class="text-on-surface-variant text-xs mt-1">Oct 13, 11:30 AM</p>
+                            </div>
+                        </div>
+
+                        <div class="flex flex-col items-center gap-4 text-center group">
+                            <div class="w-8 h-8 rounded-full bg-primary flex items-center justify-center text-white z-10 transition-transform group-hover:scale-110">
+                                <span class="material-symbols-outlined text-sm">local_shipping</span>
+                            </div>
+                            <div>
+                                <p class="font-bold text-on-surface text-sm">In Transit</p>
+                                <p class="text-primary font-semibold text-xs mt-1">Arriving Tomorrow</p>
+                            </div>
+                        </div>
+
+                        <div class="flex flex-col items-center gap-4 text-center group opacity-40">
+                            <div class="w-8 h-8 rounded-full bg-surface-container-highest border border-outline-variant flex items-center justify-center text-on-surface-variant z-10">
+                                <span class="material-symbols-outlined text-sm">potted_plant</span>
+                            </div>
+                            <div>
+                                <p class="font-bold text-on-surface text-sm">Carbon-Neutral Delivery</p>
+                                <p class="text-on-surface-variant text-xs mt-1">Estimated Oct 15</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
             </div>
 
-            <div class="relative flex justify-between">
-              <div class="flex flex-col items-center gap-4 text-center group">
-                <div class="w-8 h-8 rounded-full bg-primary flex items-center justify-center text-white z-10 transition-transform group-hover:scale-110">
-                  <span class="material-symbols-outlined text-sm" style="font-variation-settings: 'FILL' 1;">check</span>
-                </div>
-                <div>
-                  <p class="font-bold text-on-surface text-sm">Consciously Packed</p>
-                  <p class="text-on-surface-variant text-xs mt-1">Oct 12, 09:15 AM</p>
-                </div>
-              </div>
+            <section class="mt-24 max-w-4xl">
+                <h2 class="font-headline text-3xl font-bold mb-12">Detailed History</h2>
 
-              <div class="flex flex-col items-center gap-4 text-center group">
-                <div class="w-8 h-8 rounded-full bg-primary flex items-center justify-center text-white z-10 transition-transform group-hover:scale-110">
-                  <span class="material-symbols-outlined text-sm" style="font-variation-settings: 'FILL' 1;">check</span>
-                </div>
-                <div>
-                  <p class="font-bold text-on-surface text-sm">Sorted &amp; Ready</p>
-                  <p class="text-on-surface-variant text-xs mt-1">Oct 13, 11:30 AM</p>
-                </div>
-              </div>
+                <div class="space-y-0 relative border-l-2 border-surface-container-high ml-4 pl-12">
+                    <div class="relative pb-12">
+                        <div class="absolute -left-[57px] top-0 w-4 h-4 rounded-full bg-primary ring-8 ring-background"></div>
+                        <p class="text-xs font-bold text-primary uppercase tracking-widest">Oct 14, 02:40 AM</p>
+                        <p class="text-lg font-bold mt-1">Departed regional sorting facility</p>
+                        <p class="text-on-surface-variant text-sm mt-1">Boulder Logistics Hub, CO</p>
+                    </div>
 
-              <div class="flex flex-col items-center gap-4 text-center group">
-                <div class="w-8 h-8 rounded-full bg-primary flex items-center justify-center text-white z-10 active-dot transition-transform group-hover:scale-110">
-                  <span class="material-symbols-outlined text-sm">local_shipping</span>
-                </div>
-                <div>
-                  <p class="font-bold text-on-surface text-sm">In Transit</p>
-                  <p class="text-primary font-semibold text-xs mt-1">Arriving Tomorrow</p>
-                </div>
-              </div>
+                    <div class="relative pb-12">
+                        <div class="absolute -left-[57px] top-0 w-4 h-4 rounded-full bg-surface-container-highest ring-8 ring-background border border-outline"></div>
+                        <p class="text-xs font-bold text-on-surface-variant uppercase tracking-widest">Oct 13, 08:15 PM</p>
+                        <p class="text-lg font-bold mt-1">Arrived at sorting facility</p>
+                        <p class="text-on-surface-variant text-sm mt-1">Denver Hub, CO</p>
+                    </div>
 
-              <div class="flex flex-col items-center gap-4 text-center group opacity-40">
-                <div class="w-8 h-8 rounded-full bg-surface-container-highest border border-outline-variant flex items-center justify-center text-on-surface-variant z-10">
-                  <span class="material-symbols-outlined text-sm">potted_plant</span>
+                    <div class="relative pb-12">
+                        <div class="absolute -left-[57px] top-0 w-4 h-4 rounded-full bg-surface-container-highest ring-8 ring-background border border-outline"></div>
+                        <p class="text-xs font-bold text-on-surface-variant uppercase tracking-widest">Oct 12, 11:30 AM</p>
+                        <p class="text-lg font-bold mt-1">Order processed & packaging verified</p>
+                        <p class="text-on-surface-variant text-sm mt-1">Fulfillment Center, OR</p>
+                    </div>
                 </div>
-                <div>
-                  <p class="font-bold text-on-surface text-sm">Carbon-Neutral Delivery</p>
-                  <p class="text-on-surface-variant text-xs mt-1">Estimated Oct 15</p>
-                </div>
-              </div>
-            </div>
-          </div>
+            </section>
         </div>
 
-        <section class="mt-24 max-w-4xl">
-          <h2 class="font-headline text-3xl font-bold mb-12">Detailed History</h2>
-          <div class="space-y-0 relative border-l-2 border-surface-container-high ml-4 pl-12">
-            <div class="relative pb-12">
-              <div class="absolute -left-[57px] top-0 w-4 h-4 rounded-full bg-primary ring-8 ring-background"></div>
-              <p class="text-xs font-bold text-primary uppercase tracking-widest">Oct 14, 02:40 AM</p>
-              <p class="text-lg font-bold mt-1">Departed regional sorting facility</p>
-              <p class="text-on-surface-variant text-sm mt-1">Boulder Logistics Hub, CO</p>
-            </div>
-            <div class="relative pb-12">
-              <div class="absolute -left-[57px] top-0 w-4 h-4 rounded-full bg-surface-container-highest ring-8 ring-background border border-outline"></div>
-              <p class="text-xs font-bold text-on-surface-variant uppercase tracking-widest">Oct 13, 08:15 PM</p>
-              <p class="text-lg font-bold mt-1">Arrived at sorting facility</p>
-              <p class="text-on-surface-variant text-sm mt-1">Denver Hub, CO</p>
-            </div>
-            <div class="relative pb-12">
-              <div class="absolute -left-[57px] top-0 w-4 h-4 rounded-full bg-surface-container-highest ring-8 ring-background border border-outline"></div>
-              <p class="text-xs font-bold text-on-surface-variant uppercase tracking-widest">Oct 12, 11:30 AM</p>
-              <p class="text-lg font-bold mt-1">Order processed &amp; packaging verified</p>
-              <p class="text-on-surface-variant text-sm mt-1">Fulfillment Center, OR</p>
-            </div>
-          </div>
-        </section>
-      </div>
+        <div class="lg:col-span-4 space-y-8">
+            <div class="bg-primary text-white p-8 rounded-xl relative overflow-hidden">
+                <div class="absolute -right-10 -bottom-10 opacity-10">
+                    <span class="material-symbols-outlined text-[160px]">eco</span>
+                </div>
 
-      <div class="lg:col-span-4 space-y-8">
-        <div class="bg-primary text-white p-8 rounded-xl relative overflow-hidden">
-          <div class="absolute -right-10 -bottom-10 opacity-10">
-            <span class="material-symbols-outlined text-[160px]">eco</span>
-          </div>
-          <h3 class="font-headline text-xl font-bold mb-6">Your Positive Impact</h3>
-          <div class="space-y-6">
-            <div class="bg-white/10 p-4 rounded-lg backdrop-blur-sm">
-              <div class="flex items-center justify-between mb-2">
-                <span class="text-sm font-medium opacity-80">CO2 Offset</span>
-                <span class="bg-primary-fixed-dim text-primary text-[10px] font-bold px-2 py-0.5 rounded-full uppercase">Verified</span>
-              </div>
-              <p class="text-3xl font-headline font-extrabold">12.4 kg</p>
-              <p class="text-xs mt-1 opacity-70">Equivalent to planting 1 tree</p>
-            </div>
-            <div class="bg-white/10 p-4 rounded-lg backdrop-blur-sm">
-              <div class="flex items-center justify-between mb-2">
-                <span class="text-sm font-medium opacity-80">Plastic Avoided</span>
-                <span class="material-symbols-outlined text-sm" style="font-variation-settings: 'FILL' 1;">recycling</span>
-              </div>
-              <p class="text-3xl font-headline font-extrabold">450 g</p>
-              <p class="text-xs mt-1 opacity-70">100% compostable mycelium packaging</p>
-            </div>
-          </div>
-        </div>
+                <h3 class="font-headline text-xl font-bold mb-6">Your Positive Impact</h3>
 
-        <div class="bg-surface-container-low p-8 rounded-xl border border-outline-variant/10">
-          <h3 class="font-headline text-lg font-bold mb-6 text-on-surface">Delivery Details</h3>
-          <div class="space-y-6">
-            <div class="flex gap-4">
-              <span class="material-symbols-outlined text-secondary">location_on</span>
-              <div>
-                <p class="text-xs font-bold text-on-surface-variant uppercase tracking-widest">Shipping To</p>
-                <p class="text-sm mt-1 leading-relaxed">
-                  Alex Rivera<br />
-                  1420 Pine Street, Apt 4C<br />
-                  San Francisco, CA 94109
-                </p>
-              </div>
+                <div class="space-y-6">
+                    <div class="bg-white/10 p-4 rounded-lg backdrop-blur-sm">
+                        <div class="flex items-center justify-between mb-2">
+                            <span class="text-sm font-medium opacity-80">CO2 Offset</span>
+                            <span class="bg-primary-fixed-dim text-primary text-[10px] font-bold px-2 py-0.5 rounded-full uppercase">Verified</span>
+                        </div>
+                        <p class="text-3xl font-headline font-extrabold">12.4 kg</p>
+                        <p class="text-xs mt-1 opacity-70">Equivalent to planting 1 tree</p>
+                    </div>
+
+                    <div class="bg-white/10 p-4 rounded-lg backdrop-blur-sm">
+                        <div class="flex items-center justify-between mb-2">
+                            <span class="text-sm font-medium opacity-80">Plastic Avoided</span>
+                            <span class="material-symbols-outlined text-sm" style="font-variation-settings: 'FILL' 1;">recycling</span>
+                        </div>
+                        <p class="text-3xl font-headline font-extrabold">450 g</p>
+                        <p class="text-xs mt-1 opacity-70">100% compostable mycelium packaging</p>
+                    </div>
+                </div>
             </div>
-            <div class="flex gap-4">
-              <span class="material-symbols-outlined text-secondary">inventory_2</span>
-              <div>
-                <p class="text-xs font-bold text-on-surface-variant uppercase tracking-widest">In This Package</p>
-                <ul class="text-sm mt-1 space-y-1">
-                  <li>Hemp Cotton Duvet Cover × 1</li>
-                  <li>Bamboo Pillowcase Set × 2</li>
-                </ul>
-              </div>
+
+            <div class="bg-surface-container-low p-8 rounded-xl border border-outline-variant/10">
+                <h3 class="font-headline text-lg font-bold mb-6 text-on-surface">Delivery Details</h3>
+
+                <div class="space-y-6">
+                    <div class="flex gap-4">
+                        <span class="material-symbols-outlined text-secondary">location_on</span>
+                        <div>
+                            <p class="text-xs font-bold text-on-surface-variant uppercase tracking-widest">Shipping To</p>
+                            <p class="text-sm mt-1 leading-relaxed">
+                                Alex Rivera<br />
+                                1420 Pine Street, Apt 4C<br />
+                                San Francisco, CA 94109
+                            </p>
+                        </div>
+                    </div>
+
+                    <div class="flex gap-4">
+                        <span class="material-symbols-outlined text-secondary">inventory_2</span>
+                        <div>
+                            <p class="text-xs font-bold text-on-surface-variant uppercase tracking-widest">In This Package</p>
+                            <ul class="text-sm mt-1 space-y-1">
+                                <li>Hemp Cotton Duvet Cover × 1</li>
+                                <li>Bamboo Pillowcase Set × 2</li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <div class="pt-6 border-t border-outline-variant/30">
+                        <button class="w-full bg-secondary text-white py-4 rounded-lg font-bold hover:bg-secondary/90 transition-colors flex items-center justify-center gap-2">
+                            <span class="material-symbols-outlined text-sm">support_agent</span>
+                            Help with Order
+                        </button>
+                    </div>
+                </div>
             </div>
-            <div class="pt-6 border-t border-outline-variant/30">
-              <button class="w-full bg-secondary text-white py-4 rounded-lg font-bold hover:bg-secondary/90 transition-colors flex items-center justify-center gap-2">
-                <span class="material-symbols-outlined text-sm">support_agent</span>
-                Help with Order
-              </button>
-            </div>
-          </div>
         </div>
-      </div>
     </div>
-  </main>
+</main>
 
-  <footer class="w-full pt-16 pb-8 bg-[#edefe7] dark:bg-stone-800 text-[#384e21] dark:text-[#b5cf95] font-['Be_Vietnam_Pro'] text-sm">
-    <div class="grid grid-cols-2 md:grid-cols-4 gap-12 px-8 max-w-7xl mx-auto">
-      <div class="col-span-2 md:col-span-1">
-        <div class="text-xl font-bold text-[#384e21] mb-6 font-headline tracking-widest uppercase">Zentro</div>
-        <p class="text-[#191c18]/60 leading-relaxed mb-6">Sustainable living, simplified. We bring together the world's most ethical brands in one place.</p>
-        <div class="flex gap-4">
-          <a class="material-symbols-outlined opacity-100 hover:opacity-80 transition-opacity" href="#">public</a>
-          <a class="material-symbols-outlined opacity-100 hover:opacity-80 transition-opacity" href="#">nest_eco_leaf</a>
-          <a class="material-symbols-outlined opacity-100 hover:opacity-80 transition-opacity" href="#">volunteer_activism</a>
-        </div>
-      </div>
-      <div>
-        <h4 class="font-bold text-[#384e21] mb-6">The Shop</h4>
-        <ul class="space-y-4">
-          <li><a class="text-[#191c18]/60 hover:underline decoration-[#384e21]/30 underline-offset-4" href="<?= $base ?>">Home Decor</a></li>
-          <li><a class="text-[#191c18]/60 hover:underline decoration-[#384e21]/30 underline-offset-4" href="#">Skincare</a></li>
-          <li><a class="text-[#191c18]/60 hover:underline decoration-[#384e21]/30 underline-offset-4" href="#">Fashion</a></li>
-          <li><a class="text-[#191c18]/60 hover:underline decoration-[#384e21]/30 underline-offset-4" href="#">Zero Waste</a></li>
-        </ul>
-      </div>
-      <div>
-        <h4 class="font-bold text-[#384e21] mb-6">About Us</h4>
-        <ul class="space-y-4">
-          <li><a class="text-[#191c18]/60 hover:underline decoration-[#384e21]/30 underline-offset-4" href="#">Our Story</a></li>
-          <li><a class="text-[#191c18]/60 hover:underline decoration-[#384e21]/30 underline-offset-4" href="#">Sustainability</a></li>
-          <li><a class="text-[#191c18]/60 hover:underline decoration-[#384e21]/30 underline-offset-4" href="<?= $base ?>?url=blog">Blog</a></li>
-          <li><a class="text-[#191c18]/60 hover:underline decoration-[#384e21]/30 underline-offset-4" href="#">Careers</a></li>
-        </ul>
-      </div>
-      <div>
-        <h4 class="font-bold text-[#384e21] mb-6">Contact</h4>
-        <ul class="space-y-4">
-          <li><a class="text-[#191c18]/60 hover:underline decoration-[#384e21]/30 underline-offset-4" href="#">Shipping</a></li>
-          <li><a class="text-[#191c18]/60 hover:underline decoration-[#384e21]/30 underline-offset-4" href="#">Privacy Policy</a></li>
-          <li><a class="text-[#191c18]/60 hover:underline decoration-[#384e21]/30 underline-offset-4" href="#">Instagram</a></li>
-          <li><a class="text-[#191c18]/60 hover:underline decoration-[#384e21]/30 underline-offset-4" href="#">LinkedIn</a></li>
-        </ul>
-      </div>
-    </div>
-    <div class="max-w-7xl mx-auto px-8 mt-16 pt-8 border-t border-primary/10 flex flex-col md:flex-row justify-between gap-4">
-      <div class="text-[#191c18]/60">© 2024 Zentro Sustainable Living. Built for the Earth.</div>
-      <div class="flex gap-6">
-        <a class="text-[#191c18]/60 hover:text-primary transition-colors" href="#">Terms</a>
-        <a class="text-[#191c18]/60 hover:text-primary transition-colors" href="#">Privacy</a>
-        <a class="text-[#191c18]/60 hover:text-primary transition-colors" href="#">Cookies</a>
-      </div>
-    </div>
-  </footer>
-</body>
-</html>
+<?php require_once __DIR__ . '/../layouts/footer.php'; ?>
