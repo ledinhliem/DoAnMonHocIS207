@@ -53,5 +53,19 @@
             </div>
         </div>
     </footer>
+    <div class="max-w-7xl mx-auto px-8 mt-16 pt-8 border-t border-primary/10 flex flex-col md:flex-row justify-between gap-4 text-xs text-on-surface-variant/60">
+            <div>© <?php echo date('Y'); ?> Zentro Sustainable Living. Built for the Earth.</div>
+            <div class="flex gap-6">
+                <a class="hover:text-primary transition-colors" href="#">Terms</a>
+                <a class="hover:text-primary transition-colors" href="#">Privacy</a>
+                <a class="hover:text-primary transition-colors" href="#">Cookies</a>
+            </div>
+        </div>
+    </footer>
+    
+    <script src="public/js/auth.js"></script>
+
+</body>
+</html>
 </body>
 </html>
