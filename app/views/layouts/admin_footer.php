@@ -1,7 +1,8 @@
-<hr>
-<footer>
-    <p>Admin Footer</p>
-</footer>
+        </main>
+    </div>
 
+    <script src="public/js/admin.js"></script>
+    <script src="public/js/admin-products.js"></script>
+    <script src="public/js/admin-orders.js"></script>
 </body>
 </html>
