@@ -1,60 +1,35 @@
 <?php include 'app/views/layouts/header.php'; ?>
 
-<main class="flex-grow flex items-center justify-center px-6 py-20 relative overflow-hidden">
-    <div class="absolute top-[-10%] left-[-10%] w-[40%] h-[40%] bg-primary-fixed-dim/20 rounded-full blur-[120px] pointer-events-none"></div>
-    <div class="absolute bottom-[-10%] right-[-10%] w-[35%] h-[35%] bg-secondary-container/30 rounded-full blur-[100px] pointer-events-none"></div>
-
-    <div class="w-full max-w-md relative z-10">
-        <div class="mb-12 text-center">
-            <div class="inline-flex items-center justify-center w-16 h-16 rounded-full bg-surface-container mb-8">
-                <span class="material-symbols-outlined text-primary text-3xl">potted_plant</span>
-            </div>
-            <h1 class="text-4xl font-extrabold text-primary tracking-tight mb-4">Reset Password</h1>
-            <p class="text-on-surface-variant leading-relaxed">
-                Enter the email associated with your Zentro account and we'll send a recovery link to restore access.
-            </p>
+<main class="flex-grow flex flex-col items-center justify-center px-6 py-12 md:py-24 relative z-10">
+    <div class="w-full max-w-md bg-surface-container-lowest p-8 md:p-12 rounded-xl shadow-[0_40px_40px_-15px_rgba(25,28,24,0.04)] border border-outline-variant/10">
+        
+        <div class="text-center mb-8">
+            <span class="material-symbols-outlined text-5xl text-primary mb-4 bg-primary-container p-4 rounded-full">lock_reset</span>
+            <h2 class="font-headline text-3xl font-bold text-on-surface mb-2">Reset Password</h2>
+            <p class="text-on-surface-variant text-sm">Enter your registered email address and we'll send you a link to reset your password.</p>
         </div>
 
-        <div class="bg-surface-container-low rounded-[2rem] p-10 shadow-sm border border-outline-variant/10">
-            <form action="index.php?mod=auth&act=postForgot" method="POST" class="space-y-8">
-                <div class="space-y-2">
-                    <label class="block text-sm font-semibold text-on-surface ml-1" for="email">Email Address</label>
-                    <div class="relative group">
-                        <input
-                            class="w-full px-5 py-4 bg-surface-container-high rounded-xl border-none text-on-surface placeholder:text-outline focus:ring-1 focus:ring-primary/30 focus:bg-surface-container-lowest transition-all duration-300 outline-none"
-                            id="email" name="email" placeholder="name@example.com" required type="email" />
-                        <span class="material-symbols-outlined absolute right-4 top-1/2 -translate-y-1/2 text-outline group-focus-within:text-primary transition-colors">
-                            mail
-                        </span>
-                    </div>
-                </div>
+        <form action="index.php?url=forgot-password" method="POST" class="space-y-6 auth-form">
+            <div class="space-y-2">
+                <label class="block text-xs font-bold uppercase tracking-wider text-primary px-1">Email Address</label>
+                <input name="email" required class="w-full bg-surface-container-high border-none rounded-lg p-4 focus:ring-1 focus:ring-primary/30 focus:bg-surface-container-lowest transition-all placeholder:text-outline" placeholder="nature@zentro.com" type="email" />
+            </div>
+            
+            <button type="submit" class="w-full bg-primary text-on-primary font-bold py-4 rounded-lg hover:bg-primary-container transition-all">
+                Send Reset Link
+            </button>
 
-                <a href="index.php?url=reset-password" 
-                     class="w-full bg-primary text-on-primary font-bold py-4 rounded-lg hover:bg-primary-container transition-all flex justify-center items-center gap-2 group">
-                     Send Recovery Link
-                    <span class="material-symbols-outlined text-sm group-hover:translate-x-1 transition-transform">arrow_forward</span>
-                </a>
-            </form>
-
-            <div class="mt-10 pt-8 border-t border-outline-variant/30 flex flex-col items-center gap-4">
-                <a class="group flex items-center gap-2 text-sm font-medium text-on-surface-variant hover:text-primary transition-colors"
-                  href="index.php?url=login">
-                    <span class="material-symbols-outlined text-lg group-hover:-translate-x-1 transition-transform">chevron_left</span>
-                    Back to login
+            <div class="text-center pt-4">
+                <a href="index.php?url=login" class="text-sm font-semibold text-on-surface-variant hover:text-primary transition-colors flex items-center justify-center gap-2">
+                    <span class="material-symbols-outlined text-sm">arrow_back</span>
+                    Back to Sign In
                 </a>
             </div>
-        </div>
-
-        <div class="mt-12 text-center">
-            <div class="inline-flex items-center gap-2 px-4 py-2 bg-surface-container rounded-full border border-outline-variant/10">
-                <span class="w-2 h-2 rounded-full bg-primary-fixed-dim"></span>
-                <span class="text-xs font-medium text-on-surface-variant tracking-wider uppercase">Conscious Security</span>
-            </div>
-        </div>
+        </form>
     </div>
 </main>
 
-<div class="fixed bottom-0 left-0 w-full h-48 -z-20 opacity-20 pointer-events-none">
+<div class="fixed bottom-0 left-0 w-full h-60 -z-20 opacity-20 pointer-events-none">
     <img class="w-full h-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAPnWAociNieVlxiRuRMr0OaGgXkuxiC_JksDaiFam77hYuE58MST_Cjht8R1pZ1NXGLXt53qrxTb9oYwAO_nx_OM9CCvb1FZJQJrLvua1CMyPmsvkcF37cx7dakZw-SB-mB5DN38TB2fjvrPD6U5Q1648v23AmzoalVP3aP93hN5MG-1c6wXOq39KyiPDHh4jpdv-5JME2uJhA99qBTzvWbMoHLKiQ1_4sq9EPsNs2UcKnvaQ5VPajMkiEwHJPTMbcHJLvtvAs8JM" alt="river stone texture" />
 </div>
 
