@@ -125,7 +125,11 @@ class Router
                 $controller = new AdminController();
                 $controller->dashboard();
                 break;
-
+            case 'admin/dashboard':
+                require_once __DIR__ . '/../app/controllers/AdminController.php';
+                $controller = new AdminController();
+                $controller->dashboard();
+                break;
             case 'admin/products':
                 require_once __DIR__ . '/../app/controllers/AdminController.php';
                 $controller = new AdminController();
