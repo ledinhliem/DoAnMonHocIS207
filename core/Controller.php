@@ -1,14 +1,30 @@
 <?php
+
 class Controller
 {
+    // Hàm gọi Model
+    public function model($model)
+    {
+        $modelFile = APP_PATH . 'models/' . $model . '.php';
+
+        if (file_exists($modelFile)) {
+            require_once $modelFile;
+            return new $model();
+        }
+
+        die("Model {$model} không tồn tại.");
+    }
+
+    // Hàm gọi View
     public function view($view, $data = [])
     {
-        extract($data);
-        $viewPath = __DIR__ . '/../app/views/' . $view . '.php';
-        if (file_exists($viewPath)) {
-            require_once $viewPath;
+        $viewFile = APP_PATH . 'views/' . $view . '.php';
+
+        if (file_exists($viewFile)) {
+            extract($data);
+            require_once $viewFile;
         } else {
-            echo "View không tồn tại: " . $viewPath;
+            die("View {$view} không tồn tại tại đường dẫn: " . $viewFile);
         }
     }
 }
