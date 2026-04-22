@@ -160,6 +160,18 @@ class Router
                 $controller->blog();
                 break;
 
+            case 'auth/google':
+                require_once __DIR__ . '/../app/controllers/AuthController.php';
+                $controller = new AuthController();
+                $controller->googleLogin();
+                break;
+
+            case 'auth/apple':
+                require_once __DIR__ . '/../app/controllers/AuthController.php';
+                $controller = new AuthController();
+                $controller->appleLogin();
+                break;
+
             default:
                 echo '404 - Không tìm thấy trang';
                 break;
