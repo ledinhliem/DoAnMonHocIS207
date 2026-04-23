@@ -1,6 +1,6 @@
 <?php include __DIR__ . '/../layouts/header.php'; ?>
 
-<main class="max-w-7xl mx-auto px-6 lg:px-12 py-12 md:py-20">
+<main class="max-w-7xl mx-auto px-6 lg:px-12 py-12 md:pyR-20">
     <!-- Nội dung sản phẩm -->
     <div class="grid grid-cols-1 lg:grid-cols-12 gap-16 items-start">
       

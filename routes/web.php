@@ -9,6 +9,18 @@ switch ($url) {
         $controller = new HomeController();
         $controller->index();
         break;
+    case 'product':
+        require_once "app/controllers/ProductController.php";
+        $controller = new ProductController();
+        $controller->index();
+        break;
+
+    case 'product/detail':
+        require_once "app/controllers/ProductController.php";
+        $controller = new ProductController();
+        $controller->detail($_GET['id']);
+        break;
     default:
         echo "404 Not Found";
+
 }
