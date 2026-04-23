@@ -90,14 +90,35 @@
 
           <!-- Nút thêm giỏ -->
           <div class="pt-4 flex flex-col gap-4">
-            <form action="<?= BASE_URL ?>?url=cart/add" method="POST">
+            <form id="cart-form" action="<?= BASE_URL ?>?url=cart/add" method="POST">
               <input type="hidden" name="ma_san_pham" value="<?= $product['MaSanPham'] ?>">
               <input type="hidden" name="ma_bien_the" id="selected-variant-id" value="<?= $variants[0]['MaBienThe'] ?? '' ?>">
-    
-              <button type="submit" class="w-full bg-primary ...">
+ 
+              <!-- Số lượng -->
+              <div class="flex items-center gap-4 mb-4">
+                <span class="text-sm font-label font-bold text-on-surface uppercase tracking-wider">Số lượng</span>
+                <div class="flex items-center border border-outline-variant rounded-lg overflow-hidden">
+                  <button type="button" id="qty-minus"
+                    class="px-4 py-2 text-xl font-bold text-primary hover:bg-surface-container transition-colors">&#8722;</button>
+                  <input type="number" name="so_luong" id="quantity"
+                          value="1" min="1" max="<?= $variants[0]['SoLuongTon'] ?? 99 ?>"
+                          class="[&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none w-14 text-center border-none outline-none font-bold text-on-surface bg-transparent py-2">
+
+                  <button type="button" id="qty-plus"
+                    class="px-4 py-2 text-xl font-bold text-primary hover:bg-surface-container transition-colors">+</button>
+                </div>
+              </div>
+ 
+              <button type="submit" id="btn-add-cart"
+                class="w-full bg-primary text-on-primary font-bold py-4 px-8 rounded-xl hover:opacity-90 active:scale-95 transition-all text-base tracking-wide">
                 Thêm vào giỏ hàng
               </button>
             </form>
+ 
+            <!-- Thông báo lỗi nếu chưa chọn variant -->
+            <p id="variant-error" class="hidden text-red-500 text-sm text-center font-medium">
+              &#9888;&#65039; Vui lòng chọn đầy đủ màu sắc và kích thước trước khi thêm vào giỏ.
+            </p>
           </div>
 
           <!-- Mô tả chi tiết -->
@@ -153,6 +174,20 @@
     </div>
 
     <div class="max-w-4xl mx-auto">
+        <!-- Tab: Mô tả sản phẩm -->
+        <div id="description" class="tab-content animate-fadeIn">
+          <div class="prose prose-lg max-w-none text-on-surface-variant font-body leading-relaxed space-y-4">
+            <p><?= nl2br($product['MoTa'] ?? 'Chưa có mô tả cho sản phẩm này.') ?></p>
+            <?php if (!empty($product['TenVatLieu'])): ?>
+              <p><strong>Vật liệu:</strong> <?= $product['TenVatLieu'] ?></p>
+            <?php endif; ?>
+            <?php if (!empty($product['NguonGoc'])): ?>
+              <p><strong>Nguồn gốc:</strong> <?= $product['NguonGoc'] ?></p>
+            <?php endif; ?>
+          </div>
+        </div>
+
+        <!-- Tab: Đánh giá -->
         <div id="reviews" class="tab-content hidden animate-fadeIn">
           <div class="space-y-6">
             <?php if (!empty($reviews)): ?>
@@ -175,6 +210,17 @@
                 <p class="text-on-surface-variant italic mb-4">Chưa có đánh giá nào cho sản phẩm này.</p>
                 <button class="bg-secondary text-on-secondary px-8 py-3 rounded-full font-bold hover:opacity-90">
                     Viết đánh giá đầu tiên
+                </button>
+              </div>
+
+              <div id="review-form" class="hidden mt-4">
+                <textarea id="review-content"
+                  placeholder="Nhập đánh giá của bạn..."
+                  class="w-full border rounded-lg p-3 mb-3"></textarea>
+
+                <button id="submit-review"
+                  class="bg-green-700 text-white px-4 py-2 rounded-lg">
+                  Gửi đánh giá
                 </button>
               </div>
             <?php endif; ?>

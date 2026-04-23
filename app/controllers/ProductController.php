@@ -52,4 +52,5 @@ class ProductController extends Controller
         'products' => $results
     ]);
 }
+
 }

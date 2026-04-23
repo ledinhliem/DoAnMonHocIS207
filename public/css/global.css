@@ -4,16 +4,16 @@
 
 @layer base {
   :root {
-    /* Khai báo bảng màu Zentro */
-    --primary: #384e21;
-    --primary-container: #4f6636;
-    --primary-fixed: #d0ecaf;
-    --surface: #f9faf2;
-    --surface-container-high: #e7e9e1;
-    --on-surface: #191c18;
-    --on-surface-variant: #44483e;
-    --outline-variant: #c5c8ba;
-    --secondary-container: #ffd5ae;
+    /* Zentro Brand Color */
+    --primary: #384e21; /*Primary action*/
+    --primary-container: #4f6636; /*Hover*/
+    --primary-fixed: #d0ecaf; /*Active*/
+    --surface: #f9faf2;   /*Background*/
+    --surface-container-high: #e7e9e1; 
+    --on-surface: #191c18; /*Text chính*/
+    --on-surface-variant: #44483e; /*Text phụ*/
+    --outline-variant: #c5c8ba; /*Border, divider*/
+    --secondary-container: #ffd5ae; 
     --on-secondary-container: #7a5b3b;
   }
 
@@ -27,26 +27,157 @@
 }
 
 @layer components {
-  /* 1. CLASS căn chính giữa màn hình */
-  .centering-wrapper {
-    @apply w-full flex flex-col items-center justify-center px-6;
-    /* Trừ đi chiều cao Header/Footer (khoảng 160px) để không bị cuộn trang */
-    min-height: calc(100vh - 160px); 
-  }
 
-  /* 2. Dùng cho mọi ô nhập liệu */
+  /* =========================
+     INPUT
+  ========================= */
   .zentro-input {
-    @apply w-full p-4 bg-[#e7e9e1] border-none rounded-xl outline-none transition-all;
-    @apply focus:ring-2 focus:ring-[#384e21]/20 focus:bg-white;
+    @apply w-full p-4 rounded-xl outline-none transition-all;
+    background-color: var(--surface-container-high);
   }
 
-  /* 3.  Nút bấm màu xanh  */
+  .zentro-input:focus {
+    @apply ring-2;
+    ring-color: rgba(56, 78, 33, 0.2);
+    background-color: white;
+  }
+
+  /* =========================
+     BUTTON
+  ========================= */
   .zentro-button {
-    @apply w-full py-4 bg-[#384e21] text-white font-bold rounded-xl text-base transition-all;
-    @apply shadow-md hover:bg-[#4f6636] active:scale-[0.98] hover:shadow-lg;
+    @apply w-full py-4 text-white font-semibold rounded-xl text-base transition-all duration-200;
+    background-color: var(--primary);
+    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
   }
 
-  /* 4. ĐỊNH NGHĨA LẠI CÁC MÀU TAILWIND */
+  .zentro-button:hover {
+    background-color: var(--primary-container);
+    transform: translateY(-1px);
+  }
+
+  .zentro-button:active {
+    transform: scale(0.98);
+  }
+
+  .zentro-button:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+  }
+
+  .zentro-button-outline {
+  @apply w-full py-4 rounded-xl text-base transition-all;
+  border: 1px solid var(--primary);
+  color: var(--primary);
+  }
+
+  .zentro-button-outline:hover {
+    background: var(--primary);
+    color: white;
+  }
+
+  /* =========================
+     CARD
+  ========================= */
+  .zentro-card {
+    @apply bg-white rounded-2xl transition-all duration-200;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+  }
+
+  .zentro-card:hover {
+    box-shadow: 0 6px 20px rgba(0,0,0,0.1);
+  }
+
+  /* =========================
+     VARIANT (SIZE / COLOR)
+  ========================= */
+  .variant-btn {
+    @apply px-4 py-2 border rounded-xl text-sm transition-all duration-200;
+    border-color: var(--outline-variant);
+  }
+
+  .variant-btn:hover {
+    border-color: var(--primary);
+  }
+
+  .variant-btn.active {
+    background-color: var(--primary);
+    color: white;
+    transform: scale(1.05);
+    border-color: var(--primary);
+  }
+
+  /* =========================
+     PRODUCT IMAGE
+  ========================= */
+  .product-image {
+    @apply rounded-2xl overflow-hidden;
+  }
+
+  .thumbnail-item img {
+    @apply rounded-xl transition-all duration-200 cursor-pointer;
+    opacity: 0.7;
+  }
+
+  .thumbnail-item img:hover {
+    opacity: 1;
+  }
+
+  .thumbnail-item.active img {
+    border: 2px solid var(--primary);
+    opacity: 1;
+  }
+
+  /* =========================
+     TAB
+  ========================= */
+  .tab-btn {
+    @apply px-4 py-2 text-sm font-medium border-b-2 transition-all duration-200;
+    border-color: transparent;
+    color: var(--on-surface-variant);
+  }
+
+  .tab-btn.active {
+    border-color: var(--primary);
+    color: var(--primary);
+  }
+
+  .tab-content {
+    @apply mt-4;
+  }
+
+  /* =========================
+     REVIEW
+  ========================= */
+  .review-item {
+    border-bottom: 1px solid var(--outline-variant);
+    padding: 12px 0;
+  }
+
+  /* =========================
+     TYPOGRAPHY
+  ========================= */
+  .product-title {
+    font-size: 22px;
+    font-weight: 600;
+  }
+
+  .product-price {
+    font-size: 24px;
+    font-weight: 700;
+    color: var(--primary);
+  }
+
+  /* =========================
+     SPACING
+  ========================= */
+  .section {
+    @apply mb-6;
+  }
+
+  /* =========================
+     UTILITY COLOR
+  ========================= */
   .text-primary { color: var(--primary); }
   .bg-primary { background-color: var(--primary); }
   .bg-primary-fixed { background-color: var(--primary-fixed); }
