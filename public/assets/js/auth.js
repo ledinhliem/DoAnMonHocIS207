@@ -1,24 +1,38 @@
 document.addEventListener('DOMContentLoaded', function() {
-    // 1. Chức năng Toggle Ẩn/Hiện mật khẩu
-    const toggleButtons = document.querySelectorAll('.toggle-password');
-    toggleButtons.forEach(btn => {
-        btn.addEventListener('click', function() {
-            const inputId = this.getAttribute('data-target');
-            const input = document.getElementById(inputId);
-            
-            if (input.type === 'password') {
-                input.type = 'text';
-                this.textContent = 'visibility_off'; // Đổi icon sang nhắm mắt
-                this.classList.add('text-primary'); // Đổi màu icon khi hiện pass
+    // 1. CHỨC NĂNG CON MẮT THÔNG MINH
+    const toggleEye = document.getElementById('toggleEye');
+    const passwordInput = document.getElementById('login_pass');
+
+    if (toggleEye && passwordInput) {
+        // Click để ẩn/hiện mật khẩu
+        toggleEye.addEventListener('click', function() {
+            if (passwordInput.type === 'password') {
+                passwordInput.type = 'text';
+                this.textContent = 'visibility'; // Hiện icon mắt mở
+                this.classList.add('text-primary');
             } else {
-                input.type = 'password';
-                this.textContent = 'visibility';
+                passwordInput.type = 'password';
+                this.textContent = 'visibility_off'; // Hiện icon mắt gạch
                 this.classList.remove('text-primary');
             }
         });
-    });
 
-    // 2. Validate Form Frontend
+        // Logic gõ mới đổi icon (Đúng yêu cầu của Lan)
+        passwordInput.addEventListener('input', function() {
+            if (this.value.length > 0) {
+                // Nếu đang gõ và đang ở chế độ ẩn thì hiện mắt mở để mời bấm
+                if (this.type === 'password') {
+                    toggleEye.textContent = 'visibility';
+                }
+            } else {
+                // Nếu xóa sạch chữ thì quay về mắt gạch mặc định
+                toggleEye.textContent = 'visibility_off';
+                this.type = 'password'; // Reset về ẩn cho an toàn
+            }
+        });
+    }
+
+    // 2. VALIDATE FORM FRONTEND
     const authForm = document.querySelector('form.auth-form');
     if (authForm) {
         authForm.addEventListener('submit', function(e) {
@@ -29,11 +43,10 @@ document.addEventListener('DOMContentLoaded', function() {
             const password = authForm.querySelector('input[name="password"]');
             const confirmPass = authForm.querySelector('input[name="confirm_password"]');
 
-            // Regex kiểm tra định dạng email
             const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
             if (email && !emailRegex.test(email.value)) {
-                errorMsg += '• Vui lòng nhập đúng định dạng email (ví dụ: name@domain.com).\n';
+                errorMsg += '• Vui lòng nhập đúng định dạng email.\n';
                 isValid = false;
             }
 
@@ -48,9 +61,16 @@ document.addEventListener('DOMContentLoaded', function() {
             }
 
             if (!isValid) {
-                e.preventDefault(); // Ngăn form gửi dữ liệu
+                e.preventDefault();
                 alert("Lỗi nhập liệu:\n\n" + errorMsg);
+            } else {
+                // Hiệu ứng loading cho nút bấm của Long
+                const submitBtn = authForm.querySelector('button[type="submit"]');
+                if (submitBtn) {
+                    submitBtn.innerHTML = 'Verifying... <span class="animate-pulse">...</span>';
+                    submitBtn.classList.add('opacity-50', 'pointer-events-none');
+                }
             }
         });
     }
-});
+}); // Chỉ đóng ở cuối cùng này thôi nhé Lan!

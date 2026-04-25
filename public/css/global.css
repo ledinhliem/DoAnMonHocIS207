@@ -23,34 +23,67 @@
     background-color: var(--surface);
     font-family: 'Be Vietnam Pro', sans-serif;
     color: var(--on-surface);
+    scroll-behavior: smooth;
   }
 }
 
 @layer components {
-  /* 1. CLASS căn chính giữa màn hình */
+  /* 1. Wrapper căn giữa cho các trang Auth (Login/Register) */
   .centering-wrapper {
     @apply w-full flex flex-col items-center justify-center px-6;
-    /* Trừ đi chiều cao Header/Footer (khoảng 160px) để không bị cuộn trang */
     min-height: calc(100vh - 160px); 
   }
 
-  /* 2. Dùng cho mọi ô nhập liệu */
+  /* 2. Ô nhập liệu Zentro Style */
   .zentro-input {
     @apply w-full p-4 bg-[#e7e9e1] border-none rounded-xl outline-none transition-all;
-    @apply focus:ring-2 focus:ring-[#384e21]/20 focus:bg-white;
+    @apply focus:ring-2 focus:ring-[#384e21]/20 focus:bg-white placeholder:text-outline/50;
   }
 
-  /* 3.  Nút bấm màu xanh  */
+  /* 3. Nút bấm chính (Xanh đậm) */
   .zentro-button {
     @apply w-full py-4 bg-[#384e21] text-white font-bold rounded-xl text-base transition-all;
-    @apply shadow-md hover:bg-[#4f6636] active:scale-[0.98] hover:shadow-lg;
+    @apply shadow-md hover:bg-[#4f6636] active:scale-[0.98] hover:shadow-lg disabled:opacity-50 disabled:pointer-events-none;
   }
 
-  /* 4. ĐỊNH NGHĨA LẠI CÁC MÀU TAILWIND */
+  /* 4. Icon con mắt tùy chỉnh */
+  .eye-icon-style {
+    @apply absolute right-4 top-1/2 -translate-y-1/2 text-[#c5c8ba] cursor-pointer transition-colors select-none;
+    z-index: 20;
+  }
+
+  /* Định nghĩa các class màu sắc bổ trợ */
   .text-primary { color: var(--primary); }
   .bg-primary { background-color: var(--primary); }
   .bg-primary-fixed { background-color: var(--primary-fixed); }
   .bg-surface-container-high { background-color: var(--surface-container-high); }
   .text-on-surface-variant { color: var(--on-surface-variant); }
   .bg-secondary-container { background-color: var(--secondary-container); }
+}
+
+
+/* Ẩn con mắt mặc định của Edge và Chrome */
+input::-ms-reveal,
+input::-ms-clear {
+  display: none !important;
+}
+
+/* Ẩn icon mặc định của Safari/Chrome trên một số hệ điều hành */
+input::-webkit-contacts-auto-fill-button,
+input::-webkit-credentials-auto-fill-button {
+  visibility: hidden !important;
+  display: none !important;
+  pointer-events: none !important;
+}
+
+/* Tinh chỉnh Material Symbols để thẳng hàng hơn */
+.material-symbols-outlined {
+  font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+  vertical-align: middle;
+}
+
+input[type="password"] {
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    appearance: none;
 }

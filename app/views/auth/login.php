@@ -1,5 +1,23 @@
 <?php include 'app/views/layouts/header.php'; ?>
 
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/devicons/devicon@latest/devicon.min.css">
+
+<style>
+    /* Ẩn con mắt mặc định của Edge */
+    input::-ms-reveal,
+    input::-ms-clear {
+        display: none !important;
+    }
+
+    /* Ẩn icon chìa khóa/mắt mặc định của Chrome/Safari */
+    input::-webkit-contacts-auto-fill-button,
+    input::-webkit-credentials-auto-fill-button {
+        visibility: hidden !important;
+        display: none !important;
+        pointer-events: none !important;
+    }
+</style>
+
 <main class="flex-grow flex flex-col items-center justify-center px-6 py-12 md:py-24">
     <div class="mb-12 text-center">
         <h1 class="font-headline text-4xl font-extrabold text-primary tracking-widest uppercase mb-2">Zentro</h1>
@@ -23,7 +41,7 @@
                 <p class="text-on-surface-variant text-sm">Enter your details to access your conscious collection.</p>
             </div>
 
-            <form action="index.php?url=login" method="POST" class="space-y-6 auth-form">
+            <form id="loginForm" action="index.php?url=login" method="POST" class="space-y-6 auth-form">
                 <div class="space-y-2">
                     <label class="block text-xs font-bold uppercase tracking-wider text-primary px-1">Email Address</label>
                     <input name="email" required class="w-full bg-surface-container-high border-none rounded-lg p-4 focus:ring-1 focus:ring-primary/30 focus:bg-surface-container-lowest transition-all placeholder:text-outline" placeholder="nature@zentro.com" type="email" />
@@ -35,13 +53,18 @@
                         <a class="text-xs text-secondary font-semibold hover:underline" href="index.php?url=forgot-password">Forgot Password?</a>
                     </div>
                     <div class="relative">
-                        <input id="login_pass" name="password" required class="w-full bg-surface-container-high border-none rounded-lg p-4 pr-12 focus:ring-1 focus:ring-primary/30 focus:bg-surface-container-lowest transition-all placeholder:text-outline" placeholder="••••••••" type="password" />
-                        <span class="material-symbols-outlined absolute right-4 top-1/2 -translate-y-1/2 text-outline-variant cursor-pointer hover:text-primary transition-colors toggle-password select-none" data-target="login_pass">visibility</span>
+                        <input id="login_pass" name="password" required 
+                            class="w-full bg-surface-container-high border-none rounded-lg p-4 pr-12 focus:ring-1 focus:ring-primary/30 focus:bg-surface-container-lowest transition-all" 
+                            placeholder="••••••••" type="password" />
+    
+                        <span id="toggleEye" style="z-index: 10;" class="material-symbols-outlined absolute right-4 top-1/2 -translate-y-1/2 text-outline-variant cursor-pointer hover:text-primary transition-colors select-none">
+                            visibility_off
+                        </span>
                     </div>
                 </div>
 
-                <button type="submit" class="w-full bg-primary text-on-primary font-bold py-4 rounded-lg hover:bg-primary-container transition-all flex justify-center items-center gap-2 group">
-                    Sign In
+                <button id="submitBtn" type="submit" class="w-full bg-primary text-white font-bold py-4 rounded-lg hover:bg-primary-container transition-all flex justify-center items-center gap-2 group">
+                    <span id="btnText">Sign In</span>
                     <span class="material-symbols-outlined text-sm group-hover:translate-x-1 transition-transform">arrow_forward</span>
                 </button>
             </form>
@@ -54,41 +77,75 @@
             </div>
             
             <div class="grid grid-cols-2 gap-4">
-                <button type="button" class="flex items-center justify-center gap-3 bg-surface-container border border-outline-variant/20 py-3 rounded-lg hover:bg-surface-variant transition-colors">
-                    <span class="material-symbols-outlined text-primary">cloud</span>
+                <a href="index.php?url=auth/google" class="flex items-center justify-center gap-3 bg-white border border-outline-variant/30 py-3 rounded-lg hover:bg-surface-container transition-all no-underline text-on-surface shadow-sm">
+                    <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" width="18" height="18" alt="Google">
                     <span class="text-sm font-semibold">Google</span>
-                </button>
-                <button type="button" class="flex items-center justify-center gap-3 bg-surface-container border border-outline-variant/20 py-3 rounded-lg hover:bg-surface-variant transition-colors">
-                    <span class="material-symbols-outlined text-primary">brand_awareness</span>
+                </a>
+                <a href="index.php?url=auth/apple" class="flex items-center justify-center gap-3 bg-black py-3 rounded-lg hover:bg-gray-800 transition-all no-underline text-white shadow-sm">
+                    <i class="devicon-apple-original text-lg"></i>
                     <span class="text-sm font-semibold">Apple</span>
-                </button>
+                </a>
             </div>
         </section>
 
-        <section class="hidden md:flex flex-col justify-between bg-primary-container text-on-primary-container p-12 rounded-xl relative overflow-hidden">
-            <div class="absolute top-0 right-0 w-64 h-64 bg-primary-fixed-dim/10 rounded-full blur-3xl -mr-20 -mt-20"></div>
+        <section class="hidden md:flex flex-col justify-between bg-primary-container text-white p-12 rounded-xl relative overflow-hidden">
+            <div class="absolute top-0 right-0 w-64 h-64 bg-white/10 rounded-full blur-3xl -mr-20 -mt-20"></div>
             <div class="relative z-10">
                 <span class="material-symbols-outlined text-4xl mb-6">eco</span>
                 <h3 class="font-headline text-4xl font-bold leading-tight mb-6">"Earth provides enough to satisfy every man's needs, but not every man's greed."</h3>
-                <p class="text-on-primary-container/80 text-lg italic">— Mahatma Gandhi</p>
-            </div>
-            <div class="relative z-10 bg-surface/10 backdrop-blur-md p-6 rounded-xl border border-white/10">
-                <div class="flex items-center gap-4 mb-4">
-                    <div class="w-12 h-12 rounded-full overflow-hidden border-2 border-primary-fixed">
-                        <img alt="User profile" class="w-full h-full object-cover" src="https://ui-avatars.com/api/?name=Elena+Woods&background=random" />
-                    </div>
-                    <div>
-                        <p class="font-bold text-white">Join the Movement</p>
-                        <p class="text-xs text-on-primary-container/70">Over 10,000+ eco-conscious members.</p>
-                    </div>
-                </div>
+                <p class="text-white/80 text-lg italic">— Mahatma Gandhi</p>
             </div>
         </section>
     </div>
 </main>
 
-<div class="fixed bottom-0 left-0 w-full h-60 -z-20 opacity-20 pointer-events-none">
-    <img class="w-full h-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAPnWAociNieVlxiRuRMr0OaGgXkuxiC_JksDaiFam77hYuE58MST_Cjht8R1pZ1NXGLXt53qrxTb9oYwAO_nx_OM9CCvb1FZJQJrLvua1CMyPmsvkcF37cx7dakZw-SB-mB5DN38TB2fjvrPD6U5Q1648v23AmzoalVP3aP93hN5MG-1c6wXOq39KyiPDHh4jpdv-5JME2uJhA99qBTzvWbMoHLKiQ1_4sq9EPsNs2UcKnvaQ5VPajMkiEwHJPTMbcHJLvtvAs8JM" alt="river stone texture" />
-</div>
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const toggleEye = document.getElementById('toggleEye');
+    const passwordInput = document.getElementById('login_pass');
+
+    // 1. Logic Click để ẩn/hiện mật khẩu
+    if (toggleEye && passwordInput) {
+        toggleEye.addEventListener('click', function() {
+            if (passwordInput.type === 'password') {
+                passwordInput.type = 'text';
+                this.textContent = 'visibility'; // Hiện mật khẩu -> đổi sang mắt mở
+                this.classList.add('text-primary');
+            } else {
+                passwordInput.type = 'password';
+                this.textContent = 'visibility_off'; // Ẩn mật khẩu -> đổi sang mắt gạch
+                this.classList.remove('text-primary');
+            }
+        });
+
+        // 2. TÍNH NĂNG CON MẮT THÔNG MINH (Đổi icon khi gõ)
+        passwordInput.addEventListener('input', function() {
+            if (this.value.length > 0) {
+                // Nếu đang gõ và đang ở chế độ ẩn, hiện icon nhắc nhở có thể mở mắt
+                if (this.type === 'password') {
+                    toggleEye.textContent = 'visibility'; 
+                }
+            } else {
+                // Nếu xóa sạch text, quay về icon mặc định gạch chéo
+                toggleEye.textContent = 'visibility_off';
+                // Đảm bảo type cũng trở về password khi xóa sạch
+                passwordInput.type = 'password';
+                toggleEye.classList.remove('text-primary');
+            }
+        });
+    }
+
+    // 3. Hiệu ứng nút Sign In
+    const loginForm = document.getElementById('loginForm');
+    if (loginForm) {
+        loginForm.addEventListener('submit', function() {
+            const btn = document.getElementById('submitBtn');
+            const txt = document.getElementById('btnText');
+            txt.textContent = 'Verifying...';
+            btn.classList.add('opacity-50', 'pointer-events-none');
+        });
+    }
+});
+</script>
 
 <?php include 'app/views/layouts/footer.php'; ?>
