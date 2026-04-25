@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Máy chủ: 127.0.0.1
--- Thời gian đã tạo: Th3 28, 2026 lúc 09:41 AM
+-- Thời gian đã tạo: Th4 22, 2026 lúc 07:49 PM
 -- Phiên bản máy phục vụ: 10.4.32-MariaDB
 -- Phiên bản PHP: 8.2.12
 
@@ -36,13 +36,6 @@ CREATE TABLE `baiviet` (
   `MaNguoiDung` int(11) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
---
--- Đang đổ dữ liệu cho bảng `baiviet`
---
-
-INSERT INTO `baiviet` (`MaBaiViet`, `TieuDe`, `NoiDung`, `HinhAnhBia`, `NgayDang`, `MaNguoiDung`) VALUES
-(2, 'Bài viết đầu tiên', 'Đây là nội dung bài viết mẫu', 'sample.jpg', '2026-03-18 00:00:00', 1);
-
 -- --------------------------------------------------------
 
 --
@@ -57,13 +50,6 @@ CREATE TABLE `bienthesanpham` (
   `GiaTien` decimal(15,2) NOT NULL DEFAULT 0.00,
   `SoLuongTon` int(11) DEFAULT 0
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
-
---
--- Đang đổ dữ liệu cho bảng `bienthesanpham`
---
-
-INSERT INTO `bienthesanpham` (`MaBienThe`, `MaSanPham`, `KichThuoc`, `MauSac`, `GiaTien`, `SoLuongTon`) VALUES
-(1, 1, 'M', 'Xanh', 100000.00, 10);
 
 -- --------------------------------------------------------
 
@@ -133,13 +119,6 @@ CREATE TABLE `danhgia` (
   `TrangThai` int(11) DEFAULT 0,
   `PhanHoiAdmin` text DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
-
---
--- Đang đổ dữ liệu cho bảng `danhgia`
---
-
-INSERT INTO `danhgia` (`MaDanhGia`, `MaNguoiDung`, `MaSanPham`, `SoSao`, `NoiDung`, `NgayDanhGia`, `TrangThai`, `PhanHoiAdmin`) VALUES
-(1, 1, 1, 5, 'Sản phẩm rất tốt', '2026-03-18 00:00:00', 0, NULL);
 
 -- --------------------------------------------------------
 
@@ -252,7 +231,8 @@ CREATE TABLE `nguoidung` (
 --
 
 INSERT INTO `nguoidung` (`MaNguoiDung`, `HoTen`, `Email`, `MatKhau`, `SoDienThoai`, `MaQuyen`, `NgayTao`) VALUES
-(1, 'Admin Demo', 'admin@gmail.com', '123456', '0123456789', 1, '2026-03-18 00:00:00');
+(11, 'lan', 'thanhcong_final@gmail.com', '$2y$10$zMqev447OOAizg6t8oV4Cu8TnimND1isQBYGGgAHWDx8soPYMmPOW', '', 2, '2026-04-10 10:09:35'),
+(12, 'lan', 'abc@gmail.com.vn', '$2y$10$ZaIEmIjWQJGckB7K5DdMAOzjuLek/xBCRsCBAA7M01i13LK1nTJ6m', '', 2, '2026-04-10 10:10:02');
 
 -- --------------------------------------------------------
 
@@ -278,13 +258,25 @@ CREATE TABLE `nhomquyen` (
   `TenQuyen` varchar(50) NOT NULL COMMENT '1: Admin, 2: Khách hàng'
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
+-- --------------------------------------------------------
+
 --
--- Đang đổ dữ liệu cho bảng `nhomquyen`
+-- Cấu trúc bảng cho bảng `password_resets`
 --
 
-INSERT INTO `nhomquyen` (`MaQuyen`, `TenQuyen`) VALUES
-(1, 'Admin'),
-(2, 'Khách hàng');
+CREATE TABLE `password_resets` (
+  `email` varchar(255) NOT NULL,
+  `token` varchar(255) NOT NULL,
+  `created_at` timestamp NOT NULL DEFAULT current_timestamp()
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Đang đổ dữ liệu cho bảng `password_resets`
+--
+
+INSERT INTO `password_resets` (`email`, `token`, `created_at`) VALUES
+('24520944@gm.uit.edu.vn', '17ebe69ee7288a6f5ffb17bb6ee54f63e46482a3b350320783447143146d974e', '2026-04-22 16:22:07'),
+('thnl3012@gmail.com', 'eecfb550df2566632688ee61a03783623438f656f9192aa98574f6422b4dc072', '2026-04-22 16:32:49');
 
 -- --------------------------------------------------------
 
@@ -343,13 +335,6 @@ CREATE TABLE `sanpham` (
   `ThanThienMoiTruong` tinyint(1) DEFAULT 1
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
---
--- Đang đổ dữ liệu cho bảng `sanpham`
---
-
-INSERT INTO `sanpham` (`MaSanPham`, `TenSanPham`, `MaDanhMuc`, `MaThuongHieu`, `MaVatLieu`, `MoTa`, `DiemXanh`, `TrangThai`, `NguonGoc`, `TacDongMoiTruong`, `CoTaiChe`, `ThanThienMoiTruong`) VALUES
-(1, 'Sản phẩm mẫu', NULL, NULL, NULL, 'Mô tả sản phẩm mẫu', 80, 0, 'Việt Nam', 'Giảm rác thải nhựa', 1, 1);
-
 -- --------------------------------------------------------
 
 --
@@ -383,6 +368,18 @@ CREATE TABLE `vatlieu` (
   `MaVatLieu` int(11) NOT NULL,
   `TenVatLieu` varchar(100) NOT NULL,
   `MoTa` text DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- --------------------------------------------------------
+
+--
+-- Cấu trúc bảng cho bảng `yeuthich`
+--
+
+CREATE TABLE `yeuthich` (
+  `MaNguoiDung` int(11) NOT NULL,
+  `MaSanPham` int(11) NOT NULL,
+  `NgayThem` datetime DEFAULT current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 --
@@ -550,6 +547,13 @@ ALTER TABLE `vatlieu`
   ADD PRIMARY KEY (`MaVatLieu`);
 
 --
+-- Chỉ mục cho bảng `yeuthich`
+--
+ALTER TABLE `yeuthich`
+  ADD PRIMARY KEY (`MaNguoiDung`,`MaSanPham`),
+  ADD KEY `MaSanPham` (`MaSanPham`);
+
+--
 -- AUTO_INCREMENT cho các bảng đã đổ
 --
 
@@ -557,13 +561,13 @@ ALTER TABLE `vatlieu`
 -- AUTO_INCREMENT cho bảng `baiviet`
 --
 ALTER TABLE `baiviet`
-  MODIFY `MaBaiViet` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+  MODIFY `MaBaiViet` int(11) NOT NULL AUTO_INCREMENT;
 
 --
 -- AUTO_INCREMENT cho bảng `bienthesanpham`
 --
 ALTER TABLE `bienthesanpham`
-  MODIFY `MaBienThe` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
+  MODIFY `MaBienThe` int(11) NOT NULL AUTO_INCREMENT;
 
 --
 -- AUTO_INCREMENT cho bảng `chungnhan`
@@ -575,7 +579,7 @@ ALTER TABLE `chungnhan`
 -- AUTO_INCREMENT cho bảng `danhgia`
 --
 ALTER TABLE `danhgia`
-  MODIFY `MaDanhGia` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
+  MODIFY `MaDanhGia` int(11) NOT NULL AUTO_INCREMENT;
 
 --
 -- AUTO_INCREMENT cho bảng `danhmuc`
@@ -611,7 +615,7 @@ ALTER TABLE `hinhanhsanpham`
 -- AUTO_INCREMENT cho bảng `nguoidung`
 --
 ALTER TABLE `nguoidung`
-  MODIFY `MaNguoiDung` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
+  MODIFY `MaNguoiDung` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=13;
 
 --
 -- AUTO_INCREMENT cho bảng `nhacungcap`
@@ -623,7 +627,7 @@ ALTER TABLE `nhacungcap`
 -- AUTO_INCREMENT cho bảng `nhomquyen`
 --
 ALTER TABLE `nhomquyen`
-  MODIFY `MaQuyen` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+  MODIFY `MaQuyen` int(11) NOT NULL AUTO_INCREMENT;
 
 --
 -- AUTO_INCREMENT cho bảng `phieunhap`
@@ -647,7 +651,7 @@ ALTER TABLE `ptvanchuyen`
 -- AUTO_INCREMENT cho bảng `sanpham`
 --
 ALTER TABLE `sanpham`
-  MODIFY `MaSanPham` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
+  MODIFY `MaSanPham` int(11) NOT NULL AUTO_INCREMENT;
 
 --
 -- AUTO_INCREMENT cho bảng `thuonghieu`
@@ -759,6 +763,13 @@ ALTER TABLE `sanpham`
 ALTER TABLE `sanpham_chungnhan`
   ADD CONSTRAINT `sanpham_chungnhan_ibfk_1` FOREIGN KEY (`MaSanPham`) REFERENCES `sanpham` (`MaSanPham`) ON DELETE CASCADE,
   ADD CONSTRAINT `sanpham_chungnhan_ibfk_2` FOREIGN KEY (`MaChungNhan`) REFERENCES `chungnhan` (`MaChungNhan`) ON DELETE CASCADE;
+
+--
+-- Các ràng buộc cho bảng `yeuthich`
+--
+ALTER TABLE `yeuthich`
+  ADD CONSTRAINT `yeuthich_ibfk_1` FOREIGN KEY (`MaNguoiDung`) REFERENCES `nguoidung` (`MaNguoiDung`) ON DELETE CASCADE,
+  ADD CONSTRAINT `yeuthich_ibfk_2` FOREIGN KEY (`MaSanPham`) REFERENCES `sanpham` (`MaSanPham`) ON DELETE CASCADE;
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;

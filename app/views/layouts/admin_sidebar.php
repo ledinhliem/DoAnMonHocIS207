@@ -25,13 +25,6 @@
             <span class="font-['Be_Vietnam_Pro'] font-medium text-sm">Inventory</span>
         </a>
 
-        <a
-            class="text-[#191c18]/60 hover:bg-[#e1e3dc] dark:hover:bg-stone-700 mx-2 my-1 px-4 py-3 rounded-lg flex items-center gap-3 transition-all hover:translate-x-1 duration-200"
-            href="#"
-        >
-            <span class="material-symbols-outlined">local_shipping</span>
-            <span class="font-['Be_Vietnam_Pro'] font-medium text-sm">Suppliers</span>
-        </a>
 
         <a
             class="<?= ($currentPage ?? '') === 'products'
@@ -73,13 +66,7 @@
             <span class="font-['Be_Vietnam_Pro'] font-medium text-sm">Blog</span>
         </a>
 
-        <a
-            class="text-[#191c18]/60 hover:bg-[#e1e3dc] dark:hover:bg-stone-700 mx-2 my-1 px-4 py-3 rounded-lg flex items-center gap-3 transition-all hover:translate-x-1 duration-200"
-            href="#"
-        >
-            <span class="material-symbols-outlined">settings</span>
-            <span class="font-['Be_Vietnam_Pro'] font-medium text-sm">Settings</span>
-        </a>
+       
     </nav>
 
     <div class="mt-auto px-4">
