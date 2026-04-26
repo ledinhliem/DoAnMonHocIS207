@@ -1,69 +1,54 @@
 <?php
+require_once __DIR__ . '/../models/ProductModel.php';
+
 class ProductController extends Controller
 {
-    public function index()
-{
-    $productModel = $this->model('ProductModel');
+    private $productModel;
 
-    $category = $_GET['category'] ?? ''; // home / beauty / fashion
-    $filter   = $_GET['filter'] ?? '';   // 1 / 2 / 3 / 4
-    $sort     = $_GET['sort'] ?? '';
-
-    $products = $productModel->getProducts($filter, $sort);
-
-    $this->view('product/index', [
-        'title' => 'Sản phẩm',
-        'category' => $category,
-        'filter' => $filter,
-        'sort' => $sort,
-        'products' => $products
-    ]);
-}
-    public function detail($id)
+    public function __construct()
     {
-        $productModel = $this->model('ProductModel');
+        $this->productModel = new ProductModel();
+    }
 
-        $product = $productModel->getProductById($id);
+    public function index()
+    {
+        $filters = [
+            'keyword'   => $_GET['keyword'] ?? '',
+            'category'  => $_GET['category'] ?? '',
+            'impact'    => $_GET['impact'] ?? '',
+            'price_max' => $_GET['price_max'] ?? '',
+            'sort'      => $_GET['sort'] ?? '',
+        ];
+
+        $products = $this->productModel->getAll($filters);
+
+        $this->view('product/index', [
+            'title'      => 'Sản phẩm',
+            'products'   => $products,
+            'filters'    => $filters,
+            'categories' => $this->productModel->getCategories(),
+            'impacts'    => $this->productModel->getImpacts(),
+        ]);
+    }
+
+    public function detail()
+    {
+        $id = $_GET['id'] ?? 1;
+        $product = $this->productModel->getById($id);
+
         if (!$product) {
-            // Xử lý khi không tìm thấy sản phẩm
-            header("Location: " . BASE_URL . "?url=product");
-            exit;
+            echo 'Không tìm thấy sản phẩm';
+            return;
         }
 
-        $variants = $productModel->getVariants($id);
-        $images = $productModel->getProductImages($id);
-        $reviews = $productModel->getReviews($id);
-
         $this->view('product/detail', [
-            'title' => $product['TenSanPham'],
+            'title' => 'Chi tiết sản phẩm',
             'product' => $product,
-            'variants' => $variants,
-            'images' => $images,
-            'reviews' => $reviews // Truyền biến reviews sang view
         ]);
     }
 
     public function search()
     {
-        $keyword = trim($_GET['keyword'] ?? '');
-
-        // DATA GIẢ (mock)
-        $products = [
-            ['id' => 1, 'name' => 'Bamboo Brush'],
-            ['id' => 2, 'name' => 'Bamboo Towel'],
-            ['id' => 3, 'name' => 'Cutlery Set'],
-            ['id' => 4, 'name' => 'Laptop Stand']
-        ];
-
-        // FILTER
-        $results = array_values(array_filter($products, function ($p) use ($keyword) {
-            return stripos(strtolower($p['name']), strtolower($keyword)) !== false;
-        }));
-        // TRUYỀN QUA VIEW
-        $this->view('product/search', [
-            'title' => 'Tìm kiếm',
-            'keyword' => $keyword,
-            'products' => $results
-        ]);
+        $this->index();
     }
 }
