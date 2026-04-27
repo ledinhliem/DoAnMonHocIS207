@@ -24,7 +24,7 @@
 
         <form action="index.php?url=forgot-password" method="POST" class="space-y-6 auth-form">
             <div class="space-y-2">
-                <label class="block text-xs font-bold uppercase tracking-wider text-primary px-1">Email Address</label>
+                <label class="block text-xs font-bold uppercase tracking-wider text-primary px-1">Địa chỉ email</label>
                 <input name="email" required class="w-full bg-surface-container-high border-none rounded-lg p-4 focus:ring-1 focus:ring-primary/30 focus:bg-surface-container-lowest transition-all placeholder:text-outline" placeholder="nature@zentro.com" type="email" />
             </div>
             
@@ -35,7 +35,7 @@
             <div class="text-center pt-4">
                 <a href="index.php?url=login" class="text-sm font-semibold text-on-surface-variant hover:text-primary transition-colors flex items-center justify-center gap-2">
                     <span class="material-symbols-outlined text-sm">arrow_back</span>
-                    Back to Sign In
+                    Quay lại đăng nhập
                 </a>
             </div>
         </form>

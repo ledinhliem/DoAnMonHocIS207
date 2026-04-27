@@ -2,7 +2,7 @@
 
 <main class="max-w-6xl mx-auto px-8 py-12">
     <nav class="flex items-center space-x-2 text-sm text-on-surface-variant mb-10">
-        <a href="?url=" class="hover:text-primary">Home</a>
+        <a href="?url=" class="hover:text-primary">Trang chủ</a>
         <span>/</span>
         <a href="?url=blog" class="hover:text-primary">Blog</a>
         <span>/</span>
@@ -37,9 +37,9 @@
         <div class="flex items-end justify-between mb-8">
             <div>
                 <span class="text-sm uppercase tracking-widest text-secondary">Curated Living</span>
-                <h2 class="text-4xl font-black font-headline text-primary mt-2">Shop the Look</h2>
+                <h2 class="text-4xl font-black font-headline text-primary mt-2">Cửa hàng the Look</h2>
             </div>
-            <a href="?url=product" class="font-semibold text-primary">View Collection</a>
+            <a href="?url=product" class="font-semibold text-primary">Xem bộ sưu tập</a>
         </div>
 
         <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
@@ -55,8 +55,8 @@
                         </a>
 
                         <form method="POST" action="?url=cart/add" class="absolute bottom-4 right-4">
-                            <input type="hidden" name="product_id" value="<?= $product['id'] ?>">
-                            <input type="hidden" name="quantity" value="1">
+                            <input type="hidden" name="ma_san_pham" value="<?= $product['id'] ?>">
+                            <input type="hidden" name="so_luong" value="1">
                             <button type="submit" class="w-12 h-12 rounded-full bg-white shadow flex items-center justify-center text-primary">
                                 <span class="material-symbols-outlined">add</span>
                             </button>

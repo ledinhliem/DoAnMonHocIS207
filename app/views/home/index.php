@@ -13,20 +13,16 @@
             <div
                 class="max-w-2xl bg-surface/90 backdrop-blur-md p-10 md:p-16 rounded-xl border-l-8 border-primary shadow-xl">
                 <span
-                    class="inline-block px-4 py-1 rounded-full bg-primary-fixed text-on-primary-fixed-variant text-xs font-bold uppercase tracking-widest mb-6">Sustainable
-                    Excellence</span>
-                <h1 class="font-headline text-5xl md:text-7xl font-extrabold text-on-background leading-[1.1] mb-6">Live
-                    with <span class="text-primary italic">Intent</span>.</h1>
-                <p class="text-lg md:text-xl text-on-surface-variant mb-10 leading-relaxed max-w-lg">Curated essentials
-                    for a conscious home. Every product in our marketplace is vetted for ethical production and
-                    environmental impact.</p>
+                    class="inline-block px-4 py-1 rounded-full bg-primary-fixed text-on-primary-fixed-variant text-xs font-bold uppercase tracking-widest mb-6">Sống xanh bền vững</span>
+                <h1 class="font-headline text-5xl md:text-7xl font-extrabold text-on-background leading-[1.1] mb-6">Sống
+                    <span class="text-primary italic">có chủ đích</span>.</h1>
+                <p class="text-lg md:text-xl text-on-surface-variant mb-10 leading-relaxed max-w-lg">Những vật dụng được tuyển chọn cho không gian sống xanh, ưu tiên sản xuất có trách nhiệm và giảm tác động môi trường.</p>
                 <div class="flex flex-wrap gap-4">
                     <button
                         class="px-8 py-4 bg-primary text-on-primary rounded-lg font-bold text-lg hover:hero-gradient transition-all duration-300 shadow-lg shadow-primary/20"
-                        onclick="window.location.href='<?= BASE_URL ?>?url=product'">Explore Shop</button>
+                        onclick="window.location.href='<?= BASE_URL ?>?url=product'">Khám phá cửa hàng</button>
                     <button
-                        class="px-8 py-4 bg-secondary-container text-on-secondary-container rounded-lg font-bold text-lg hover:opacity-90 transition-all duration-300">Our
-                        Mission</button>
+                        class="px-8 py-4 bg-secondary-container text-on-secondary-container rounded-lg font-bold text-lg hover:opacity-90 transition-all duration-300">Sứ mệnh của chúng tôi</button>
                 </div>
             </div>
         </div>
@@ -39,19 +35,19 @@
                 class="flex flex-wrap justify-center md:justify-between items-center gap-8 opacity-60 grayscale hover:grayscale-0 transition-all duration-500">
                 <div class="flex items-center gap-3">
                     <span class="material-symbols-outlined text-3xl text-primary">eco</span>
-                    <span class="font-headline font-bold text-sm tracking-widest uppercase">Certified B Corp</span>
+                    <span class="font-headline font-bold text-sm tracking-widest uppercase">Chứng nhận B Corp</span>
                 </div>
                 <div class="flex items-center gap-3">
                     <span class="material-symbols-outlined text-3xl text-primary">recycling</span>
-                    <span class="font-headline font-bold text-sm tracking-widest uppercase">100% Recyclable</span>
+                    <span class="font-headline font-bold text-sm tracking-widest uppercase">100% có thể tái chế</span>
                 </div>
                 <div class="flex items-center gap-3">
                     <span class="material-symbols-outlined text-3xl text-primary">vaping_rooms</span>
-                    <span class="font-headline font-bold text-sm tracking-widest uppercase">Carbon Neutral</span>
+                    <span class="font-headline font-bold text-sm tracking-widest uppercase">Trung hòa carbon</span>
                 </div>
                 <div class="flex items-center gap-3">
                     <span class="material-symbols-outlined text-3xl text-primary">verified_user</span>
-                    <span class="font-headline font-bold text-sm tracking-widest uppercase">Fair Trade</span>
+                    <span class="font-headline font-bold text-sm tracking-widest uppercase">Thương mại công bằng</span>
                 </div>
             </div>
         </div>
@@ -61,14 +57,12 @@
     <section class="py-24 max-w-7xl mx-auto px-8">
         <div class="flex flex-col md:flex-row justify-between items-end mb-16 gap-6">
             <div class="max-w-xl">
-                <h2 class="font-headline text-4xl md:text-5xl font-extrabold text-on-background mb-4">Conscious
-                    Collections</h2>
-                <p class="text-on-surface-variant text-lg">Curated categories designed to integrate sustainability
-                    seamlessly into your daily rituals.</p>
+                <h2 class="font-headline text-4xl md:text-5xl font-extrabold text-on-background mb-4">Bộ sưu tập sống xanh</h2>
+                <p class="text-on-surface-variant text-lg">Các danh mục được tuyển chọn để đưa lối sống bền vững vào thói quen hằng ngày.</p>
             </div>
             <a class="text-primary font-bold flex items-center gap-2 group border-b border-transparent hover:border-primary transition-all"
                 href="<?= BASE_URL ?>?url=product">
-                View All Categories <span
+                Xem tất cả danh mục <span
                     class="material-symbols-outlined group-hover:translate-x-1 transition-transform">arrow_forward</span>
             </a>
         </div>
@@ -81,11 +75,10 @@
                 <div class="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent"></div>
                 <div class="absolute bottom-0 left-0 p-10">
 
-                    <p class="text-white/80 mb-6 max-w-sm">Elevate your living space with timeless pieces built to last
-                        generations.</p>
-                    <a href="<?= BASE_URL ?>?url=product&category=home"
+                    <p class="text-white/80 mb-6 max-w-sm">Nâng tầm không gian sống bằng những món đồ bền đẹp theo thời gian.</p>
+                    <a href="<?= BASE_URL ?>?url=product&category=living-room"
                         class="inline-block px-6 py-3 bg-surface text-primary rounded-lg font-bold hover:bg-primary-fixed transition-colors">
-                        Shop Decor
+                        Cửa hàng Decor
                     </a>
                 </div>
             </div>
@@ -97,9 +90,9 @@
                 <div class="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent"></div>
                 <div class="absolute bottom-0 left-0 p-8">
 
-                    <a href="<?= BASE_URL ?>?url=product&category=beauty"
+                    <a href="<?= BASE_URL ?>?url=product&category=wellness"
                         class="inline-flex items-center gap-2 text-white font-bold">
-                        Explore Beauty
+                        Khám phá chăm sóc cá nhân
                         <span class="material-symbols-outlined text-sm">north_east</span>
                     </a>
                 </div>
@@ -112,9 +105,9 @@
                 <div class="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent"></div>
                 <div class="absolute bottom-0 left-0 p-8">
 
-                    <a href="<?= BASE_URL ?>?url=product&category=fashion"
+                    <a href="<?= BASE_URL ?>?url=product&category=bedroom"
                         class="inline-flex items-center gap-2 text-white font-bold">
-                        Shop Apparel
+                        Cửa hàng phòng ngủ
                         <span class="material-symbols-outlined text-sm">north_east</span>
                     </a>
                 </div>
@@ -125,21 +118,20 @@
                     <div class="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center">
                         <span class="material-symbols-outlined text-primary">compost</span>
                     </div>
-                    <span class="font-headline font-bold text-primary uppercase tracking-widest text-sm">Our Impact Last
-                        Year</span>
+                    <span class="font-headline font-bold text-primary uppercase tracking-widest text-sm">Tác động của năm qua</span>
                 </div>
                 <div class="grid grid-cols-2 md:grid-cols-3 gap-8">
                     <div>
                         <div class="font-headline text-4xl font-extrabold text-primary mb-1">12k+</div>
-                        <div class="text-on-surface-variant text-sm font-medium">Trees Planted</div>
+                        <div class="text-on-surface-variant text-sm font-medium">Cây đã trồng</div>
                     </div>
                     <div>
                         <div class="font-headline text-4xl font-extrabold text-primary mb-1">45t</div>
-                        <div class="text-on-surface-variant text-sm font-medium">Plastic Recovered</div>
+                        <div class="text-on-surface-variant text-sm font-medium">Nhựa đã thu gom</div>
                     </div>
                     <div>
                         <div class="font-headline text-4xl font-extrabold text-primary mb-1">100%</div>
-                        <div class="text-on-surface-variant text-sm font-medium">Fair Wages</div>
+                        <div class="text-on-surface-variant text-sm font-medium">Lương công bằng</div>
                     </div>
                 </div>
             </div>
@@ -153,36 +145,34 @@
                 <div class="order-2 md:order-1">
                     <div
                         class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-surface-tint/10 text-primary font-bold text-xs uppercase tracking-tighter mb-6">
-                        <span class="material-symbols-outlined text-xs">auto_awesome</span> Featured Product
+                        <span class="material-symbols-outlined text-xs">auto_awesome</span> Sản phẩm nổi bật
                     </div>
-                    <h2 class="font-headline text-4xl md:text-5xl font-extrabold text-on-background mb-6">The Artisan
-                        Stoneware Set</h2>
+                    <h2 class="font-headline text-4xl md:text-5xl font-extrabold text-on-background mb-6">Bộ gốm thủ công Artisan</h2>
                     <p class="text-on-surface-variant text-lg mb-8 leading-relaxed">
-                        Handcrafted in small batches using local clay and natural glazes. Each piece is unique,
-                        reflecting the hands that made it and the earth it came from.
+                        Được làm thủ công theo từng mẻ nhỏ bằng đất sét địa phương và men tự nhiên. Mỗi sản phẩm đều có nét riêng từ chất liệu và bàn tay người thợ.
                     </p>
                     <div class="flex flex-col gap-4 mb-10">
                         <div class="flex items-center gap-3">
                             <span class="material-symbols-outlined text-primary"
                                 style="font-variation-settings: 'FILL' 1;">check_circle</span>
-                            <span class="font-medium">Lead-free, non-toxic glazes</span>
+                            <span class="font-medium">Men không chì, không độc hại</span>
                         </div>
                         <div class="flex items-center gap-3">
                             <span class="material-symbols-outlined text-primary"
                                 style="font-variation-settings: 'FILL' 1;">check_circle</span>
-                            <span class="font-medium">Sourced from regenerative clay mines</span>
+                            <span class="font-medium">Nguồn đất sét được khai thác có trách nhiệm</span>
                         </div>
                         <div class="flex items-center gap-3">
                             <span class="material-symbols-outlined text-primary"
                                 style="font-variation-settings: 'FILL' 1;">check_circle</span>
-                            <span class="font-medium">Shipped in plastic-free packaging</span>
+                            <span class="font-medium">Đóng gói không nhựa</span>
                         </div>
                     </div>
                     <div class="flex items-center gap-8">
                         <button
                             class="px-8 py-4 bg-primary text-on-primary rounded-lg font-bold shadow-lg hover:opacity-90 transition-opacity"
                             onclick="window.location.href='<?= BASE_URL ?>?url=product/detail&id=1'">
-                            Pre-order Now
+                            Đặt trước ngay
                         </button>
 
                         <div class="text-2xl font-headline font-bold text-primary">$185.00</div>
@@ -210,16 +200,15 @@
             <div
                 class="absolute bottom-0 left-0 w-48 h-48 bg-primary-container rounded-full translate-y-1/2 -translate-x-1/2 opacity-20">
             </div>
-            <h2 class="font-headline text-4xl md:text-5xl font-extrabold mb-6 relative z-10">Join the Circle.</h2>
-            <p class="text-on-primary/80 text-lg mb-10 max-w-xl mx-auto relative z-10">Receive sustainable living tips,
-                ethical shop updates, and 10% off your first order.</p>
+            <h2 class="font-headline text-4xl md:text-5xl font-extrabold mb-6 relative z-10">Tham gia cộng đồng xanh.</h2>
+            <p class="text-on-primary/80 text-lg mb-10 max-w-xl mx-auto relative z-10">Nhận mẹo sống xanh, cập nhật sản phẩm có trách nhiệm và ưu đãi 10% cho đơn hàng đầu tiên.</p>
             <form class="flex flex-col md:flex-row gap-4 max-w-lg mx-auto relative z-10" method="post" action="#">
                 <input
                     class="flex-grow bg-white/10 border-transparent focus:border-white/40 focus:ring-0 rounded-lg px-6 py-4 text-white placeholder:text-white/50 transition-all"
-                    placeholder="Email Address" type="email" name="email" />
+                    placeholder="Địa chỉ email" type="email" name="email" />
                 <button
                     class="bg-surface text-primary font-bold px-8 py-4 rounded-lg hover:bg-surface-bright transition-colors"
-                    type="submit">Subscribe</button>
+                    type="submit">Đăng ký</button>
             </form>
         </div>
     </section>

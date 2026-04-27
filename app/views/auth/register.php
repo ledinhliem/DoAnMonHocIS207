@@ -24,7 +24,7 @@
 <main class="flex-grow flex flex-col items-center justify-center px-6 py-12 md:py-24">
     <div class="mb-12 text-center">
         <h1 class="font-headline text-4xl font-extrabold text-primary tracking-widest uppercase mb-2">Zentro</h1>
-        <p class="text-on-surface-variant font-medium tracking-tight">Sustainable Living, Simplified.</p>
+        <p class="text-on-surface-variant font-medium tracking-tight">Sống xanh đơn giản hơn.</p>
     </div>
 
     <div class="w-full max-w-5xl grid grid-cols-1 md:grid-cols-2 gap-8 items-stretch">
@@ -40,7 +40,7 @@
             </div>
 
             <div class="mb-8">
-                <h2 class="font-headline text-3xl font-bold text-on-surface mb-2">Create Account</h2>
+                <h2 class="font-headline text-3xl font-bold text-on-surface mb-2">Tạo tài khoản</h2>
                 <p class="text-on-surface-variant text-sm">Begin your eco-friendly journey today.</p>
             </div>
 
@@ -51,7 +51,7 @@
                 </div>
 
                 <div class="space-y-2">
-                    <label class="block text-xs font-bold uppercase tracking-wider text-primary px-1">Email Address</label>
+                    <label class="block text-xs font-bold uppercase tracking-wider text-primary px-1">Địa chỉ email</label>
                     <input name="email" required class="w-full bg-surface-container-high border-none rounded-lg p-4 focus:ring-1 focus:ring-primary/30 focus:bg-surface-container-lowest transition-all placeholder:text-outline" placeholder="nature@zentro.com" type="email" />
                 </div>
                 
@@ -73,7 +73,7 @@
                 </div>
 
                 <button type="submit" class="w-full mt-4 bg-primary text-white font-bold py-4 rounded-lg hover:bg-primary-container transition-all flex justify-center items-center gap-2 group">
-                    Create Account
+                    Tạo tài khoản
                     <span class="material-symbols-outlined text-sm group-hover:translate-x-1 transition-transform">arrow_forward</span>
                 </button>
             </form>

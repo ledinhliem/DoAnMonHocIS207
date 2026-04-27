@@ -3,7 +3,7 @@
 <head>
     <meta charset="utf-8"/>
     <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
-    <title>Zentro Admin Dashboard</title>
+    <title>Zentro Admin - Bảng điều khiển</title>
 
     <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
 
@@ -97,6 +97,3 @@
 </head>
 <body class="bg-surface text-on-surface min-h-screen">
     <div class="min-h-screen bg-surface">
-        <?php require_once './app/views/layouts/admin_sidebar.php'; ?>
-
-        <main class="ml-64 min-h-screen">

@@ -92,7 +92,7 @@ foreach ($inventoryList as $entry) {
     <div class="px-6 mb-10">
         <a href="/is207/index.php?url=admin/dashboard" class="block">
             <h1 class="font-['Epilogue'] font-black text-[#384e21] text-2xl tracking-tighter">Zentro Admin</h1>
-            <p class="text-xs text-on-surface-variant font-medium mt-1">Eco-Management Suite</p>
+            <p class="text-xs text-on-surface-variant font-medium mt-1">Bộ quản trị xanh</p>
         </a>
     </div>
 
@@ -100,48 +100,38 @@ foreach ($inventoryList as $entry) {
         <a class="text-[#191c18]/60 hover:bg-[#e1e3dc] dark:hover:bg-stone-700 mx-2 my-1 px-4 py-3 rounded-lg flex items-center gap-3 transition-all hover:translate-x-1 duration-200"
            href="/is207/index.php?url=admin/dashboard">
             <span class="material-symbols-outlined">dashboard</span>
-            <span class="font-['Be_Vietnam_Pro'] font-medium text-sm">Dashboard</span>
+            <span class="font-['Be_Vietnam_Pro'] font-medium text-sm">Bảng điều khiển</span>
         </a>
         <a class="bg-[#384e21] text-white rounded-lg mx-2 my-1 px-4 py-3 flex items-center gap-3 shadow-md"
            href="/is207/index.php?url=admin/inventory">
             <span class="material-symbols-outlined">inventory_2</span>
-            <span class="font-['Be_Vietnam_Pro'] font-medium text-sm">Inventory</span>
-        </a>
-        <a class="text-[#191c18]/60 hover:bg-[#e1e3dc] dark:hover:bg-stone-700 mx-2 my-1 px-4 py-3 rounded-lg flex items-center gap-3 transition-all hover:translate-x-1 duration-200"
-           href="/is207/index.php?url=admin/suppliers">
-            <span class="material-symbols-outlined">local_shipping</span>
-            <span class="font-['Be_Vietnam_Pro'] font-medium text-sm">Suppliers</span>
+            <span class="font-['Be_Vietnam_Pro'] font-medium text-sm">Kho hàng</span>
         </a>
         <a class="text-[#191c18]/60 hover:bg-[#e1e3dc] dark:hover:bg-stone-700 mx-2 my-1 px-4 py-3 rounded-lg flex items-center gap-3 transition-all hover:translate-x-1 duration-200"
            href="/is207/index.php?url=admin/products">
             <span class="material-symbols-outlined">eco</span>
-            <span class="font-['Be_Vietnam_Pro'] font-medium text-sm">Products</span>
+            <span class="font-['Be_Vietnam_Pro'] font-medium text-sm">Sản phẩm</span>
         </a>
         <a class="text-[#191c18]/60 hover:bg-[#e1e3dc] dark:hover:bg-stone-700 mx-2 my-1 px-4 py-3 rounded-lg flex items-center gap-3 transition-all hover:translate-x-1 duration-200"
            href="/is207/index.php?url=admin/orders">
             <span class="material-symbols-outlined">shopping_basket</span>
-            <span class="font-['Be_Vietnam_Pro'] font-medium text-sm">Orders</span>
+            <span class="font-['Be_Vietnam_Pro'] font-medium text-sm">Đơn hàng</span>
         </a>
         <a class="text-[#191c18]/60 hover:bg-[#e1e3dc] dark:hover:bg-stone-700 mx-2 my-1 px-4 py-3 rounded-lg flex items-center gap-3 transition-all hover:translate-x-1 duration-200"
            href="/is207/index.php?url=admin/reviews">
             <span class="material-symbols-outlined">rate_review</span>
-            <span class="font-['Be_Vietnam_Pro'] font-medium text-sm">Reviews</span>
+            <span class="font-['Be_Vietnam_Pro'] font-medium text-sm">Đánh giá</span>
         </a>
         <a class="text-[#191c18]/60 hover:bg-[#e1e3dc] dark:hover:bg-stone-700 mx-2 my-1 px-4 py-3 rounded-lg flex items-center gap-3 transition-all hover:translate-x-1 duration-200"
            href="/is207/index.php?url=admin/blog">
             <span class="material-symbols-outlined">article</span>
             <span class="font-['Be_Vietnam_Pro'] font-medium text-sm">Blog</span>
         </a>
-        <a class="text-[#191c18]/60 hover:bg-[#e1e3dc] dark:hover:bg-stone-700 mx-2 my-1 px-4 py-3 rounded-lg flex items-center gap-3 transition-all hover:translate-x-1 duration-200"
-           href="/is207/index.php?url=admin/settings">
-            <span class="material-symbols-outlined">settings</span>
-            <span class="font-['Be_Vietnam_Pro'] font-medium text-sm">Settings</span>
-        </a>
     </nav>
 
     <div class="px-6 pt-6 mt-6 border-t border-[#c5c8ba]/20">
         <button class="w-full bg-primary text-on-primary py-3 rounded-xl font-semibold text-sm hover:opacity-90 transition-all active:scale-95">
-            Export Reports
+            Xuất báo cáo
         </button>
         <div class="flex items-center gap-3 mt-8 px-2">
             <img class="w-10 h-10 rounded-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAdy62X4L7pZJTyiB1DnC-YJcaaqPlaBrxSCjxJ4ZBOi3JdwPNsaEXEvkkNpCxYOeQYdlMEJ9S6lsy2zFsOtRPDHB9G-XPA1lUilucWwrAdRKuowtDOnUL_zdgBgFCkRyvLAFeppQIb72ikw8o-Y_sfi0vWz-m7CGjhUVIkFTCQoB-_ZKWMG2Bg3UShZ7Ir8Ufs0W-Q8lrZKrHgm-7F-X895CcudzKpSTKDbfQffIL-6BrioTEtMHidVQy6LpC0JNy8klba1s4G3wg"/>
@@ -156,9 +146,9 @@ foreach ($inventoryList as $entry) {
 <main class="ml-64 p-8 min-h-screen">
     <header class="flex flex-col xl:flex-row justify-between gap-6 xl:items-end mb-12">
         <div>
-            <h2 class="text-4xl font-extrabold font-headline tracking-tight text-primary">Inventory Logistics</h2>
+            <h2 class="text-4xl font-extrabold font-headline tracking-tight text-primary">Quản lý kho</h2>
             <p class="text-on-surface-variant mt-2 max-w-lg">
-                Manage inventory records, warehouse entries, and supplier information from one place.
+                Quản lý tồn kho, nhập kho và thông tin nhà cung cấp từ một nơi.
             </p>
         </div>
         <div class="flex gap-4 flex-wrap">
@@ -169,29 +159,29 @@ foreach ($inventoryList as $entry) {
                         type="text"
                         name="keyword"
                         value="<?= e($keyword) ?>"
-                        placeholder="Search entry or supplier..."
+                        placeholder="Tìm phiếu nhập hoặc nhà cung cấp..."
                         class="bg-surface-container-high border-none rounded-xl pl-10 pr-4 py-3 focus:ring-1 focus:ring-primary/30 focus:bg-surface-container-lowest transition-all"
                     />
                 </div>
 
                 <select name="status" class="bg-surface-container-high border-none rounded-xl px-4 py-3 focus:ring-1 focus:ring-primary/30 focus:bg-surface-container-lowest transition-all">
-                    <option value="">All Status</option>
-                    <option value="verified" <?= $status === 'verified' ? 'selected' : '' ?>>Verified</option>
-                    <option value="pending" <?= $status === 'pending' ? 'selected' : '' ?>>Pending</option>
-                    <option value="approved" <?= $status === 'approved' ? 'selected' : '' ?>>Approved</option>
-                    <option value="cancelled" <?= $status === 'cancelled' ? 'selected' : '' ?>>Cancelled</option>
+                    <option value="">Tất cả trạng thái</option>
+                    <option value="verified" <?= $status === 'verified' ? 'selected' : '' ?>>Đã xác minh</option>
+                    <option value="pending" <?= $status === 'pending' ? 'selected' : '' ?>>Đang chờ</option>
+                    <option value="approved" <?= $status === 'approved' ? 'selected' : '' ?>>Đã duyệt</option>
+                    <option value="cancelled" <?= $status === 'cancelled' ? 'selected' : '' ?>>Đã hủy</option>
                 </select>
 
                 <button class="bg-surface-container-high px-6 py-3 rounded-xl font-bold text-primary flex items-center gap-2 hover:bg-surface-container-highest transition-colors" type="submit">
                     <span class="material-symbols-outlined text-xl">filter_list</span>
-                    Filter
+                    Bộ lọc
                 </button>
             </form>
 
             <a href="/is207/index.php?url=inventory/create"
                class="bg-secondary-container text-on-secondary-container px-6 py-3 rounded-xl font-bold flex items-center gap-2 hover:opacity-90 transition-all active:scale-95 shadow-sm">
                 <span class="material-symbols-outlined text-xl">add</span>
-                New Entry
+                Thêm phiếu nhập
             </a>
         </div>
     </header>
@@ -199,19 +189,19 @@ foreach ($inventoryList as $entry) {
     <!-- Stats -->
     <section class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-10">
         <div class="bg-surface-container-lowest rounded-2xl p-6 shadow-sm">
-            <p class="text-xs uppercase tracking-widest text-on-surface-variant font-bold mb-2">Total Entries</p>
+            <p class="text-xs uppercase tracking-widest text-on-surface-variant font-bold mb-2">Tổng phiếu nhập</p>
             <p class="text-3xl font-black text-primary"><?= number_format($totalEntries) ?></p>
         </div>
         <div class="bg-surface-container-lowest rounded-2xl p-6 shadow-sm">
-            <p class="text-xs uppercase tracking-widest text-on-surface-variant font-bold mb-2">Verified</p>
+            <p class="text-xs uppercase tracking-widest text-on-surface-variant font-bold mb-2">Đã xác minh</p>
             <p class="text-3xl font-black text-primary"><?= number_format($verifiedCount) ?></p>
         </div>
         <div class="bg-surface-container-lowest rounded-2xl p-6 shadow-sm">
-            <p class="text-xs uppercase tracking-widest text-on-surface-variant font-bold mb-2">Pending</p>
+            <p class="text-xs uppercase tracking-widest text-on-surface-variant font-bold mb-2">Đang chờ</p>
             <p class="text-3xl font-black text-primary"><?= number_format($pendingCount) ?></p>
         </div>
         <div class="bg-surface-container-lowest rounded-2xl p-6 shadow-sm">
-            <p class="text-xs uppercase tracking-widest text-on-surface-variant font-bold mb-2">Total Value</p>
+            <p class="text-xs uppercase tracking-widest text-on-surface-variant font-bold mb-2">Tổng giá trị</p>
             <p class="text-3xl font-black text-primary"><?= formatMoneyVND($totalInventoryValue) ?></p>
         </div>
     </section>
@@ -222,7 +212,7 @@ foreach ($inventoryList as $entry) {
                 <div class="flex justify-between items-center mb-6">
                     <h3 class="text-xl font-bold font-headline text-primary flex items-center gap-2">
                         <span class="material-symbols-outlined">list_alt</span>
-                        Warehouse Entry Records
+                        Danh sách phiếu nhập kho
                     </h3>
                     <span class="text-xs font-semibold bg-primary/10 text-primary px-3 py-1 rounded-full uppercase tracking-wider">Live Logs</span>
                 </div>
@@ -231,11 +221,11 @@ foreach ($inventoryList as $entry) {
                     <table class="w-full text-left border-separate border-spacing-y-4">
                         <thead>
                             <tr class="text-on-surface-variant text-xs font-bold uppercase tracking-widest">
-                                <th class="pb-2 px-4">Entry ID</th>
-                                <th class="pb-2 px-4">Date Arrival</th>
-                                <th class="pb-2 px-4">Supplier</th>
-                                <th class="pb-2 px-4">Total Value</th>
-                                <th class="pb-2 px-4">Status</th>
+                                <th class="pb-2 px-4">Mã phiếu</th>
+                                <th class="pb-2 px-4">Ngày nhập</th>
+                                <th class="pb-2 px-4">Nhà cung cấp</th>
+                                <th class="pb-2 px-4">Tổng giá trị</th>
+                                <th class="pb-2 px-4">Trạng thái</th>
                                 <th class="pb-2 px-4"></th>
                             </tr>
                         </thead>
@@ -274,7 +264,7 @@ foreach ($inventoryList as $entry) {
                             <?php else: ?>
                                 <tr>
                                     <td colspan="6" class="py-10 px-4 text-center text-on-surface-variant">
-                                        No inventory records found.
+                                        Không tìm thấy dữ liệu kho.
                                     </td>
                                 </tr>
                             <?php endif; ?>
@@ -286,12 +276,13 @@ foreach ($inventoryList as $entry) {
             <div class="bg-surface-container-low rounded-3xl p-8 border border-outline-variant/10">
                 <h3 class="text-xl font-bold font-headline text-primary mb-6 flex items-center gap-2">
                     <span class="material-symbols-outlined">add_business</span>
-                    Register New Supplier
+                    Đăng ký nhà cung cấp mới
                 </h3>
 
                 <form class="grid grid-cols-1 md:grid-cols-2 gap-6" method="POST" action="/is207/index.php?url=supplier/create">
+                    <input type="hidden" name="action" value="add_supplier">
                     <div class="space-y-2">
-                        <label class="text-xs font-bold text-on-surface-variant uppercase tracking-wider px-1">Supplier Name</label>
+                        <label class="text-xs font-bold text-on-surface-variant uppercase tracking-wider px-1">Tên nhà cung cấp</label>
                         <input class="w-full bg-surface-container-high border-none rounded-xl px-4 py-3 focus:ring-1 focus:ring-primary/30 focus:bg-surface-container-lowest transition-all" placeholder="e.g. Nordic Timber Ltd." type="text" name="supplier_name"/>
                     </div>
 
@@ -301,9 +292,9 @@ foreach ($inventoryList as $entry) {
                     </div>
 
                     <div class="space-y-2">
-                        <label class="text-xs font-bold text-on-surface-variant uppercase tracking-wider px-1">Primary Category</label>
+                        <label class="text-xs font-bold text-on-surface-variant uppercase tracking-wider px-1">Danh mục chính</label>
                         <select class="w-full bg-surface-container-high border-none rounded-xl px-4 py-3 focus:ring-1 focus:ring-primary/30 focus:bg-surface-container-lowest transition-all" name="category">
-                            <option value="Sustainable Textiles">Sustainable Textiles</option>
+                            <option value="Dệt may bền vững">Dệt may bền vững</option>
                             <option value="Raw Materials">Raw Materials</option>
                             <option value="Packaging">Packaging</option>
                             <option value="Renewable Energy Parts">Renewable Energy Parts</option>
@@ -311,13 +302,13 @@ foreach ($inventoryList as $entry) {
                     </div>
 
                     <div class="space-y-2">
-                        <label class="text-xs font-bold text-on-surface-variant uppercase tracking-wider px-1">Location</label>
+                        <label class="text-xs font-bold text-on-surface-variant uppercase tracking-wider px-1">Địa điểm</label>
                         <input class="w-full bg-surface-container-high border-none rounded-xl px-4 py-3 focus:ring-1 focus:ring-primary/30 focus:bg-surface-container-lowest transition-all" placeholder="City, Country" type="text" name="location"/>
                     </div>
 
                     <div class="md:col-span-2 pt-4">
                         <button class="bg-primary text-on-primary px-8 py-4 rounded-xl font-bold shadow-md hover:scale-[1.02] active:scale-95 transition-all w-full md:w-auto" type="submit">
-                            Confirm &amp; Register Supplier
+                            Xác nhận đăng ký nhà cung cấp
                         </button>
                     </div>
                 </form>
@@ -326,7 +317,7 @@ foreach ($inventoryList as $entry) {
 
         <div class="space-y-8">
             <div class="bg-surface-container-lowest rounded-3xl p-8 shadow-sm">
-                <h3 class="text-xl font-bold font-headline text-primary mb-6">Supplier Network</h3>
+                <h3 class="text-xl font-bold font-headline text-primary mb-6">Mạng lưới nhà cung cấp</h3>
                 <div class="space-y-6">
                     <?php if (!empty($supplierList)): ?>
                         <?php foreach ($supplierList as $supplier): ?>
@@ -358,12 +349,12 @@ foreach ($inventoryList as $entry) {
                             </div>
                         <?php endforeach; ?>
                     <?php else: ?>
-                        <p class="text-sm text-on-surface-variant">No supplier data available.</p>
+                        <p class="text-sm text-on-surface-variant">Chưa có dữ liệu nhà cung cấp.</p>
                     <?php endif; ?>
                 </div>
 
                 <a href="/is207/index.php?url=admin/suppliers" class="block w-full mt-8 py-3 rounded-xl border border-outline-variant/30 text-sm font-bold text-on-surface-variant hover:bg-surface-container-low transition-colors text-center">
-                    View All Suppliers
+                    View All Nhà cung cấp
                 </a>
             </div>
 
@@ -373,12 +364,12 @@ foreach ($inventoryList as $entry) {
                     <h4 class="text-white font-headline font-bold text-xl">Main Hub Status</h4>
                     <div class="mt-4 flex gap-4">
                         <div class="flex flex-col">
-                            <span class="text-white/60 text-[10px] uppercase font-bold">Entries</span>
+                            <span class="text-white/60 text-[10px] uppercase font-bold">Phiếu nhập</span>
                             <span class="text-white font-black text-lg"><?= number_format($totalEntries) ?></span>
                         </div>
                         <div class="w-px h-8 bg-white/20"></div>
                         <div class="flex flex-col">
-                            <span class="text-white/60 text-[10px] uppercase font-bold">Suppliers</span>
+                            <span class="text-white/60 text-[10px] uppercase font-bold">Nhà cung cấp</span>
                             <span class="text-white font-black text-lg"><?= number_format($totalSuppliers) ?></span>
                         </div>
                     </div>
@@ -387,14 +378,14 @@ foreach ($inventoryList as $entry) {
 
             <div class="bg-primary text-on-primary p-8 rounded-3xl shadow-lg relative overflow-hidden">
                 <div class="absolute -top-4 -right-4 w-24 h-24 bg-primary-container/20 rounded-full blur-2xl"></div>
-                <h4 class="text-lg font-bold font-headline mb-2">Inventory Alert</h4>
+                <h4 class="text-lg font-bold font-headline mb-2">Cảnh báo kho hàng</h4>
                 <p class="text-sm text-on-primary/80 leading-relaxed">
                     <?= $pendingCount > 0
-                        ? e($pendingCount) . ' inventory record(s) are currently pending verification.'
-                        : 'No pending inventory alerts at the moment.' ?>
+                        ? e($pendingCount) . ' phiếu nhập đang chờ xác minh.'
+                        : 'Hiện chưa có cảnh báo tồn kho cần xử lý.' ?>
                 </p>
                 <button class="mt-6 px-4 py-2 bg-white/10 hover:bg-white/20 rounded-lg text-xs font-bold transition-all flex items-center gap-2">
-                    Resolve Now
+                    Xử lý ngay
                     <span class="material-symbols-outlined text-sm">arrow_forward</span>
                 </button>
             </div>
@@ -408,11 +399,14 @@ foreach ($inventoryList as $entry) {
         <p class="font-['Be_Vietnam_Pro'] text-sm tracking-wide text-[#191c18]/50">© 2026 Zentro Sustainable Living. Admin panel.</p>
     </div>
     <div class="flex flex-wrap gap-8 justify-center">
-        <a class="font-['Be_Vietnam_Pro'] text-sm tracking-wide text-[#191c18]/50 hover:text-[#384e21] underline underline-offset-4 transition-all opacity-80 hover:opacity-100" href="#">Privacy Policy</a>
-        <a class="font-['Be_Vietnam_Pro'] text-sm tracking-wide text-[#191c18]/50 hover:text-[#384e21] underline underline-offset-4 transition-all opacity-80 hover:opacity-100" href="#">Terms of Service</a>
-        <a class="font-['Be_Vietnam_Pro'] text-sm tracking-wide text-[#191c18]/50 hover:text-[#384e21] underline underline-offset-4 transition-all opacity-80 hover:opacity-100" href="#">Shipping &amp; Returns</a>
-        <a class="font-['Be_Vietnam_Pro'] text-sm tracking-wide text-[#191c18]/50 hover:text-[#384e21] underline underline-offset-4 transition-all opacity-80 hover:opacity-100" href="#">Contact Us</a>
+        <a class="font-['Be_Vietnam_Pro'] text-sm tracking-wide text-[#191c18]/50 hover:text-[#384e21] underline underline-offset-4 transition-all opacity-80 hover:opacity-100" href="#">Chính sách bảo mật</a>
+        <a class="font-['Be_Vietnam_Pro'] text-sm tracking-wide text-[#191c18]/50 hover:text-[#384e21] underline underline-offset-4 transition-all opacity-80 hover:opacity-100" href="#">Điều khoản dịch vụ</a>
+        <a class="font-['Be_Vietnam_Pro'] text-sm tracking-wide text-[#191c18]/50 hover:text-[#384e21] underline underline-offset-4 transition-all opacity-80 hover:opacity-100" href="#">Phí vận chuyển &amp; Returns</a>
+        <a class="font-['Be_Vietnam_Pro'] text-sm tracking-wide text-[#191c18]/50 hover:text-[#384e21] underline underline-offset-4 transition-all opacity-80 hover:opacity-100" href="#">Liên hệ</a>
     </div>
 </footer>
 
 <?php include __DIR__ . '/../layouts/admin_footer.php'; ?>
+
+
+

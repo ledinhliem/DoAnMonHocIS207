@@ -4,7 +4,7 @@
     <div class="flex flex-col lg:flex-row lg:items-end lg:justify-between gap-6 mb-10">
         <div>
             <h1 class="text-4xl font-black font-headline text-primary mb-3">Our Journal</h1>
-            <p class="text-on-surface-variant">Blog list và subscribe button đã hoạt động.</p>
+            <p class="text-on-surface-variant">Danh sách blog và nút đăng ký đã hoạt động.</p>
         </div>
 
         <form method="POST" action="?url=blog/subscribe" class="flex gap-3">
@@ -16,7 +16,7 @@
                 class="rounded-xl border border-outline-variant bg-white"
             >
             <button type="submit" class="px-5 py-3 rounded-xl bg-primary text-white font-semibold">
-                Subscribe
+                Đăng ký
             </button>
         </form>
     </div>

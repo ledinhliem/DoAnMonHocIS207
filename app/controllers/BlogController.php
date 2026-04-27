@@ -61,7 +61,7 @@ class BlogController extends Controller
             exit;
         }
 
-        $_SESSION['success'] = 'Subscribe thành công.';
+        $_SESSION['success'] = 'Đăng ký thành công.';
         header('Location: ?url=blog');
         exit;
     }

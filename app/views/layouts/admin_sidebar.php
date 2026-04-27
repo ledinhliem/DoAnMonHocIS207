@@ -1,7 +1,7 @@
 <aside class="h-screen w-64 fixed left-0 top-0 bg-[#edefe7] dark:bg-stone-800 border-r border-[#c5c8ba]/20 shadow-[40px_0_40px_-15px_rgba(25,28,24,0.04)] z-50 flex flex-col py-8">
     <div class="px-6 mb-10">
         <h1 class="font-['Epilogue'] font-black text-[#384e21] text-2xl tracking-tighter">Zentro Admin</h1>
-        <p class="font-['Be_Vietnam_Pro'] font-medium text-xs text-[#191c18]/60 mt-1 uppercase tracking-widest">Eco-Management Suite</p>
+        <p class="font-['Be_Vietnam_Pro'] font-medium text-xs text-[#191c18]/60 mt-1 uppercase tracking-widest">Bộ quản trị xanh</p>
     </div>
 
     <nav class="flex-grow space-y-1">
@@ -12,7 +12,7 @@
             href="index.php?url=admin/dashboard"
         >
             <span class="material-symbols-outlined">dashboard</span>
-            <span class="font-['Be_Vietnam_Pro'] font-medium text-sm">Dashboard</span>
+            <span class="font-['Be_Vietnam_Pro'] font-medium text-sm">Bảng điều khiển</span>
         </a>
 
         <a
@@ -22,7 +22,7 @@
             href="index.php?url=admin/inventory"
         >
             <span class="material-symbols-outlined">inventory_2</span>
-            <span class="font-['Be_Vietnam_Pro'] font-medium text-sm">Inventory</span>
+            <span class="font-['Be_Vietnam_Pro'] font-medium text-sm">Kho hàng</span>
         </a>
 
 
@@ -33,7 +33,7 @@
             href="index.php?url=admin/products"
         >
             <span class="material-symbols-outlined">eco</span>
-            <span class="font-['Be_Vietnam_Pro'] font-medium text-sm">Products</span>
+            <span class="font-['Be_Vietnam_Pro'] font-medium text-sm">Sản phẩm</span>
         </a>
 
         <a
@@ -43,7 +43,7 @@
             href="index.php?url=admin/orders"
         >
             <span class="material-symbols-outlined">shopping_basket</span>
-            <span class="font-['Be_Vietnam_Pro'] font-medium text-sm">Orders</span>
+            <span class="font-['Be_Vietnam_Pro'] font-medium text-sm">Đơn hàng</span>
         </a>
 
         <a
@@ -53,7 +53,7 @@
             href="index.php?url=admin/reviews"
         >
             <span class="material-symbols-outlined">rate_review</span>
-            <span class="font-['Be_Vietnam_Pro'] font-medium text-sm">Reviews</span>
+            <span class="font-['Be_Vietnam_Pro'] font-medium text-sm">Đánh giá</span>
         </a>
 
         <a
@@ -72,7 +72,7 @@
     <div class="mt-auto px-4">
         <button class="w-full bg-[#384e21] text-white font-['Be_Vietnam_Pro'] text-sm py-3 rounded-xl flex items-center justify-center gap-2 hover:opacity-90 transition-opacity">
             <span class="material-symbols-outlined text-sm">file_download</span>
-            Export Reports
+            Xuất báo cáo
         </button>
 
         <div class="mt-6 pt-6 border-t border-[#c5c8ba]/20 flex items-center gap-3">
@@ -83,7 +83,7 @@
             />
             <div class="overflow-hidden">
                 <p class="text-xs font-bold text-[#384e21] truncate">Julian Reed</p>
-                <p class="text-[10px] text-[#191c18]/50 truncate">Senior Editor</p>
+                <p class="text-[10px] text-[#191c18]/50 truncate">Senior Sửaor</p>
             </div>
         </div>
     </div>

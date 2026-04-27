@@ -33,20 +33,35 @@ class CartController extends Controller
             exit;
         }
 
-        $productId = $_POST['product_id'] ?? 0;
-        $quantity = $_POST['quantity'] ?? 1;
+        $maSanPham = $_POST['ma_san_pham'] ?? 0;
+        $soLuong = $_POST['so_luong'] ?? 1;
+        $laAjax = !empty($_POST['ma_bien_the']);
 
-        $product = $this->productModel->getById($productId);
+        $product = $this->productModel->getById($maSanPham);
 
         if (!$product) {
             $_SESSION['error'] = 'Không tìm thấy sản phẩm để thêm vào giỏ.';
+
+            if ($laAjax) {
+                header('Content-Type: application/json');
+                echo json_encode(['success' => false, 'message' => $_SESSION['error']]);
+                exit;
+            }
+
             header('Location: ?url=product');
             exit;
         }
 
-        $this->cartModel->add($product, $quantity);
+        $this->cartModel->add($product, $soLuong);
 
         $_SESSION['success'] = 'Đã thêm "' . $product['name'] . '" vào giỏ hàng.';
+
+        if ($laAjax) {
+            header('Content-Type: application/json');
+            echo json_encode(['success' => true, 'message' => $_SESSION['success']]);
+            exit;
+        }
+
         header('Location: ?url=cart');
         exit;
     }
@@ -58,10 +73,10 @@ class CartController extends Controller
             exit;
         }
 
-        $id = $_POST['id'] ?? 0;
-        $quantity = $_POST['quantity'] ?? 1;
+        $maSanPham = $_POST['ma_san_pham'] ?? 0;
+        $soLuong = $_POST['so_luong'] ?? 1;
 
-        $this->cartModel->update($id, $quantity);
+        $this->cartModel->update($maSanPham, $soLuong);
         $_SESSION['success'] = 'Cập nhật giỏ hàng thành công.';
 
         header('Location: ?url=cart');
@@ -70,19 +85,11 @@ class CartController extends Controller
 
     public function remove()
     {
-        $id = $_GET['id'] ?? 0;
-        $this->cartModel->remove($id);
+        $maSanPham = $_GET['ma_san_pham'] ?? 0;
+        $this->cartModel->remove($maSanPham);
 
         $_SESSION['success'] = 'Đã xóa sản phẩm khỏi giỏ.';
         header('Location: ?url=cart');
-        exit;
-    }
-
-    //YL thêm cái này để ấy cái ajax thêm vào giỏ hàng
-    public function add()
-    {
-        header('Content-Type: application/json');
-        echo json_encode(['success' => true, 'message' => 'Đã thêm vào giỏ hàng!']);
         exit;
     }
 }

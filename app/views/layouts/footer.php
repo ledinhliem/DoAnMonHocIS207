@@ -4,7 +4,7 @@
         <div class="col-span-2 md:col-span-1">
             <div class="text-xl font-bold text-primary mb-6 font-headline tracking-widest uppercase">Zentro</div>
             <p class="text-on-surface-variant/70 leading-relaxed mb-6 text-sm">
-                Sustainable living, simplified. We bring together the world's most ethical brands in one place.
+                Sống xanh đơn giản hơn. Chúng tôi tập hợp các thương hiệu có trách nhiệm tại một nơi.
             </p>
             <div class="flex gap-4">
                 <a class="material-symbols-outlined hover:opacity-70 transition-opacity" href="#">public</a>
@@ -14,16 +14,16 @@
         </div>
 
         <div>
-            <h4 class="font-bold text-primary mb-6 uppercase text-xs tracking-widest">The Shop</h4>
+            <h4 class="font-bold text-primary mb-6 uppercase text-xs tracking-widest">The Cửa hàng</h4>
             <ul class="space-y-4 text-sm text-on-surface-variant/80">
                 <li><a class="hover:underline underline-offset-4 decoration-primary/30"
-                        href="index.php?url=product">Home Decor</a></li>
+                        href="index.php?url=product">Trang trí nhà cửa</a></li>
                 <li><a class="hover:underline underline-offset-4 decoration-primary/30"
-                        href="index.php?url=product">Skincare</a></li>
+                        href="index.php?url=product">Chăm sóc da</a></li>
                 <li><a class="hover:underline underline-offset-4 decoration-primary/30"
-                        href="index.php?url=product">Fashion</a></li>
+                        href="index.php?url=product">Thời trang</a></li>
                 <li><a class="hover:underline underline-offset-4 decoration-primary/30"
-                        href="index.php?url=product">Zero Waste</a></li>
+                        href="index.php?url=product">Không rác thải</a></li>
             </ul>
         </div>
 
@@ -44,7 +44,7 @@
         <div>
             <h4 class="font-bold text-primary mb-6 uppercase text-xs tracking-widest">Contact</h4>
             <ul class="space-y-4 text-sm text-on-surface-variant/80">
-                <li><a class="hover:underline underline-offset-4 decoration-primary/30" href="index.php">Shipping</a>
+                <li><a class="hover:underline underline-offset-4 decoration-primary/30" href="index.php">Phí vận chuyển</a>
                 </li>
                 <li><a class="hover:underline underline-offset-4 decoration-primary/30" href="index.php">Privacy
                         Policy</a></li>
@@ -59,7 +59,7 @@
 
     <div
         class="max-w-7xl mx-auto px-8 mt-16 pt-8 border-t border-primary/10 flex flex-col md:flex-row justify-between gap-4 text-xs text-on-surface-variant/60">
-        <div>© <?php echo date('Y'); ?> Zentro Sustainable Living. Built for the Earth.</div>
+        <div>© <?php echo date('Y'); ?> Zentro Sustainable Living. Xây dựng vì Trái Đất.</div>
         <div class="flex gap-6">
             <a class="hover:text-primary transition-colors" href="/is207/contact">Terms</a>
             <a class="hover:text-primary transition-colors" href="/is207/privacy">Privacy</a>

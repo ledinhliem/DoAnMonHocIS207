@@ -5,6 +5,34 @@ class Router
     {
         $url = $_GET['url'] ?? '';
 
+        if (preg_match('#^product/(create|edit/.+|delete/.+)$#', $url)) {
+            require_once __DIR__ . '/../app/controllers/AdminController.php';
+            $controller = new AdminController();
+            $controller->products();
+            return;
+        }
+
+        if (preg_match('#^blog/(create|edit/.+|delete/.+)$#', $url)) {
+            require_once __DIR__ . '/../app/controllers/AdminController.php';
+            $controller = new AdminController();
+            $controller->blog();
+            return;
+        }
+
+        if (preg_match('#^promotion/(create|edit/.+|delete/.+)$#', $url)) {
+            require_once __DIR__ . '/../app/controllers/AdminController.php';
+            $controller = new AdminController();
+            $controller->dashboard();
+            return;
+        }
+
+        if (preg_match('#^(inventory/create|inventory/edit/.+|supplier/create|supplier/detail/.+|admin/suppliers)$#', $url)) {
+            require_once __DIR__ . '/../app/controllers/AdminController.php';
+            $controller = new AdminController();
+            $controller->inventory();
+            return;
+        }
+
         switch ($url) {
             case '':
                 require_once __DIR__ . '/../app/controllers/HomeController.php';
@@ -21,7 +49,7 @@ class Router
             case 'product/detail':
                 require_once __DIR__ . '/../app/controllers/ProductController.php';
                 $controller = new ProductController();
-                $controller->detail($_GET['id'] ?? null);
+                $controller->detail();
                 break;
 
             case 'product/search':
@@ -40,6 +68,12 @@ class Router
                 require_once __DIR__ . '/../app/controllers/BlogController.php';
                 $controller = new BlogController();
                 $controller->detail();
+                break;
+
+            case 'blog/subscribe':
+                require_once __DIR__ . '/../app/controllers/BlogController.php';
+                $controller = new BlogController();
+                $controller->subscribe();
                 break;
 
             case 'login':
@@ -72,16 +106,47 @@ class Router
                 $controller->index();
                 break;
 
+            case 'cart/add':
+                require_once __DIR__ . '/../app/controllers/CartController.php';
+                $controller = new CartController();
+                $controller->add();
+                break;
+
+            case 'cart/update':
+                require_once __DIR__ . '/../app/controllers/CartController.php';
+                $controller = new CartController();
+                $controller->update();
+                break;
+
+            case 'cart/remove':
+                require_once __DIR__ . '/../app/controllers/CartController.php';
+                $controller = new CartController();
+                $controller->remove();
+                break;
+
             case 'checkout':
+            case 'order/checkout':
                 require_once __DIR__ . '/../app/controllers/OrderController.php';
                 $controller = new OrderController();
                 $controller->checkout();
+                break;
+
+            case 'order/apply-promo':
+                require_once __DIR__ . '/../app/controllers/OrderController.php';
+                $controller = new OrderController();
+                $controller->applyPromo();
                 break;
 
             case 'order/payment':
                 require_once __DIR__ . '/../app/controllers/OrderController.php';
                 $controller = new OrderController();
                 $controller->payment();
+                break;
+
+            case 'order/process-payment':
+                require_once __DIR__ . '/../app/controllers/OrderController.php';
+                $controller = new OrderController();
+                $controller->processPayment();
                 break;
 
             case 'order/transfer':
@@ -94,6 +159,12 @@ class Router
                 require_once __DIR__ . '/../app/controllers/OrderController.php';
                 $controller = new OrderController();
                 $controller->feedback();
+                break;
+
+            case 'order/submit-feedback':
+                require_once __DIR__ . '/../app/controllers/OrderController.php';
+                $controller = new OrderController();
+                $controller->submitFeedback();
                 break;
 
             case 'order/success':
@@ -112,6 +183,12 @@ class Router
                 require_once __DIR__ . '/../app/controllers/OrderController.php';
                 $controller = new OrderController();
                 $controller->tracking();
+                break;
+
+            case 'order/help':
+                require_once __DIR__ . '/../app/controllers/OrderController.php';
+                $controller = new OrderController();
+                $controller->help();
                 break;
 
             case 'profile':
@@ -158,6 +235,12 @@ class Router
                 require_once __DIR__ . '/../app/controllers/AdminController.php';
                 $controller = new AdminController();
                 $controller->blog();
+                break;
+
+            case 'admin/settings':
+                require_once __DIR__ . '/../app/controllers/AdminController.php';
+                $controller = new AdminController();
+                $controller->dashboard();
                 break;
 
             case 'auth/google':

@@ -7,7 +7,7 @@ class AdminController extends Controller
     $status = null;
     $message = '';
 
-    // Kiểm tra các hành động POST từ Dashboard
+    // Kiểm tra các hành động POST từ Bảng điều khiển
     if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $action = $_POST['action'] ?? '';
 
@@ -39,7 +39,7 @@ class AdminController extends Controller
     }
 
     $this->view('admin/dashboard', [
-        'title' => 'Admin Dashboard',
+        'title' => 'Admin Bảng điều khiển',
         'status' => $status,
         'message' => $message
     ]);

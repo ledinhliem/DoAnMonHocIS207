@@ -54,7 +54,7 @@ class ProductModel
         ],
         [
             'id' => 6,
-            'name' => 'Wellness Ritual Set',
+            'name' => 'Chăm sóc sức khỏe Ritual Set',
             'price' => 95,
             'category' => 'wellness',
             'impact' => 'plastic-free',
@@ -124,19 +124,19 @@ class ProductModel
     public function getCategories()
     {
         return [
-            'kitchenware' => 'Kitchenware',
-            'living-room' => 'Living Room',
-            'bedroom' => 'Bedroom',
-            'wellness' => 'Wellness',
+            'kitchenware' => 'Đồ bếp',
+            'living-room' => 'Phòng khách',
+            'bedroom' => 'Phòng ngủ',
+            'wellness' => 'Chăm sóc sức khỏe',
         ];
     }
 
     public function getImpacts()
     {
         return [
-            'carbon-neutral' => 'Carbon Neutral',
-            'plastic-free' => 'Plastic Free',
-            'upcycled' => 'Upcycled Materials',
+            'carbon-neutral' => 'Trung hòa carbon',
+            'plastic-free' => 'Không nhựa',
+            'upcycled' => 'Vật liệu tái chế nâng cấp',
         ];
     }
 }

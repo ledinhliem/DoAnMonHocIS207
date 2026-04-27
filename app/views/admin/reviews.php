@@ -88,7 +88,7 @@ $averageRating = $ratingCount > 0 ? round($ratingSum / $ratingCount, 1) : 0;
     <div class="px-6 mb-10">
         <a href="/is207/index.php?url=admin/dashboard" class="block">
             <h1 class="font-['Epilogue'] font-black text-[#384e21] text-2xl tracking-tighter">Zentro</h1>
-            <p class="text-[10px] uppercase tracking-[0.2em] text-on-surface-variant font-bold mt-1">Eco-Management Suite</p>
+            <p class="text-[10px] uppercase tracking-[0.2em] text-on-surface-variant font-bold mt-1">Bộ quản trị xanh</p>
         </a>
     </div>
 
@@ -96,49 +96,36 @@ $averageRating = $ratingCount > 0 ? round($ratingSum / $ratingCount, 1) : 0;
         <a class="text-[#191c18]/60 hover:bg-[#e1e3dc] dark:hover:bg-stone-700 mx-2 my-1 px-4 py-3 rounded-lg flex items-center gap-3 transition-all hover:translate-x-1 duration-200"
            href="/is207/index.php?url=admin/dashboard">
             <span class="material-symbols-outlined">dashboard</span>
-            <span class="font-medium text-sm">Dashboard</span>
+            <span class="font-medium text-sm">Bảng điều khiển</span>
         </a>
 
         <a class="text-[#191c18]/60 hover:bg-[#e1e3dc] dark:hover:bg-stone-700 mx-2 my-1 px-4 py-3 rounded-lg flex items-center gap-3 transition-all hover:translate-x-1 duration-200"
            href="/is207/index.php?url=admin/inventory">
             <span class="material-symbols-outlined">inventory_2</span>
-            <span class="font-medium text-sm">Inventory</span>
+            <span class="font-medium text-sm">Kho hàng</span>
         </a>
-
-        <a class="text-[#191c18]/60 hover:bg-[#e1e3dc] dark:hover:bg-stone-700 mx-2 my-1 px-4 py-3 rounded-lg flex items-center gap-3 transition-all hover:translate-x-1 duration-200"
-           href="/is207/index.php?url=admin/suppliers">
-            <span class="material-symbols-outlined">local_shipping</span>
-            <span class="font-medium text-sm">Suppliers</span>
-        </a>
-
         <a class="text-[#191c18]/60 hover:bg-[#e1e3dc] dark:hover:bg-stone-700 mx-2 my-1 px-4 py-3 rounded-lg flex items-center gap-3 transition-all hover:translate-x-1 duration-200"
            href="/is207/index.php?url=admin/products">
             <span class="material-symbols-outlined">eco</span>
-            <span class="font-medium text-sm">Products</span>
+            <span class="font-medium text-sm">Sản phẩm</span>
         </a>
 
         <a class="text-[#191c18]/60 hover:bg-[#e1e3dc] dark:hover:bg-stone-700 mx-2 my-1 px-4 py-3 rounded-lg flex items-center gap-3 transition-all hover:translate-x-1 duration-200"
            href="/is207/index.php?url=admin/orders">
             <span class="material-symbols-outlined">shopping_basket</span>
-            <span class="font-medium text-sm">Orders</span>
+            <span class="font-medium text-sm">Đơn hàng</span>
         </a>
 
         <a class="bg-[#384e21] text-white rounded-lg mx-2 my-1 px-4 py-3 flex items-center gap-3 active:scale-98 transition-transform"
            href="/is207/index.php?url=admin/reviews">
             <span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">rate_review</span>
-            <span class="font-medium text-sm">Reviews</span>
+            <span class="font-medium text-sm">Đánh giá</span>
         </a>
 
         <a class="text-[#191c18]/60 hover:bg-[#e1e3dc] dark:hover:bg-stone-700 mx-2 my-1 px-4 py-3 rounded-lg flex items-center gap-3 transition-all hover:translate-x-1 duration-200"
            href="/is207/index.php?url=admin/blog">
             <span class="material-symbols-outlined">article</span>
             <span class="font-medium text-sm">Blog</span>
-        </a>
-
-        <a class="text-[#191c18]/60 hover:bg-[#e1e3dc] dark:hover:bg-stone-700 mx-2 my-1 px-4 py-3 rounded-lg flex items-center gap-3 transition-all hover:translate-x-1 duration-200"
-           href="/is207/index.php?url=admin/settings">
-            <span class="material-symbols-outlined">settings</span>
-            <span class="font-medium text-sm">Settings</span>
         </a>
     </nav>
 
@@ -155,7 +142,7 @@ $averageRating = $ratingCount > 0 ? round($ratingSum / $ratingCount, 1) : 0;
 
         <button class="w-full bg-secondary-container text-on-secondary-container py-2.5 rounded-lg text-xs font-bold hover:bg-opacity-90 transition-all flex items-center justify-center gap-2">
             <span class="material-symbols-outlined text-sm">file_download</span>
-            Export Reports
+            Xuất báo cáo
         </button>
     </div>
 </aside>
@@ -180,7 +167,7 @@ $averageRating = $ratingCount > 0 ? round($ratingSum / $ratingCount, 1) : 0;
                     <div class="flex text-primary">
                         <?= $averageRating > 0 ? renderStars((int) round($averageRating)) : '' ?>
                     </div>
-                    <p class="text-[10px] font-bold text-on-surface-variant uppercase tracking-wider">Average Rating</p>
+                    <p class="text-[10px] font-bold text-on-surface-variant uppercase tracking-wider">Average Đánh giá</p>
                 </div>
             </div>
 
@@ -198,7 +185,7 @@ $averageRating = $ratingCount > 0 ? round($ratingSum / $ratingCount, 1) : 0;
                 <div class="flex gap-2 flex-wrap">
                     <a href="?tab=all"
                        class="px-4 py-2 <?= $tab === 'all' ? 'bg-primary text-on-primary' : 'bg-surface-container-high text-on-surface-variant' ?> rounded-full text-sm font-medium transition-colors">
-                        All Reviews
+                        All Đánh giá
                     </a>
                     <a href="?tab=pending"
                        class="px-4 py-2 <?= $tab === 'pending' ? 'bg-primary text-on-primary' : 'bg-surface-container-high text-on-surface-variant' ?> rounded-full text-sm font-medium transition-colors">
@@ -214,7 +201,7 @@ $averageRating = $ratingCount > 0 ? round($ratingSum / $ratingCount, 1) : 0;
                     <input type="hidden" name="tab" value="<?= e($tab) ?>">
                     <input
                         class="bg-surface-container-high border-none rounded-full pl-10 pr-4 py-2 text-sm focus:ring-2 focus:ring-primary/20 w-64 transition-all"
-                        placeholder="Search customer or content..."
+                        placeholder="Tìm kiếm customer or content..."
                         type="text"
                         name="keyword"
                         value="<?= e($keyword) ?>"
@@ -298,7 +285,7 @@ $averageRating = $ratingCount > 0 ? round($ratingSum / $ratingCount, 1) : 0;
                                     </button>
                                     <button type="button" class="flex items-center gap-2 text-error text-sm font-bold hover:underline underline-offset-4">
                                         <span class="material-symbols-outlined text-sm">delete</span>
-                                        Delete
+                                        Xóa
                                     </button>
                                 </div>
 
@@ -313,7 +300,7 @@ $averageRating = $ratingCount > 0 ? round($ratingSum / $ratingCount, 1) : 0;
                         <div class="w-16 h-16 mx-auto mb-4 rounded-full bg-surface-container flex items-center justify-center text-on-surface-variant/50">
                             <span class="material-symbols-outlined text-3xl">rate_review</span>
                         </div>
-                        <h3 class="text-2xl font-bold text-on-surface mb-2">No reviews found</h3>
+                        <h3 class="text-2xl font-bold text-on-surface mb-2">Không tìm thấy đánh giá</h3>
                         <p class="text-on-surface-variant">
                             There is no review data to display yet, or your current search/filter returned no results.
                         </p>
@@ -328,7 +315,7 @@ $averageRating = $ratingCount > 0 ? round($ratingSum / $ratingCount, 1) : 0;
                 <div class="space-y-6">
                     <div>
                         <div class="flex justify-between text-sm font-bold mb-2">
-                            <span>Pending Reviews</span>
+                            <span>Pending Đánh giá</span>
                             <span><?= $totalReviews > 0 ? round(($pendingCount / $totalReviews) * 100) : 0 ?>%</span>
                         </div>
                         <div class="w-full h-2 bg-surface rounded-full overflow-hidden">
@@ -337,7 +324,7 @@ $averageRating = $ratingCount > 0 ? round($ratingSum / $ratingCount, 1) : 0;
                     </div>
                     <div>
                         <div class="flex justify-between text-sm font-bold mb-2">
-                            <span>Flagged Reviews</span>
+                            <span>Flagged Đánh giá</span>
                             <span><?= $totalReviews > 0 ? round(($flaggedCount / $totalReviews) * 100) : 0 ?>%</span>
                         </div>
                         <div class="w-full h-2 bg-surface rounded-full overflow-hidden">
@@ -349,7 +336,7 @@ $averageRating = $ratingCount > 0 ? round($ratingSum / $ratingCount, 1) : 0;
                 <div class="mt-8 pt-8 border-t border-outline-variant/20 grid grid-cols-2 gap-4">
                     <div class="text-center">
                         <p class="text-2xl font-black text-primary"><?= $totalReviews ?></p>
-                        <p class="text-[10px] font-bold uppercase text-on-surface-variant tracking-wider">Total Reviews</p>
+                        <p class="text-[10px] font-bold uppercase text-on-surface-variant tracking-wider">Tổng cộng Đánh giá</p>
                     </div>
                     <div class="text-center">
                         <p class="text-2xl font-black text-primary"><?= $flaggedCount ?></p>
@@ -370,7 +357,7 @@ $averageRating = $ratingCount > 0 ? round($ratingSum / $ratingCount, 1) : 0;
             </div>
 
             <div class="bg-surface-container p-8 rounded-3xl">
-                <h3 class="text-xl font-bold text-primary mb-6">Current Filters</h3>
+                <h3 class="text-xl font-bold text-primary mb-6">Bộ lọc hiện tại</h3>
                 <div class="space-y-4 text-sm">
                     <div class="flex justify-between gap-4">
                         <span class="text-on-surface-variant">Tab</span>
@@ -381,7 +368,7 @@ $averageRating = $ratingCount > 0 ? round($ratingSum / $ratingCount, 1) : 0;
                         <span class="font-bold text-on-surface"><?= $keyword !== '' ? e($keyword) : '—' ?></span>
                     </div>
                     <div class="flex justify-between gap-4">
-                        <span class="text-on-surface-variant">Average Rating</span>
+                        <span class="text-on-surface-variant">Average Đánh giá</span>
                         <span class="font-bold text-on-surface"><?= $averageRating > 0 ? e($averageRating) : '—' ?></span>
                     </div>
                 </div>
@@ -396,10 +383,13 @@ $averageRating = $ratingCount > 0 ? round($ratingSum / $ratingCount, 1) : 0;
         <p class="font-['Be_Vietnam_Pro'] text-sm tracking-wide text-[#191c18]/50 mt-1">© 2026 Zentro Sustainable Living. Admin panel.</p>
     </div>
     <div class="flex gap-8">
-        <a class="font-['Be_Vietnam_Pro'] text-sm tracking-wide text-[#191c18]/50 hover:text-[#384e21] underline underline-offset-4 transition-all" href="#">Privacy Policy</a>
-        <a class="font-['Be_Vietnam_Pro'] text-sm tracking-wide text-[#191c18]/50 hover:text-[#384e21] underline underline-offset-4 transition-all" href="#">Terms of Service</a>
-        <a class="font-['Be_Vietnam_Pro'] text-sm tracking-wide text-[#191c18]/50 hover:text-[#384e21] underline underline-offset-4 transition-all" href="#">Support</a>
+        <a class="font-['Be_Vietnam_Pro'] text-sm tracking-wide text-[#191c18]/50 hover:text-[#384e21] underline underline-offset-4 transition-all" href="#">Chính sách bảo mật</a>
+        <a class="font-['Be_Vietnam_Pro'] text-sm tracking-wide text-[#191c18]/50 hover:text-[#384e21] underline underline-offset-4 transition-all" href="#">Điều khoản dịch vụ</a>
+        <a class="font-['Be_Vietnam_Pro'] text-sm tracking-wide text-[#191c18]/50 hover:text-[#384e21] underline underline-offset-4 transition-all" href="#">Hỗ trợ</a>
     </div>
 </footer>
 
 <?php include __DIR__ . '/../layouts/admin_footer.php'; ?>
+
+
+

@@ -61,7 +61,7 @@ if (!function_exists('promotionStatusBadge')) {
     <div class="px-6 mb-10">
         <a href="/is207/index.php?url=admin/dashboard" class="block">
             <h1 class="font-['Epilogue'] font-black text-[#384e21] text-2xl tracking-tighter">Zentro Admin</h1>
-            <p class="font-['Be_Vietnam_Pro'] font-medium text-xs text-[#191c18]/60 uppercase tracking-widest mt-1">Eco-Management Suite</p>
+            <p class="font-['Be_Vietnam_Pro'] font-medium text-xs text-[#191c18]/60 uppercase tracking-widest mt-1">Bộ quản trị xanh</p>
         </a>
     </div>
 
@@ -69,28 +69,28 @@ if (!function_exists('promotionStatusBadge')) {
         <a class="bg-[#384e21] text-white rounded-lg mx-2 my-1 px-4 py-3 flex items-center gap-3 active:scale-98 transition-transform"
            href="/is207/index.php?url=admin/dashboard">
             <span class="material-symbols-outlined">dashboard</span>
-            <span class="font-['Be_Vietnam_Pro'] font-medium text-sm">Dashboard</span>
+            <span class="font-['Be_Vietnam_Pro'] font-medium text-sm">Bảng điều khiển</span>
         </a>
         <a class="text-[#191c18]/60 hover:bg-[#e1e3dc] dark:hover:bg-stone-700 mx-2 my-1 px-4 py-3 rounded-lg flex items-center gap-3 transition-all hover:translate-x-1 duration-200"
            href="/is207/index.php?url=admin/inventory">
             <span class="material-symbols-outlined">inventory_2</span>
-            <span class="font-['Be_Vietnam_Pro'] font-medium text-sm">Inventory</span>
+            <span class="font-['Be_Vietnam_Pro'] font-medium text-sm">Kho hàng</span>
         </a>
       
         <a class="text-[#191c18]/60 hover:bg-[#e1e3dc] dark:hover:bg-stone-700 mx-2 my-1 px-4 py-3 rounded-lg flex items-center gap-3 transition-all hover:translate-x-1 duration-200"
            href="/is207/index.php?url=admin/products">
             <span class="material-symbols-outlined">eco</span>
-            <span class="font-['Be_Vietnam_Pro'] font-medium text-sm">Products</span>
+            <span class="font-['Be_Vietnam_Pro'] font-medium text-sm">Sản phẩm</span>
         </a>
         <a class="text-[#191c18]/60 hover:bg-[#e1e3dc] dark:hover:bg-stone-700 mx-2 my-1 px-4 py-3 rounded-lg flex items-center gap-3 transition-all hover:translate-x-1 duration-200"
            href="/is207/index.php?url=admin/orders">
             <span class="material-symbols-outlined">shopping_basket</span>
-            <span class="font-['Be_Vietnam_Pro'] font-medium text-sm">Orders</span>
+            <span class="font-['Be_Vietnam_Pro'] font-medium text-sm">Đơn hàng</span>
         </a>
         <a class="text-[#191c18]/60 hover:bg-[#e1e3dc] dark:hover:bg-stone-700 mx-2 my-1 px-4 py-3 rounded-lg flex items-center gap-3 transition-all hover:translate-x-1 duration-200"
            href="/is207/index.php?url=admin/reviews">
             <span class="material-symbols-outlined">rate_review</span>
-            <span class="font-['Be_Vietnam_Pro'] font-medium text-sm">Reviews</span>
+            <span class="font-['Be_Vietnam_Pro'] font-medium text-sm">Đánh giá</span>
         </a>
         <a class="text-[#191c18]/60 hover:bg-[#e1e3dc] dark:hover:bg-stone-700 mx-2 my-1 px-4 py-3 rounded-lg flex items-center gap-3 transition-all hover:translate-x-1 duration-200"
            href="/is207/index.php?url=admin/blog">
@@ -102,7 +102,7 @@ if (!function_exists('promotionStatusBadge')) {
 
     <div class="px-4 mt-auto">
         <button class="w-full py-3 bg-primary text-white rounded-lg font-['Be_Vietnam_Pro'] font-semibold text-sm shadow-md hover:bg-primary-container transition-colors duration-300">
-            Export Reports
+            Xuất báo cáo
         </button>
         <div class="flex items-center gap-3 mt-8 p-2 border-t border-[#c5c8ba]/20 pt-6">
             <div class="w-10 h-10 rounded-full bg-primary-fixed-dim overflow-hidden">
@@ -128,38 +128,38 @@ if (!function_exists('promotionStatusBadge')) {
     <!-- Stats Grid -->
     <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-6 mb-12">
         <div class="bg-surface-container-lowest rounded-xl p-8 shadow-sm">
-            <p class="text-on-surface/50 font-medium text-sm mb-2">Total Revenue</p>
+            <p class="text-on-surface/50 font-medium text-sm mb-2">Tổng doanh thu</p>
             <h3 class="text-4xl font-headline font-bold text-primary mb-3"><?= formatMoneyVND($totalRevenue) ?></h3>
             <div class="inline-flex items-center text-primary font-bold text-sm bg-primary-fixed-dim/20 px-3 py-1 rounded-full">
                 <span class="material-symbols-outlined text-sm mr-1">payments</span>
-                Revenue Overview
+                Tổng quan doanh thu
             </div>
         </div>
 
         <div class="bg-primary text-white rounded-xl p-8 shadow-sm">
-            <p class="text-white/70 font-medium text-sm mb-2">Active Orders</p>
+            <p class="text-white/70 font-medium text-sm mb-2">Đang xử lý Đơn hàng</p>
             <h3 class="text-5xl font-headline font-black mb-3"><?= number_format((int)$activeOrders) ?></h3>
             <div class="inline-flex items-center bg-white/10 backdrop-blur-md px-4 py-2 rounded-lg border border-white/10">
                 <span class="material-symbols-outlined mr-2">shopping_bag</span>
-                <span class="text-xs font-semibold">CURRENT ORDER LOAD</span>
+                <span class="text-xs font-semibold">ĐƠN ĐANG XỬ LÝ</span>
             </div>
         </div>
 
         <div class="bg-secondary-container rounded-xl p-8 shadow-sm">
-            <p class="text-on-secondary-container/70 font-medium text-sm mb-2">Products</p>
+            <p class="text-on-secondary-container/70 font-medium text-sm mb-2">Sản phẩm</p>
             <h3 class="text-5xl font-headline font-black text-on-secondary-container mb-3"><?= number_format((int)$totalProducts) ?></h3>
             <div class="inline-flex items-center bg-white/20 px-4 py-2 rounded-lg">
                 <span class="material-symbols-outlined mr-2">inventory_2</span>
-                <span class="text-xs font-semibold">CATALOG SIZE</span>
+                <span class="text-xs font-semibold">QUY MÔ DANH MỤC</span>
             </div>
         </div>
 
         <div class="bg-surface-container-low rounded-xl p-8 shadow-sm">
-            <p class="text-on-surface/50 font-medium text-sm mb-2">Published Posts</p>
+            <p class="text-on-surface/50 font-medium text-sm mb-2">Bài viết đã xuất bản</p>
             <h3 class="text-5xl font-headline font-black text-primary mb-3"><?= number_format((int)$publishedPosts) ?></h3>
             <div class="inline-flex items-center bg-primary-fixed-dim/20 text-primary px-4 py-2 rounded-lg">
                 <span class="material-symbols-outlined mr-2">article</span>
-                <span class="text-xs font-semibold">CONTENT STATUS</span>
+                <span class="text-xs font-semibold">TRẠNG THÁI NỘI DUNG</span>
             </div>
         </div>
     </div>
@@ -167,36 +167,36 @@ if (!function_exists('promotionStatusBadge')) {
     <!-- Secondary Overview -->
     <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-16">
         <div class="bg-surface-container-low rounded-xl p-8 border border-outline-variant/10">
-            <h4 class="font-headline text-2xl font-bold text-primary mb-3">Review Queue</h4>
-            <p class="text-on-surface/60 mb-5">Reviews currently pending moderation.</p>
+            <h4 class="font-headline text-2xl font-bold text-primary mb-3">Hàng đợi đánh giá</h4>
+            <p class="text-on-surface/60 mb-5">Đánh giá currently pending moderation.</p>
             <p class="text-4xl font-headline font-black text-primary"><?= number_format((int)$pendingReviews) ?></p>
         </div>
 
         <div class="bg-surface-container-low rounded-xl p-8 border border-outline-variant/10">
-            <h4 class="font-headline text-2xl font-bold text-primary mb-3">Total Reviews</h4>
+            <h4 class="font-headline text-2xl font-bold text-primary mb-3">Tổng cộng Đánh giá</h4>
             <p class="text-on-surface/60 mb-5">All reviews collected from customers.</p>
             <p class="text-4xl font-headline font-black text-primary"><?= number_format((int)$totalReviews) ?></p>
         </div>
 
         <div class="bg-surface-container-highest rounded-xl p-8 border-2 border-dashed border-outline-variant">
-            <h4 class="font-headline text-2xl font-bold text-primary mb-3">Dashboard Note</h4>
+            <h4 class="font-headline text-2xl font-bold text-primary mb-3">Bảng điều khiển Note</h4>
             <p class="text-on-surface/60 leading-relaxed">
                 You can later replace this block with real KPI charts, top-selling products, latest orders, or moderation alerts.
             </p>
         </div>
     </div>
 
-    <!-- Promotion Management -->
+    <!-- Quản lý khuyến mãi -->
     <section class="mt-12">
         <div class="flex justify-between items-center mb-10 flex-wrap gap-4">
             <div>
-                <h4 class="font-headline text-3xl font-bold text-primary mb-2">Promotion Management</h4>
-                <p class="text-on-surface/60">Review available promotion data and prepare campaign actions.</p>
+                <h4 class="font-headline text-3xl font-bold text-primary mb-2">Quản lý khuyến mãi</h4>
+                <p class="text-on-surface/60">Xem dữ liệu khuyến mãi và chuẩn bị thao tác chiến dịch.</p>
             </div>
             <a href="/is207/index.php?url=promotion/create"
                class="flex items-center gap-2 bg-secondary text-white px-6 py-3 rounded-lg font-semibold hover:bg-on-secondary-container transition-all">
                 <span class="material-symbols-outlined">add</span>
-                Create New Discount
+                Tạo khuyến mãi mới
             </a>
         </div>
 
@@ -206,7 +206,7 @@ if (!function_exists('promotionStatusBadge')) {
                     <?php
                     $id = promotionValue($promotion, ['id'], null);
                     $code = promotionValue($promotion, ['code', 'name', 'title'], 'PROMO');
-                    $description = promotionValue($promotion, ['description', 'summary'], 'No promotion description available.');
+                    $description = promotionValue($promotion, ['description', 'summary'], 'Chưa có mô tả khuyến mãi.');
                     $status = promotionValue($promotion, ['status'], 'scheduled');
                     $usage = promotionValue($promotion, ['usage', 'used'], '0');
                     $limit = promotionValue($promotion, ['limit', 'max_usage'], '—');
@@ -226,10 +226,10 @@ if (!function_exists('promotionStatusBadge')) {
                         <div class="flex justify-between items-center py-4 border-t border-outline-variant/10">
                             <div>
                                 <?php if ($startDate !== ''): ?>
-                                    <p class="text-[10px] text-on-surface/40 uppercase font-bold tracking-tighter">Starts</p>
+                                    <p class="text-[10px] text-on-surface/40 uppercase font-bold tracking-tighter">Bắt đầu</p>
                                     <p class="font-bold text-on-surface"><?= e($startDate) ?></p>
                                 <?php else: ?>
-                                    <p class="text-[10px] text-on-surface/40 uppercase font-bold tracking-tighter">Usage</p>
+                                    <p class="text-[10px] text-on-surface/40 uppercase font-bold tracking-tighter">Lượt dùng</p>
                                     <p class="font-bold text-on-surface"><?= e($usage) ?><?= $limit !== '—' ? ' / ' . e($limit) : '' ?></p>
                                 <?php endif; ?>
                             </div>
@@ -239,7 +239,7 @@ if (!function_exists('promotionStatusBadge')) {
                                     <a href="/is207/index.php?url=promotion/edit/<?= urlencode((string)$id) ?>" class="p-2 text-on-surface/60 hover:text-primary">
                                         <span class="material-symbols-outlined">edit</span>
                                     </a>
-                                    <a href="/is207/index.php?url=promotion/delete/<?= urlencode((string)$id) ?>" onclick="return confirm('Delete this promotion?')" class="p-2 text-on-surface/60 hover:text-error">
+                                    <a href="/is207/index.php?url=promotion/delete/<?= urlencode((string)$id) ?>" onclick="return confirm('Xóa khuyến mãi này?')" class="p-2 text-on-surface/60 hover:text-error">
                                         <span class="material-symbols-outlined">delete</span>
                                     </a>
                                 <?php else: ?>
@@ -260,7 +260,7 @@ if (!function_exists('promotionStatusBadge')) {
                 <div class="w-16 h-16 mx-auto mb-4 rounded-full bg-surface-container-high flex items-center justify-center text-outline-variant">
                     <span class="material-symbols-outlined text-3xl">local_offer</span>
                 </div>
-                <h5 class="text-2xl font-headline font-bold text-primary mb-2">No promotions found</h5>
+                <h5 class="text-2xl font-headline font-bold text-primary mb-2">Không tìm thấy khuyến mãi</h5>
                 <p class="text-on-surface/60">There is no promotion data to display yet.</p>
             </div>
         <?php endif; ?>
@@ -272,11 +272,12 @@ if (!function_exists('promotionStatusBadge')) {
             <p class="font-['Be_Vietnam_Pro'] text-sm tracking-wide text-[#191c18]/50 mt-1">© 2026 Zentro Sustainable Living. Admin panel.</p>
         </div>
         <div class="flex gap-8">
-            <a class="text-[#191c18]/50 hover:text-[#384e21] underline underline-offset-4 transition-opacity font-['Be_Vietnam_Pro'] text-sm tracking-wide" href="#">Privacy Policy</a>
-            <a class="text-[#191c18]/50 hover:text-[#384e21] underline underline-offset-4 transition-opacity font-['Be_Vietnam_Pro'] text-sm tracking-wide" href="#">Terms of Service</a>
-            <a class="text-[#191c18]/50 hover:text-[#384e21] underline underline-offset-4 transition-opacity font-['Be_Vietnam_Pro'] text-sm tracking-wide" href="#">Contact Us</a>
+            <a class="text-[#191c18]/50 hover:text-[#384e21] underline underline-offset-4 transition-opacity font-['Be_Vietnam_Pro'] text-sm tracking-wide" href="#">Chính sách bảo mật</a>
+            <a class="text-[#191c18]/50 hover:text-[#384e21] underline underline-offset-4 transition-opacity font-['Be_Vietnam_Pro'] text-sm tracking-wide" href="#">Điều khoản dịch vụ</a>
+            <a class="text-[#191c18]/50 hover:text-[#384e21] underline underline-offset-4 transition-opacity font-['Be_Vietnam_Pro'] text-sm tracking-wide" href="#">Liên hệ</a>
         </div>
     </footer>
 </main>
 
 <?php include __DIR__ . '/../layouts/admin_footer.php'; ?>
+

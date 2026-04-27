@@ -6,7 +6,7 @@ class BlogModel
         return [
             [
                 'id' => 1,
-                'title' => 'Building a Home with the Earth',
+                'title' => 'Building a Trang chủ with the Earth',
                 'excerpt' => 'Cách vật liệu bền vững tạo nên không gian sống hiện đại và có chiều sâu.',
                 'image' => 'https://images.unsplash.com/photo-1513694203232-719a280e022f?auto=format&fit=crop&w=1200&q=80',
                 'category' => 'Sustainability',
@@ -20,7 +20,7 @@ class BlogModel
             ],
             [
                 'id' => 3,
-                'title' => 'Small Rituals for a Greener Home',
+                'title' => 'Small Rituals for a Greener Trang chủ',
                 'excerpt' => 'Một vài thay đổi nhỏ trong sinh hoạt hằng ngày có thể tạo khác biệt lớn cho môi trường.',
                 'image' => 'https://images.unsplash.com/photo-1515377905703-c4788e51af15?auto=format&fit=crop&w=1200&q=80',
                 'category' => 'Lifestyle',

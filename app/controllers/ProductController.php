@@ -41,9 +41,40 @@ class ProductController extends Controller
             return;
         }
 
+        $categories = $this->productModel->getCategories();
+        $sanPham = [
+            'MaSanPham' => $product['id'],
+            'TenSanPham' => $product['name'],
+            'TenDanhMuc' => $categories[$product['category']] ?? 'Sản phẩm',
+            'TenVatLieu' => 'Vật liệu thân thiện môi trường',
+            'NguonGoc' => 'Zentro',
+            'TacDongMoiTruong' => $product['impact'],
+            'DiemXanh' => (int) round(($product['rating'] / 5) * 100),
+            'CoTaiChe' => $product['impact'] === 'upcycled',
+            'ThanThienMoiTruong' => true,
+            'MoTa' => $product['description'],
+        ];
+
+        $hinhAnh = [
+            ['DuongDan' => $product['image']],
+        ];
+
+        $bienThe = [
+            [
+                'MaBienThe' => $product['id'],
+                'MauSac' => 'Tự nhiên',
+                'KichThuoc' => 'Tiêu chuẩn',
+                'GiaTien' => $product['price'],
+                'SoLuongTon' => 99,
+            ],
+        ];
+
         $this->view('product/detail', [
             'title' => 'Chi tiết sản phẩm',
-            'product' => $product,
+            'product' => $sanPham,
+            'images' => $hinhAnh,
+            'variants' => $bienThe,
+            'reviews' => [],
         ]);
     }
 

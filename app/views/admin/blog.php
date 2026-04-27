@@ -75,20 +75,20 @@ foreach ($postList as $post) {
     <!-- Header Section -->
     <header class="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-12">
         <div class="max-w-2xl">
-            <h2 class="font-headline text-5xl font-extrabold tracking-tight text-primary leading-none mb-4">Blog Management</h2>
+            <h2 class="font-headline text-5xl font-extrabold tracking-tight text-primary leading-none mb-4">Quản lý blog</h2>
             <p class="font-body text-lg text-on-surface-variant leading-relaxed opacity-80">
-                Manage blog posts, track publishing status, and prepare article actions from one admin view.
+                Quản lý bài viết, theo dõi trạng thái xuất bản và chuẩn bị thao tác nội dung từ trang quản trị.
             </p>
         </div>
         <div class="flex gap-4 flex-wrap">
             <button type="button" class="bg-surface-container-high text-primary font-bold px-6 py-3 rounded-xl flex items-center gap-2 hover:bg-surface-container-highest transition-colors">
                 <span class="material-symbols-outlined">history</span>
-                Revision History
+                Revision Lịch sử
             </button>
             <a href="/is207/index.php?url=blog/create"
                class="bg-primary text-white font-bold px-8 py-3 rounded-xl flex items-center gap-2 hover:opacity-95 shadow-lg shadow-primary/10 transition-all">
                 <span class="material-symbols-outlined">add</span>
-                Create New Post
+                Tạo bài viết mới
             </a>
         </div>
     </header>
@@ -99,7 +99,7 @@ foreach ($postList as $post) {
             <span class="material-symbols-outlined text-primary text-3xl">visibility</span>
             <div>
                 <p class="text-4xl font-headline font-black text-primary"><?= number_format($totalViews) ?></p>
-                <p class="text-xs font-label uppercase tracking-widest text-on-surface-variant mt-1">Total Article Reads</p>
+                <p class="text-xs font-label uppercase tracking-widest text-on-surface-variant mt-1">Tổng cộng Article Reads</p>
             </div>
         </div>
 
@@ -107,7 +107,7 @@ foreach ($postList as $post) {
             <span class="material-symbols-outlined text-white text-3xl">verified</span>
             <div>
                 <p class="text-4xl font-headline font-black text-white"><?= $publishedCount ?></p>
-                <p class="text-xs font-label uppercase tracking-widest text-white/70 mt-1">Published Posts</p>
+                <p class="text-xs font-label uppercase tracking-widest text-white/70 mt-1">Bài viết đã xuất bản</p>
             </div>
         </div>
 
@@ -115,7 +115,7 @@ foreach ($postList as $post) {
             <span class="material-symbols-outlined text-on-secondary-container text-3xl">edit_note</span>
             <div>
                 <p class="text-4xl font-headline font-black text-on-secondary-container"><?= $draftCount ?></p>
-                <p class="text-xs font-label uppercase tracking-widest text-on-secondary-container opacity-70 mt-1">Drafts</p>
+                <p class="text-xs font-label uppercase tracking-widest text-on-secondary-container opacity-70 mt-1">Bản nháp</p>
             </div>
         </div>
 
@@ -123,7 +123,7 @@ foreach ($postList as $post) {
             <span class="material-symbols-outlined text-primary text-3xl">article</span>
             <div>
                 <p class="text-4xl font-headline font-black text-primary"><?= $totalPosts ?></p>
-                <p class="text-xs font-label uppercase tracking-widest text-on-surface-variant mt-1">Total Posts</p>
+                <p class="text-xs font-label uppercase tracking-widest text-on-surface-variant mt-1">Tổng cộng Posts</p>
             </div>
         </div>
     </div>
@@ -142,11 +142,11 @@ foreach ($postList as $post) {
                         </a>
                         <a href="?tab=published"
                            class="<?= $tab === 'published' ? 'bg-surface-container-lowest text-primary shadow-sm' : 'text-on-surface-variant hover:bg-surface-container-high' ?> text-xs font-bold px-4 py-1.5 rounded-full transition-colors">
-                            Published
+                            Đã xuất bản
                         </a>
                         <a href="?tab=draft"
                            class="<?= $tab === 'draft' ? 'bg-surface-container-lowest text-primary shadow-sm' : 'text-on-surface-variant hover:bg-surface-container-high' ?> text-xs font-bold px-4 py-1.5 rounded-full transition-colors">
-                            Drafts
+                            Bản nháp
                         </a>
                     </div>
 
@@ -158,7 +158,7 @@ foreach ($postList as $post) {
                                 type="text"
                                 name="keyword"
                                 value="<?= e($keyword) ?>"
-                                placeholder="Search posts..."
+                                placeholder="Tìm kiếm posts..."
                                 class="bg-surface-container-low border-none rounded-full pl-10 pr-4 py-2 text-sm focus:ring-2 focus:ring-primary/20 w-60"
                             />
                         </div>
@@ -208,7 +208,7 @@ foreach ($postList as $post) {
                                         <span class="material-symbols-outlined">edit</span>
                                     </a>
                                     <a href="/is207/index.php?url=blog/delete/<?= urlencode((string)$id) ?>"
-                                       onclick="return confirm('Delete this post?')"
+                                       onclick="return confirm('Xóa bài viết này?')"
                                        class="p-2 text-error hover:bg-red-50 rounded-lg">
                                         <span class="material-symbols-outlined">delete</span>
                                     </a>
@@ -228,7 +228,7 @@ foreach ($postList as $post) {
                         <div class="w-16 h-16 mx-auto mb-4 rounded-full bg-surface-container-high flex items-center justify-center text-on-surface-variant">
                             <span class="material-symbols-outlined text-3xl">article</span>
                         </div>
-                        <h4 class="font-headline text-2xl font-bold text-primary mb-2">No blog posts found</h4>
+                        <h4 class="font-headline text-2xl font-bold text-primary mb-2">Không tìm thấy bài viết</h4>
                         <p class="text-on-surface-variant">
                             There is no blog data to display yet, or your current search/filter returned no results.
                         </p>
@@ -237,10 +237,10 @@ foreach ($postList as $post) {
             </div>
 
             <div class="mt-10 flex items-center justify-between border-t border-outline-variant/20 pt-8">
-                <p class="text-sm text-on-surface-variant opacity-60">Showing available posts from current data source</p>
+                <p class="text-sm text-on-surface-variant opacity-60">Đang hiển thị bài viết từ nguồn dữ liệu hiện tại</p>
                 <div class="flex gap-4">
-                    <button type="button" class="text-sm font-bold text-primary opacity-50 cursor-not-allowed">Previous</button>
-                    <button type="button" class="text-sm font-bold text-primary">Next</button>
+                    <button type="button" class="text-sm font-bold text-primary opacity-50 cursor-not-allowed">Trước</button>
+                    <button type="button" class="text-sm font-bold text-primary">Tiếp</button>
                 </div>
             </div>
         </div>
@@ -249,30 +249,30 @@ foreach ($postList as $post) {
         <div class="space-y-8">
             <section class="bg-surface-container rounded-3xl p-8 border-l-8 border-primary">
                 <div class="flex items-center justify-between mb-6">
-                    <h3 class="font-headline text-xl font-bold text-primary">Publishing Summary</h3>
+                    <h3 class="font-headline text-xl font-bold text-primary">Publishing Tóm tắt</h3>
                     <span class="material-symbols-outlined text-primary">campaign</span>
                 </div>
                 <div class="space-y-6">
                     <div class="relative pl-6 border-l-2 border-outline-variant">
                         <div class="absolute -left-1.5 top-0 w-3 h-3 bg-primary rounded-full"></div>
-                        <p class="text-[10px] font-bold text-primary uppercase tracking-widest mb-1">Published</p>
+                        <p class="text-[10px] font-bold text-primary uppercase tracking-widest mb-1">Đã xuất bản</p>
                         <h5 class="text-sm font-bold text-on-surface mb-2"><?= $publishedCount ?> live article(s)</h5>
                         <p class="text-xs text-on-surface-variant leading-relaxed">Posts currently visible to readers.</p>
                     </div>
                     <div class="relative pl-6 border-l-2 border-outline-variant">
                         <div class="absolute -left-1.5 top-0 w-3 h-3 bg-outline-variant rounded-full"></div>
-                        <p class="text-[10px] font-bold text-on-surface-variant uppercase tracking-widest mb-1">Drafts</p>
+                        <p class="text-[10px] font-bold text-on-surface-variant uppercase tracking-widest mb-1">Bản nháp</p>
                         <h5 class="text-sm font-bold text-on-surface mb-2"><?= $draftCount ?> draft post(s)</h5>
                         <p class="text-xs text-on-surface-variant leading-relaxed">Posts still being reviewed or edited.</p>
                     </div>
                 </div>
                 <button class="w-full mt-8 py-3 bg-surface-container-highest text-primary text-xs font-bold rounded-xl hover:bg-surface-variant transition-colors">
-                    Manage Content
+                    Quản lý nội dung
                 </button>
             </section>
 
             <section class="bg-surface-container-low rounded-3xl p-8">
-                <h3 class="font-headline text-lg font-bold text-primary mb-4">Editorial Quality</h3>
+                <h3 class="font-headline text-lg font-bold text-primary mb-4">Sửaorial Quality</h3>
                 <ul class="space-y-4">
                     <li class="flex gap-3">
                         <span class="material-symbols-outlined text-primary" style="font-variation-settings: 'FILL' 1;">check_circle</span>
@@ -284,7 +284,7 @@ foreach ($postList as $post) {
                     </li>
                     <li class="flex gap-3">
                         <span class="material-symbols-outlined text-outline-variant">check_circle</span>
-                        <span class="text-xs text-on-surface-variant opacity-60">Track views and draft count from real post data.</span>
+                        <span class="text-xs text-on-surface-variant opacity-60">Theo dõi views and draft count from real post data.</span>
                     </li>
                 </ul>
             </section>
@@ -336,7 +336,7 @@ foreach ($postList as $post) {
     </button>
     <button class="p-4 bg-primary text-on-primary rounded-full shadow-2xl hover:scale-105 transition-transform flex items-center gap-2 px-6">
         <span class="material-symbols-outlined">edit_square</span>
-        <span class="font-bold text-sm">Quick Editor</span>
+        <span class="font-bold text-sm">Sửa nhanh</span>
     </button>
 </div>
 

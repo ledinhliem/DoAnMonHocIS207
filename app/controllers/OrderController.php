@@ -47,14 +47,12 @@ class OrderController extends Controller
             'payment_method' => 'card',
         ];
 
-        $errors = $_SESSION['checkout_errors'] ?? [];
-
         $this->view('order/checkout', [
-            'title' => 'Checkout',
+            'title' => 'Thanh toán',
             'items' => $items,
             'summary' => $this->getCheckoutSummary(),
             'checkoutData' => $checkoutData,
-            'errors' => $errors,
+            'errors' => $_SESSION['checkout_errors'] ?? [],
             'success' => $_SESSION['success'] ?? '',
             'error' => $_SESSION['error'] ?? '',
         ]);
@@ -69,10 +67,9 @@ class OrderController extends Controller
             exit;
         }
 
-        $promoCode = $_POST['promo_code'] ?? '';
         $result = $this->orderModel->calculateDiscount(
             $this->cartModel->getSubtotal(),
-            $promoCode
+            $_POST['promo_code'] ?? ''
         );
 
         if ($result['valid']) {
@@ -123,21 +120,10 @@ class OrderController extends Controller
                 header('Location: ?url=order/success');
                 exit;
             }
-
-            $this->view('order/payment', [
-                'title' => 'Card Payment',
-                'summary' => $this->getCheckoutSummary(),
-                'checkoutData' => $checkoutData,
-                'errors' => $_SESSION['payment_errors'] ?? [],
-                'old' => $_SESSION['payment_old'] ?? [],
-            ]);
-
-            unset($_SESSION['payment_errors'], $_SESSION['payment_old']);
-            return;
         }
 
         $this->view('order/payment', [
-            'title' => 'Card Payment',
+            'title' => 'Thanh toán thẻ',
             'summary' => $this->getCheckoutSummary(),
             'checkoutData' => $_SESSION['checkout_data'] ?? [],
             'errors' => $_SESSION['payment_errors'] ?? [],
@@ -154,7 +140,6 @@ class OrderController extends Controller
             exit;
         }
 
-        // prevent double submit / cart rỗng
         if (empty($this->cartModel->getItems())) {
             $_SESSION['error'] = 'Không có sản phẩm nào để thanh toán.';
             header('Location: ?url=product');
@@ -192,13 +177,19 @@ class OrderController extends Controller
         exit;
     }
 
+    public function transfer()
+    {
+        $this->view('order/transfer', [
+            'title' => 'Chuyển khoản',
+            'summary' => $this->getCheckoutSummary(),
+        ]);
+    }
+
     public function feedback()
     {
-        $latestOrder = $this->orderModel->getLatestOrder();
-
         $this->view('order/feedback', [
             'title' => 'Feedback',
-            'order' => $latestOrder,
+            'order' => $this->orderModel->getLatestOrder(),
             'errors' => $_SESSION['feedback_errors'] ?? [],
             'success' => $_SESSION['success'] ?? '',
             'old' => $_SESSION['feedback_old'] ?? [],
@@ -235,21 +226,6 @@ class OrderController extends Controller
         exit;
     }
 
-    public function payment()
-    {
-        $this->view('order/payment', ['title' => 'Thanh toán thẻ']);
-    }
-
-    public function transfer()
-    {
-        $this->view('order/transfer', ['title' => 'Chuyển khoản']);
-    }
-
-    public function feedback()
-    {
-        $this->view('order/feedback', ['title' => 'Phản hồi đơn hàng']);
-    }
-
     public function success()
     {
         $this->view('order/success', [
@@ -271,11 +247,9 @@ class OrderController extends Controller
 
     public function tracking()
     {
-        $order = $this->orderModel->getLatestOrder();
-
         $this->view('order/tracking', [
             'title' => 'Theo dõi đơn hàng',
-            'order' => $order,
+            'order' => $this->orderModel->getLatestOrder(),
             'helpMessage' => $_SESSION['help_message'] ?? '',
         ]);
 

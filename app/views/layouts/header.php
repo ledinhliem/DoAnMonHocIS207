@@ -66,10 +66,10 @@ if (!empty($_SESSION['cart']) && is_array($_SESSION['cart'])) {
         </a>
 
         <nav class="hidden md:flex gap-8 items-center font-headline">
-            <a class="text-on-surface/70 hover:text-primary transition-all" href="?url=product">Shop</a>
-            <a class="text-on-surface/70 hover:text-primary transition-all" href="?url=product">Categories</a>
+            <a class="text-on-surface/70 hover:text-primary transition-all" href="?url=product">Cửa hàng</a>
+            <a class="text-on-surface/70 hover:text-primary transition-all" href="?url=product">Danh mục</a>
             <a class="text-on-surface/70 hover:text-primary transition-all" href="?url=blog">Blog</a>
-            <a class="text-on-surface/70 hover:text-primary transition-all" href="?url=order/history">History</a>
+            <a class="text-on-surface/70 hover:text-primary transition-all" href="?url=order/history">Lịch sử</a>
         </nav>
 
         <div class="flex items-center gap-6">

@@ -88,7 +88,7 @@ h1, h2, h3 { font-family: 'Epilogue', sans-serif; }
     <div class="flex items-center gap-12">
       <a class="text-2xl font-bold text-[#384e21] dark:text-[#b5cf95] tracking-tighter" href="<?= $base ?>">Zentro</a>
       <div class="hidden md:flex items-center gap-8">
-        <a class="text-[#191c18]/70 dark:text-stone-400 hover:text-[#4f6636] transition-colors duration-300" href="<?= $base ?>">Shop</a>
+        <a class="text-[#191c18]/70 dark:text-stone-400 hover:text-[#4f6636] transition-colors duration-300" href="<?= $base ?>">Cửa hàng</a>
         <a class="text-[#191c18]/70 dark:text-stone-400 hover:text-[#4f6636] transition-colors duration-300" href="#">Sustainability</a>
         <a class="text-[#191c18]/70 dark:text-stone-400 hover:text-[#4f6636] transition-colors duration-300" href="<?= $base ?>?url=blog">Blog</a>
         <a class="text-[#191c18]/70 dark:text-stone-400 hover:text-[#4f6636] transition-colors duration-300" href="#">About</a>
@@ -119,11 +119,11 @@ h1, h2, h3 { font-family: 'Epilogue', sans-serif; }
         </a>
         <a class="flex items-center gap-3 px-4 py-3 rounded-lg text-on-surface-variant hover:bg-surface-container transition-colors" href="#">
           <span class="material-symbols-outlined" data-icon="local_shipping">local_shipping</span>
-          <span class="font-medium">Saved Addresses</span>
+          <span class="font-medium">Địa chỉ đã lưu</span>
         </a>
         <a class="flex items-center gap-3 px-4 py-3 rounded-lg text-on-surface-variant hover:bg-surface-container transition-colors" href="<?= $base ?>?url=order/history">
           <span class="material-symbols-outlined" data-icon="shopping_basket">shopping_basket</span>
-          <span class="font-medium">Order History</span>
+          <span class="font-medium">Lịch sử đơn hàng</span>
         </a>
         <a class="flex items-center gap-3 px-4 py-3 rounded-lg text-on-surface-variant hover:bg-surface-container transition-colors" href="#">
           <span class="material-symbols-outlined" data-icon="favorite">favorite</span>
@@ -131,7 +131,7 @@ h1, h2, h3 { font-family: 'Epilogue', sans-serif; }
         </a>
         <a class="flex items-center gap-3 px-4 py-3 rounded-lg text-on-surface-variant hover:bg-surface-container transition-colors" href="#">
           <span class="material-symbols-outlined" data-icon="settings">settings</span>
-          <span class="font-medium">Account Settings</span>
+          <span class="font-medium">Account Cài đặt</span>
         </a>
       </nav>
     </aside>
@@ -144,7 +144,7 @@ h1, h2, h3 { font-family: 'Epilogue', sans-serif; }
             <h1 class="text-4xl font-bold text-on-surface tracking-tight">Personal Information</h1>
           </div>
           <button class="px-6 py-2 rounded-full border border-outline-variant text-primary font-medium hover:bg-surface-container transition-colors">
-            Edit Profile
+            Sửa Profile
           </button>
         </div>
 
@@ -154,11 +154,11 @@ h1, h2, h3 { font-family: 'Epilogue', sans-serif; }
             <p class="text-lg font-medium text-on-surface">Elena Green</p>
           </div>
           <div class="p-8 rounded-xl bg-surface-container-lowest border border-outline-variant/10">
-            <label class="text-on-surface-variant text-xs font-semibold uppercase tracking-widest block mb-1">Email Address</label>
+            <label class="text-on-surface-variant text-xs font-semibold uppercase tracking-widest block mb-1">Địa chỉ email</label>
             <p class="text-lg font-medium text-on-surface">elena.green@zentroliving.com</p>
           </div>
           <div class="p-8 rounded-xl bg-surface-container-lowest border border-outline-variant/10">
-            <label class="text-on-surface-variant text-xs font-semibold uppercase tracking-widest block mb-1">Phone Number</label>
+            <label class="text-on-surface-variant text-xs font-semibold uppercase tracking-widest block mb-1">Số điện thoại</label>
             <p class="text-lg font-medium text-on-surface">+1 (555) 234-8910</p>
           </div>
           <div class="p-8 rounded-xl bg-surface-container-lowest border border-outline-variant/10">
@@ -174,12 +174,12 @@ h1, h2, h3 { font-family: 'Epilogue', sans-serif; }
       <div class="space-y-8">
         <div class="flex flex-col md:flex-row justify-between items-start md:items-end gap-4">
           <div>
-            <span class="text-secondary font-semibold tracking-wider text-xs uppercase mb-2 block">Delivery Management</span>
-            <h2 class="text-3xl font-bold text-on-surface tracking-tight">Saved Addresses</h2>
+            <span class="text-secondary font-semibold tracking-wider text-xs uppercase mb-2 block">Quản lý giao hàng</span>
+            <h2 class="text-3xl font-bold text-on-surface tracking-tight">Địa chỉ đã lưu</h2>
           </div>
           <button class="px-8 py-3 rounded-full bg-secondary-container text-on-secondary-container font-bold flex items-center gap-2 hover:opacity-90 transition-opacity">
             <span class="material-symbols-outlined" data-icon="add">add</span>
-            Add New Address
+            Thêm địa chỉ mới
           </button>
         </div>
 
@@ -196,7 +196,7 @@ h1, h2, h3 { font-family: 'Epilogue', sans-serif; }
             <div>
               <div class="flex items-center gap-3 mb-6">
                 <span class="bg-primary text-on-primary text-[10px] font-bold uppercase tracking-widest px-3 py-1 rounded-full">Primary</span>
-                <h3 class="text-xl font-bold text-on-surface">Home Sanctuary</h3>
+                <h3 class="text-xl font-bold text-on-surface">Trang chủ Sanctuary</h3>
               </div>
               <address class="not-italic text-lg text-on-surface-variant leading-relaxed">
                 1248 Oakwood Avenue<br/>
@@ -253,14 +253,14 @@ h1, h2, h3 { font-family: 'Epilogue', sans-serif; }
     <div class="mb-8 md:mb-0 space-y-4">
       <span class="font-['Epilogue'] font-bold text-[#384e21] text-2xl">Zentro</span>
       <p class="font-['Be_Vietnam_Pro'] text-sm tracking-wide text-[#191c18]/50 max-w-xs">
-        © 2024 Zentro Sustainable Living. Crafted for the conscious.
+        © 2026 Zentro Sustainable Living. Được xây dựng cho lối sống xanh.
       </p>
     </div>
     <div class="flex flex-wrap justify-center gap-8">
-      <a class="text-[#191c18]/50 hover:text-[#384e21] underline underline-offset-4 transition-opacity opacity-80 hover:opacity-100 font-['Be_Vietnam_Pro'] text-sm tracking-wide" href="#">Privacy Policy</a>
-      <a class="text-[#191c18]/50 hover:text-[#384e21] underline underline-offset-4 transition-opacity opacity-80 hover:opacity-100 font-['Be_Vietnam_Pro'] text-sm tracking-wide" href="#">Terms of Service</a>
-      <a class="text-[#191c18]/50 hover:text-[#384e21] underline underline-offset-4 transition-opacity opacity-80 hover:opacity-100 font-['Be_Vietnam_Pro'] text-sm tracking-wide" href="#">Shipping &amp; Returns</a>
-      <a class="text-[#191c18]/50 hover:text-[#384e21] underline underline-offset-4 transition-opacity opacity-80 hover:opacity-100 font-['Be_Vietnam_Pro'] text-sm tracking-wide" href="#">Contact Us</a>
+      <a class="text-[#191c18]/50 hover:text-[#384e21] underline underline-offset-4 transition-opacity opacity-80 hover:opacity-100 font-['Be_Vietnam_Pro'] text-sm tracking-wide" href="#">Chính sách bảo mật</a>
+      <a class="text-[#191c18]/50 hover:text-[#384e21] underline underline-offset-4 transition-opacity opacity-80 hover:opacity-100 font-['Be_Vietnam_Pro'] text-sm tracking-wide" href="#">Điều khoản dịch vụ</a>
+      <a class="text-[#191c18]/50 hover:text-[#384e21] underline underline-offset-4 transition-opacity opacity-80 hover:opacity-100 font-['Be_Vietnam_Pro'] text-sm tracking-wide" href="#">Phí vận chuyển &amp; Returns</a>
+      <a class="text-[#191c18]/50 hover:text-[#384e21] underline underline-offset-4 transition-opacity opacity-80 hover:opacity-100 font-['Be_Vietnam_Pro'] text-sm tracking-wide" href="#">Liên hệ</a>
     </div>
   </div>
 </footer>

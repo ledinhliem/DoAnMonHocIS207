@@ -6,7 +6,7 @@
             <span class="material-symbols-outlined text-green-700 text-4xl">check</span>
         </div>
 
-        <h1 class="text-4xl font-black font-headline text-primary mb-4">Order Successful</h1>
+        <h1 class="text-4xl font-black font-headline text-primary mb-4">Đặt hàng thành công</h1>
 
         <?php if (!empty($success)): ?>
             <p class="mb-4 text-green-700"><?= htmlspecialchars($success) ?></p>
@@ -18,19 +18,19 @@
             </p>
 
             <p class="text-lg mb-8">
-                Order ID: <strong class="text-primary"><?= htmlspecialchars($order['order_id']) ?></strong>
+                Mã đơn hàng: <strong class="text-primary"><?= htmlspecialchars($order['order_id']) ?></strong>
             </p>
         <?php endif; ?>
 
         <div class="flex flex-wrap justify-center gap-4">
             <a href="?url=order/tracking" class="px-5 py-3 rounded-xl bg-primary text-white font-semibold">
-                Track Order
+                Theo dõi đơn hàng
             </a>
             <a href="?url=order/feedback" class="px-5 py-3 rounded-xl border border-outline-variant font-semibold">
-                Leave Feedback
+                Gửi phản hồi
             </a>
             <a href="?url=order/history" class="px-5 py-3 rounded-xl border border-outline-variant font-semibold">
-                Order History
+                Lịch sử đơn hàng
             </a>
         </div>
     </div>

@@ -69,7 +69,7 @@ foreach ($orderList as $order) {
     <div class="px-6 mb-10">
         <a href="/is207/index.php?url=admin/dashboard" class="block">
             <h1 class="font-['Epilogue'] font-black text-[#384e21] text-2xl tracking-tighter">Zentro Admin</h1>
-            <p class="text-xs text-[#191c18]/60 mt-1 uppercase tracking-widest font-semibold">Eco-Management Suite</p>
+            <p class="text-xs text-[#191c18]/60 mt-1 uppercase tracking-widest font-semibold">Bộ quản trị xanh</p>
         </a>
     </div>
 
@@ -77,28 +77,28 @@ foreach ($orderList as $order) {
         <a class="text-[#191c18]/60 hover:bg-[#e1e3dc] mx-2 my-1 px-4 py-3 rounded-lg flex items-center gap-3 transition-all hover:translate-x-1"
            href="/is207/index.php?url=admin/dashboard">
             <span class="material-symbols-outlined">dashboard</span>
-            <span class="font-medium text-sm">Dashboard</span>
+            <span class="font-medium text-sm">Bảng điều khiển</span>
         </a>
         <a class="text-[#191c18]/60 hover:bg-[#e1e3dc] mx-2 my-1 px-4 py-3 rounded-lg flex items-center gap-3 transition-all hover:translate-x-1"
            href="/is207/index.php?url=admin/inventory">
             <span class="material-symbols-outlined">inventory_2</span>
-            <span class="font-medium text-sm">Inventory</span>
+            <span class="font-medium text-sm">Kho hàng</span>
         </a>
     
         <a class="text-[#191c18]/60 hover:bg-[#e1e3dc] mx-2 my-1 px-4 py-3 rounded-lg flex items-center gap-3 transition-all hover:translate-x-1"
            href="/is207/index.php?url=admin/products">
             <span class="material-symbols-outlined">eco</span>
-            <span class="font-medium text-sm">Products</span>
+            <span class="font-medium text-sm">Sản phẩm</span>
         </a>
         <a class="bg-[#384e21] text-white rounded-lg mx-2 my-1 px-4 py-3 flex items-center gap-3 active:scale-98 transition-transform"
            href="/is207/index.php?url=admin/orders">
             <span class="material-symbols-outlined">shopping_basket</span>
-            <span class="font-medium text-sm">Orders</span>
+            <span class="font-medium text-sm">Đơn hàng</span>
         </a>
         <a class="text-[#191c18]/60 hover:bg-[#e1e3dc] mx-2 my-1 px-4 py-3 rounded-lg flex items-center gap-3 transition-all hover:translate-x-1"
            href="/is207/index.php?url=admin/reviews">
             <span class="material-symbols-outlined">rate_review</span>
-            <span class="font-medium text-sm">Reviews</span>
+            <span class="font-medium text-sm">Đánh giá</span>
         </a>
         <a class="text-[#191c18]/60 hover:bg-[#e1e3dc] mx-2 my-1 px-4 py-3 rounded-lg flex items-center gap-3 transition-all hover:translate-x-1"
            href="/is207/index.php?url=admin/blog">
@@ -110,13 +110,13 @@ foreach ($orderList as $order) {
 
     <div class="px-4 mt-auto">
         <button class="w-full bg-primary text-on-primary py-3 rounded-lg font-bold text-sm hover:opacity-90 transition-opacity">
-            Export Reports
+            Xuất báo cáo
         </button>
         <div class="mt-6 flex items-center gap-3 px-2">
             <img alt="Admin User Profile" class="w-10 h-10 rounded-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCjjxf0bpVd1PEy-plVsvJuJYFgGGrAoI7qv2sZ8irZHnaLsAaFQ9n99Pcn6x9xlaF1PeCT8q_xAC-ZpAtXTUkXP-avaZ65A_DoAcu-Jh9F9IayrnQEFxulcpk4uZKs0nMeRzXvKdmaS-c_6olS1abOW3cgVrjlnE-l6IZjt7qKXTKgakIQAfPTAr_-Mte1lwyF6shvgZcaG6znrFLWB1n9VEfvuk2fPzDXKRihq6bG2SpDEZ-YPqkSDzTlfrEtFUd7ZU-LEgm_PZY"/>
             <div class="overflow-hidden">
                 <p class="text-sm font-bold truncate">Alex Rivier</p>
-                <p class="text-xs text-on-surface-variant/70 truncate">Fleet Manager</p>
+                <p class="text-xs text-on-surface-variant/70 truncate">Quản lý vận hành</p>
             </div>
         </div>
     </div>
@@ -126,19 +126,19 @@ foreach ($orderList as $order) {
     <header class="mb-10">
         <div class="flex flex-col xl:flex-row justify-between gap-6 xl:items-end">
             <div>
-                <h2 class="text-5xl font-black font-headline tracking-tighter text-primary mb-4">Order Queue</h2>
+                <h2 class="text-5xl font-black font-headline tracking-tighter text-primary mb-4">Hàng đợi đơn hàng</h2>
                 <p class="text-lg text-on-surface-variant max-w-xl leading-relaxed">
-                    Manage orders, monitor fulfillment progress, and prepare order actions from the admin panel.
+                    Quản lý đơn hàng, theo dõi xử lý và chuẩn bị thao tác đơn hàng từ trang quản trị.
                 </p>
             </div>
 
             <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 w-full xl:w-auto">
                 <div class="bg-surface-container px-6 py-4 rounded-xl">
-                    <p class="text-[10px] uppercase tracking-widest font-bold text-on-surface-variant/50 mb-1">Displayed Orders</p>
+                    <p class="text-[10px] uppercase tracking-widest font-bold text-on-surface-variant/50 mb-1">Displayed Đơn hàng</p>
                     <p class="text-2xl font-black font-headline text-primary"><?= count($orderList) ?></p>
                 </div>
                 <div class="bg-surface-container px-6 py-4 rounded-xl">
-                    <p class="text-[10px] uppercase tracking-widest font-bold text-on-surface-variant/50 mb-1">Active</p>
+                    <p class="text-[10px] uppercase tracking-widest font-bold text-on-surface-variant/50 mb-1">Đang xử lý</p>
                     <p class="text-2xl font-black font-headline text-primary"><?= $activeCount ?></p>
                 </div>
                 <div class="bg-surface-container px-6 py-4 rounded-xl">
@@ -156,7 +156,7 @@ foreach ($orderList as $order) {
                     <div class="flex flex-wrap gap-3">
                         <a href="?tab=active"
                            class="px-6 py-2 <?= $tab === 'active' ? 'bg-primary text-on-primary' : 'bg-surface-container text-on-surface-variant' ?> rounded-full text-sm font-semibold transition-colors">
-                            Active Orders (<?= $activeCount ?>)
+                            Đang xử lý Đơn hàng (<?= $activeCount ?>)
                         </a>
 
                         <a href="?tab=archived"
@@ -170,7 +170,7 @@ foreach ($orderList as $order) {
                             <span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-on-surface-variant/40">search</span>
                             <input
                                 class="pl-10 pr-4 py-2 bg-surface-container border-none rounded-lg text-sm focus:ring-2 focus:ring-primary/20 w-full sm:w-72 transition-all"
-                                placeholder="Search order ID or customer..."
+                                placeholder="Tìm kiếm order ID or customer..."
                                 type="text"
                                 name="keyword"
                                 value="<?= e($keyword) ?>"
@@ -189,7 +189,7 @@ foreach ($orderList as $order) {
                         <input type="hidden" name="tab" value="<?= e($tab) ?>">
 
                         <button type="submit" class="px-5 py-2 bg-primary text-on-primary rounded-lg text-sm font-bold hover:opacity-90 transition-opacity">
-                            Apply
+                            Áp dụng
                         </button>
                     </div>
                 </form>
@@ -238,7 +238,7 @@ foreach ($orderList as $order) {
                                             <?php endif; ?>
                                         </p>
                                         <?php if ($tracking !== ''): ?>
-                                            <p class="text-xs text-on-surface-variant mt-2">Tracking: <?= e($tracking) ?></p>
+                                            <p class="text-xs text-on-surface-variant mt-2">Theo dõiing: <?= e($tracking) ?></p>
                                         <?php endif; ?>
                                     </div>
                                 </div>
@@ -264,7 +264,7 @@ foreach ($orderList as $order) {
                         <div class="w-16 h-16 mx-auto mb-4 rounded-full bg-surface-container flex items-center justify-center text-on-surface-variant/50">
                             <span class="material-symbols-outlined text-3xl">shopping_basket</span>
                         </div>
-                        <h3 class="text-2xl font-bold text-on-surface mb-2">No orders found</h3>
+                        <h3 class="text-2xl font-bold text-on-surface mb-2">Không tìm thấy đơn hàng</h3>
                         <p class="text-on-surface-variant">
                             There is no order data to display yet, or your current search/filter returned no results.
                         </p>
@@ -313,7 +313,7 @@ foreach ($orderList as $order) {
                         Use this panel later for stock warnings, delivery alerts, or quick fulfillment actions when backend logic is added.
                     </p>
                     <button class="w-full bg-surface-container-lowest text-primary py-3 rounded-xl font-bold text-sm hover:scale-105 transition-transform">
-                        Review Orders
+                        Review Đơn hàng
                     </button>
                 </div>
                 <div class="absolute -right-8 -bottom-8 opacity-10">
@@ -322,7 +322,7 @@ foreach ($orderList as $order) {
             </div>
 
             <div class="p-6 border border-outline-variant/30 rounded-2xl">
-                <h4 class="font-headline font-bold text-lg mb-4">Current Filters</h4>
+                <h4 class="font-headline font-bold text-lg mb-4">Bộ lọc hiện tại</h4>
                 <ul class="space-y-4">
                     <li class="flex justify-between gap-4">
                         <span class="text-on-surface-variant">Tab</span>
@@ -349,12 +349,13 @@ foreach ($orderList as $order) {
             </p>
         </div>
         <div class="flex gap-8">
-            <a class="text-[#191c18]/50 text-sm hover:text-[#384e21] underline underline-offset-4 transition-all" href="#">Privacy Policy</a>
-            <a class="text-[#191c18]/50 text-sm hover:text-[#384e21] underline underline-offset-4 transition-all" href="#">Terms of Service</a>
-            <a class="text-[#191c18]/50 text-sm hover:text-[#384e21] underline underline-offset-4 transition-all" href="#">Shipping &amp; Returns</a>
-            <a class="text-[#191c18]/50 text-sm hover:text-[#384e21] underline underline-offset-4 transition-all" href="#">Contact Us</a>
+            <a class="text-[#191c18]/50 text-sm hover:text-[#384e21] underline underline-offset-4 transition-all" href="#">Chính sách bảo mật</a>
+            <a class="text-[#191c18]/50 text-sm hover:text-[#384e21] underline underline-offset-4 transition-all" href="#">Điều khoản dịch vụ</a>
+            <a class="text-[#191c18]/50 text-sm hover:text-[#384e21] underline underline-offset-4 transition-all" href="#">Phí vận chuyển &amp; Returns</a>
+            <a class="text-[#191c18]/50 text-sm hover:text-[#384e21] underline underline-offset-4 transition-all" href="#">Liên hệ</a>
         </div>
     </footer>
 </main>
 
 <?php include __DIR__ . '/../layouts/admin_footer.php'; ?>
+
