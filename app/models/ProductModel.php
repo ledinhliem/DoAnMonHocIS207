@@ -1,142 +1,257 @@
 <?php
-class ProductModel
-{
-    private $products = [
-        [
-            'id' => 1,
-            'name' => 'Honed Stone Pitcher',
-            'price' => 68,
-            'category' => 'kitchenware',
-            'impact' => 'plastic-free',
-            'rating' => 4.8,
-            'image' => 'https://images.unsplash.com/photo-1610701596007-11502861dcfa?auto=format&fit=crop&w=900&q=80',
-            'description' => 'Bình gốm thủ công tối giản, phù hợp decor và sử dụng hằng ngày.',
-        ],
-        [
-            'id' => 2,
-            'name' => 'Terra Ceramic Vessel',
-            'price' => 185,
-            'category' => 'living-room',
-            'impact' => 'carbon-neutral',
-            'rating' => 4.9,
-            'image' => 'https://images.unsplash.com/photo-1517705008128-361805f42e86?auto=format&fit=crop&w=900&q=80',
-            'description' => 'Bình gốm cao cấp theo phong cách organic, bền vững và sang trọng.',
-        ],
-        [
-            'id' => 3,
-            'name' => 'Floating Cork Plank',
-            'price' => 120,
-            'category' => 'bedroom',
-            'impact' => 'upcycled',
-            'rating' => 4.5,
-            'image' => 'https://images.unsplash.com/photo-1505693416388-ac5ce068fe85?auto=format&fit=crop&w=900&q=80',
-            'description' => 'Tấm cork thân thiện môi trường, tạo cảm giác ấm áp cho không gian.',
-        ],
-        [
-            'id' => 4,
-            'name' => 'Aegean Pendant Light',
-            'price' => 480,
-            'category' => 'living-room',
-            'impact' => 'plastic-free',
-            'rating' => 4.7,
-            'image' => 'https://images.unsplash.com/photo-1513694203232-719a280e022f?auto=format&fit=crop&w=900&q=80',
-            'description' => 'Đèn thả hiện đại với chất liệu tái chế, tạo điểm nhấn nổi bật.',
-        ],
-        [
-            'id' => 5,
-            'name' => 'Honed Oak Lounge Chair',
-            'price' => 1240,
-            'category' => 'living-room',
-            'impact' => 'carbon-neutral',
-            'rating' => 5.0,
-            'image' => 'https://images.unsplash.com/photo-1505693416388-ac5ce068fe85?auto=format&fit=crop&w=900&q=80',
-            'description' => 'Ghế lounge gỗ sồi thiết kế tinh giản, phù hợp không gian xanh.',
-        ],
-        [
-            'id' => 6,
-            'name' => 'Chăm sóc sức khỏe Ritual Set',
-            'price' => 95,
-            'category' => 'wellness',
-            'impact' => 'plastic-free',
-            'rating' => 4.6,
-            'image' => 'https://images.unsplash.com/photo-1515377905703-c4788e51af15?auto=format&fit=crop&w=900&q=80',
-            'description' => 'Bộ wellness thân thiện môi trường cho sinh hoạt hằng ngày.',
-        ],
-    ];
 
+class ProductModel extends Model
+{
     public function getAll($filters = [])
     {
-        $products = $this->products;
+        $sql = "
+            SELECT
+                sp.MaSanPham,
+                sp.TenSanPham,
+                sp.MaDanhMuc,
+                sp.MoTa,
+                sp.DiemXanh,
+                sp.TacDongMoiTruong,
+                sp.CoTaiChe,
+                sp.ThanThienMoiTruong,
+                dm.TenDanhMuc,
+                MIN(bt.GiaTien) AS GiaTien,
+                SUM(bt.SoLuongTon) AS TongTon,
+                (
+                    SELECT bt2.MaBienThe
+                    FROM bienthesanpham bt2
+                    WHERE bt2.MaSanPham = sp.MaSanPham
+                    ORDER BY bt2.MaBienThe ASC
+                    LIMIT 1
+                ) AS MaBienTheMacDinh,
+                (
+                    SELECT ha.DuongDan
+                    FROM hinhanhsanpham ha
+                    WHERE ha.MaSanPham = sp.MaSanPham
+                    LIMIT 1
+                ) AS HinhAnh
+            FROM sanpham sp
+            LEFT JOIN danhmuc dm ON dm.MaDanhMuc = sp.MaDanhMuc
+            LEFT JOIN bienthesanpham bt ON bt.MaSanPham = sp.MaSanPham
+            WHERE sp.TrangThai = 1
+        ";
+
+        $params = [];
 
         if (!empty($filters['keyword'])) {
-            $keyword = mb_strtolower(trim($filters['keyword']));
-            $products = array_filter($products, function ($product) use ($keyword) {
-                return str_contains(mb_strtolower($product['name']), $keyword)
-                    || str_contains(mb_strtolower($product['description']), $keyword);
-            });
+            $sql .= " AND (sp.TenSanPham LIKE ? OR sp.MoTa LIKE ?)";
+            $keyword = '%' . trim($filters['keyword']) . '%';
+            $params[] = $keyword;
+            $params[] = $keyword;
         }
 
         if (!empty($filters['category'])) {
-            $category = $filters['category'];
-            $products = array_filter($products, function ($p) use ($category) {
-                return $p['category'] === $category;
-            });
+            $sql .= " AND sp.MaDanhMuc = ?";
+            $params[] = $filters['category'];
         }
 
         if (!empty($filters['impact'])) {
-            $impact = $filters['impact'];
-            $products = array_filter($products, function ($p) use ($impact) {
-                return $p['impact'] === $impact;
-            });
+            if ($filters['impact'] === 'recycle') {
+                $sql .= " AND sp.CoTaiChe = 1";
+            } elseif ($filters['impact'] === 'eco') {
+                $sql .= " AND sp.ThanThienMoiTruong = 1";
+            } elseif ($filters['impact'] === 'high-score') {
+                $sql .= " AND sp.DiemXanh >= 90";
+            }
         }
+
+        $sql .= "
+            GROUP BY
+                sp.MaSanPham,
+                sp.TenSanPham,
+                sp.MaDanhMuc,
+                sp.MoTa,
+                sp.DiemXanh,
+                sp.TacDongMoiTruong,
+                sp.CoTaiChe,
+                sp.ThanThienMoiTruong,
+                dm.TenDanhMuc
+        ";
 
         if (isset($filters['price_max']) && $filters['price_max'] !== '') {
-            $priceMax = (float)$filters['price_max'];
-            $products = array_filter($products, function ($p) use ($priceMax) {
-                return $p['price'] <= $priceMax;
-            });
+            $sql .= " HAVING GiaTien <= ?";
+            $params[] = (float)$filters['price_max'];
         }
 
-        $sort = $filters['sort'] ?? '';
-        if ($sort === 'price_asc') {
-            usort($products, fn($a, $b) => $a['price'] <=> $b['price']);
-        } elseif ($sort === 'price_desc') {
-            usort($products, fn($a, $b) => $b['price'] <=> $a['price']);
-        } elseif ($sort === 'impact_desc') {
-            usort($products, fn($a, $b) => $b['rating'] <=> $a['rating']);
+        if (($filters['sort'] ?? '') === 'price_asc') {
+            $sql .= " ORDER BY GiaTien ASC";
+        } elseif (($filters['sort'] ?? '') === 'price_desc') {
+            $sql .= " ORDER BY GiaTien DESC";
+        } elseif (($filters['sort'] ?? '') === 'impact_desc') {
+            $sql .= " ORDER BY sp.DiemXanh DESC";
         } else {
-            usort($products, fn($a, $b) => $a['id'] <=> $b['id']);
+            $sql .= " ORDER BY sp.MaSanPham ASC";
         }
 
-        return array_values($products);
+        $stmt = $this->db->prepare($sql);
+        $stmt->execute($params);
+        $rows = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+        $products = [];
+
+        foreach ($rows as $row) {
+            $products[] = [
+                'id' => $row['MaSanPham'],
+                'name' => $row['TenSanPham'],
+                'price' => (float)$row['GiaTien'],
+                'category' => $row['MaDanhMuc'],
+                'impact' => $row['TacDongMoiTruong'] ?? '',
+                'rating' => ((int)$row['DiemXanh']) / 20,
+                'image' => $this->imageUrl($row['HinhAnh'] ?? ''),
+                'description' => $row['MoTa'] ?? '',
+                'eco_tag' => $this->getEcoTag($row),
+                'is_bestseller' => ((int)$row['DiemXanh'] >= 95),
+
+                'MaSanPham' => $row['MaSanPham'],
+                'TenSanPham' => $row['TenSanPham'],
+                'MaDanhMuc' => $row['MaDanhMuc'],
+                'TenDanhMuc' => $row['TenDanhMuc'] ?? '',
+                'GiaTien' => (float)$row['GiaTien'],
+                'DiemXanh' => (int)$row['DiemXanh'],
+                'MaBienTheMacDinh' => $row['MaBienTheMacDinh'] ?? '',
+                'TongTon' => (int)($row['TongTon'] ?? 0),
+            ];
+        }
+
+        return $products;
     }
 
     public function getById($id)
     {
-        foreach ($this->products as $product) {
-            if ((int)$product['id'] === (int)$id) {
-                return $product;
-            }
-        }
-        return null;
+        return $this->getProductById($id);
+    }
+
+    public function getProductById($id)
+    {
+        $sql = "
+            SELECT 
+                sp.*,
+                dm.TenDanhMuc,
+                th.TenThuongHieu,
+                vl.TenVatLieu
+            FROM sanpham sp
+            LEFT JOIN danhmuc dm ON dm.MaDanhMuc = sp.MaDanhMuc
+            LEFT JOIN thuonghieu th ON th.MaThuongHieu = sp.MaThuongHieu
+            LEFT JOIN vatlieu vl ON vl.MaVatLieu = sp.MaVatLieu
+            WHERE sp.MaSanPham = ?
+            LIMIT 1
+        ";
+
+        $stmt = $this->db->prepare($sql);
+        $stmt->execute([$id]);
+
+        return $stmt->fetch(PDO::FETCH_ASSOC);
+    }
+
+    public function getVariantsByProductId($id)
+    {
+        $sql = "
+            SELECT *
+            FROM bienthesanpham
+            WHERE MaSanPham = ?
+            ORDER BY MaBienThe ASC
+        ";
+
+        $stmt = $this->db->prepare($sql);
+        $stmt->execute([$id]);
+
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    }
+
+    public function getImagesByProductId($id)
+    {
+        $sql = "
+            SELECT
+                MaHinhAnh,
+                MaSanPham,
+                DuongDan
+            FROM hinhanhsanpham
+            WHERE MaSanPham = ?
+            ORDER BY MaHinhAnh ASC
+        ";
+
+        $stmt = $this->db->prepare($sql);
+        $stmt->execute([$id]);
+
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    }
+
+    public function getReviewsByProductId($id)
+    {
+        $sql = "
+            SELECT 
+                dg.*,
+                nd.HoTen
+            FROM danhgia dg
+            LEFT JOIN nguoidung nd ON nd.MaNguoiDung = dg.MaNguoiDung
+            WHERE dg.MaSanPham = ?
+            AND dg.TrangThai = 1
+            ORDER BY dg.NgayDanhGia DESC
+        ";
+
+        $stmt = $this->db->prepare($sql);
+        $stmt->execute([$id]);
+
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
 
     public function getCategories()
     {
-        return [
-            'kitchenware' => 'Đồ bếp',
-            'living-room' => 'Phòng khách',
-            'bedroom' => 'Phòng ngủ',
-            'wellness' => 'Chăm sóc sức khỏe',
-        ];
+        $stmt = $this->db->query("
+            SELECT MaDanhMuc, TenDanhMuc
+            FROM danhmuc
+            ORDER BY MaDanhMuc ASC
+        ");
+
+        $rows = $stmt->fetchAll(PDO::FETCH_ASSOC);
+        $categories = [];
+
+        foreach ($rows as $row) {
+            $categories[$row['MaDanhMuc']] = $row['TenDanhMuc'];
+        }
+
+        return $categories;
     }
 
     public function getImpacts()
     {
         return [
-            'carbon-neutral' => 'Trung hòa carbon',
-            'plastic-free' => 'Không nhựa',
-            'upcycled' => 'Vật liệu tái chế nâng cấp',
+            'high-score' => 'Điểm xanh cao',
+            'recycle' => 'Có thể tái chế',
+            'eco' => 'Thân thiện môi trường',
         ];
+    }
+
+    private function imageUrl($fileName)
+    {
+        if (empty($fileName)) {
+            return BASE_URL . 'public/images/products/default.jpg';
+        }
+
+        if (preg_match('/^https?:\/\//', $fileName)) {
+            return $fileName;
+        }
+
+        $fileName = basename($fileName);
+
+        return BASE_URL . 'public/images/products/' . $fileName;
+    }
+
+    private function getEcoTag($row)
+    {
+        if ((int)($row['DiemXanh'] ?? 0) >= 95) {
+            return 'ĐIỂM XANH CAO';
+        }
+
+        if (!empty($row['CoTaiChe'])) {
+            return 'CÓ THỂ TÁI CHẾ';
+        }
+
+        return 'THÂN THIỆN MÔI TRƯỜNG';
     }
 }
