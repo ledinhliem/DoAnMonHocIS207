@@ -41,10 +41,17 @@
                 <p class="text-on-surface-variant text-sm">Enter your details to access your conscious collection.</p>
             </div>
 
+            <?php if (isset($data['error']) && !empty($data['error'])): ?>
+                <div class="mb-6 p-4 rounded-lg bg-red-50 border border-red-200 flex items-start gap-3">
+                    <span class="material-symbols-outlined text-red-500">error</span>
+                    <p class="text-sm font-medium text-red-600 mt-0.5"><?php echo $data['error']; ?></p>
+                </div>
+            <?php endif; ?>
+
             <form id="loginForm" action="index.php?url=login" method="POST" class="space-y-6 auth-form">
                 <div class="space-y-2">
                     <label class="block text-xs font-bold uppercase tracking-wider text-primary px-1">Địa chỉ email</label>
-                    <input name="email" required class="w-full bg-surface-container-high border-none rounded-lg p-4 focus:ring-1 focus:ring-primary/30 focus:bg-surface-container-lowest transition-all placeholder:text-outline" placeholder="nature@zentro.com" type="email" />
+                    <input name="email" required class="w-full bg-surface-container-high border-none rounded-lg p-4 focus:ring-1 focus:ring-primary/30 focus:bg-surface-container-lowest transition-all placeholder:text-outline" placeholder="nature@zentro.com" type="email" value="<?php echo isset($_POST['email']) ? htmlspecialchars($_POST['email']) : ''; ?>" />
                 </div>
                 
                 <div class="space-y-2">

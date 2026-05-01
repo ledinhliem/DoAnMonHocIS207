@@ -1,6 +1,27 @@
 <?php
-class OrderModel
+class OrderModel extends Model
 {
+    public function __construct() {
+        parent::__construct(); 
+    }
+
+    // Lấy lịch sử đơn hàng theo User ID
+    public function getOrdersByUserId($userId)
+    {
+        $sql = "SELECT * FROM donhang WHERE MaNguoiDung = ? ORDER BY NgayDat DESC";
+        $stmt = $this->db->prepare($sql);
+        $stmt->execute([$userId]);
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    }
+
+    // Lấy chi tiết 1 đơn hàng (Dùng cho Tracking)
+    public function getOrderById($orderId, $userId)
+    {
+        $sql = "SELECT * FROM donhang WHERE MaDonHang = ? AND MaNguoiDung = ?";
+        $stmt = $this->db->prepare($sql);
+        $stmt->execute([$orderId, $userId]);
+        return $stmt->fetch(PDO::FETCH_ASSOC);
+    }
     public function calculateDiscount($subtotal, $promoCode)
     {
         $promoCode = strtoupper(trim($promoCode));
@@ -146,4 +167,6 @@ class OrderModel
     {
         return $_SESSION['latest_order'] ?? null;
     }
+
+    
 }

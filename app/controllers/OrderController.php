@@ -237,19 +237,48 @@ class OrderController extends Controller
         unset($_SESSION['success']);
     }
 
-    public function history()
+    public function history() 
     {
-        $this->view('order/history', [
-            'title' => 'Lịch sử đơn hàng',
-            'orders' => $this->orderModel->getOrders(),
-        ]);
+    // 1. Kiểm tra nếu chưa đăng nhập thì đá ra trang login ngay
+    if (!isset($_SESSION['user_id'])) {
+        header('Location: ?url=login');
+        exit;
+    }
+
+    // 2. Lấy đơn hàng CỦA RIÊNG người dùng này
+    $orders = $this->orderModel->getOrdersByUserId($_SESSION['user_id']); 
+
+    $this->view('order/history', [
+        'title' => 'Lịch sử đơn hàng',
+        'orders' => $orders,
+    ]);
     }
 
     public function tracking()
     {
+        if (!isset($_SESSION['user_id'])) {
+            header('Location: index.php?url=login');
+            exit;
+        }
+
+        // Lấy mã đơn hàng từ trên thanh URL 
+        $maDonHang = $_GET['id'] ?? null;
+        
+        if (!$maDonHang) {
+            header('Location: index.php?url=order/history');
+            exit;
+        }
+
+        // Truy vấn dữ liệu THẬT của đơn hàng đó
+        $order = $this->orderModel->getOrderById($maDonHang, $_SESSION['user_id']);
+
+        if (!$order) {
+            die("Không tìm thấy đơn hàng, hoặc bạn không có quyền xem đơn này!");
+        }
+
         $this->view('order/tracking', [
             'title' => 'Theo dõi đơn hàng',
-            'order' => $this->orderModel->getLatestOrder(),
+            'order' => $order,
             'helpMessage' => $_SESSION['help_message'] ?? '',
         ]);
 
