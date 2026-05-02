@@ -27,9 +27,9 @@
                 <?= htmlspecialchars($blog['title']) ?>
             </h1>
 
-            <p class="text-lg text-on-surface-variant leading-relaxed">
-                <?= htmlspecialchars($blog['excerpt']) ?> Bài viết này giới thiệu cách chọn vật liệu, đồ nội thất và sản phẩm sống xanh để tạo nên không gian vừa đẹp vừa bền vững.
-            </p>
+            <div class="text-lg text-on-surface-variant leading-relaxed whitespace-pre-line">
+                 <?= nl2br(htmlspecialchars($blog['content'])) ?>
+            </div>
         </div>
     </article>
 

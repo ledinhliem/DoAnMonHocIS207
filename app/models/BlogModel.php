@@ -1,43 +1,99 @@
 <?php
+require_once __DIR__ . '/../../core/Database.php';
+
 class BlogModel
 {
+    private $db;
+
+    public function __construct()
+    {
+        $database = new Database();
+        $this->db = $database->connect();
+    }
+
     public function getAll()
     {
-        return [
-            [
-                'id' => 1,
-                'title' => 'Building a Trang chủ with the Earth',
-                'excerpt' => 'Cách vật liệu bền vững tạo nên không gian sống hiện đại và có chiều sâu.',
-                'image' => 'https://images.unsplash.com/photo-1513694203232-719a280e022f?auto=format&fit=crop&w=1200&q=80',
-                'category' => 'Sustainability',
-            ],
-            [
-                'id' => 2,
-                'title' => 'The Future of Conscious Interiors',
-                'excerpt' => 'Thiết kế nội thất xanh không chỉ là xu hướng, mà là tiêu chuẩn mới.',
-                'image' => 'https://images.unsplash.com/photo-1505693416388-ac5ce068fe85?auto=format&fit=crop&w=1200&q=80',
-                'category' => 'Interiors',
-            ],
-            [
-                'id' => 3,
-                'title' => 'Small Rituals for a Greener Trang chủ',
-                'excerpt' => 'Một vài thay đổi nhỏ trong sinh hoạt hằng ngày có thể tạo khác biệt lớn cho môi trường.',
-                'image' => 'https://images.unsplash.com/photo-1515377905703-c4788e51af15?auto=format&fit=crop&w=1200&q=80',
-                'category' => 'Lifestyle',
-            ],
-        ];
+        $sql = "SELECT 
+                    MaBaiViet AS id,
+                    TieuDe AS title,
+                    NoiDung AS content,
+                    HinhAnhBia AS image,
+                    NgayDang AS created_at,
+                    MaNguoiDung AS user_id
+                FROM baiviet
+                ORDER BY NgayDang DESC, MaBaiViet DESC";
+
+        $stmt = $this->db->prepare($sql);
+        $stmt->execute();
+
+        $blogs = $stmt->fetchAll();
+
+        foreach ($blogs as &$blog) {
+            $blog['excerpt'] = $this->makeExcerpt($blog['content']);
+            $blog['category'] = 'Sustainability';
+            $blog['image'] = $this->formatImagePath($blog['image']);
+        }
+
+        return $blogs;
     }
 
     public function getById($id)
     {
-        $id = (int)$id;
+        $sql = "SELECT 
+                    MaBaiViet AS id,
+                    TieuDe AS title,
+                    NoiDung AS content,
+                    HinhAnhBia AS image,
+                    NgayDang AS created_at,
+                    MaNguoiDung AS user_id
+                FROM baiviet
+                WHERE MaBaiViet = :id
+                LIMIT 1";
 
-        foreach ($this->getAll() as $blog) {
-            if ((int)$blog['id'] === $id) {
-                return $blog;
-            }
+        $stmt = $this->db->prepare($sql);
+        $stmt->bindValue(':id', (int)$id, PDO::PARAM_INT);
+        $stmt->execute();
+
+        $blog = $stmt->fetch();
+
+        if (!$blog) {
+            return null;
         }
 
-        return null;
+        $blog['excerpt'] = $this->makeExcerpt($blog['content']);
+        $blog['category'] = 'Sustainability';
+        $blog['image'] = $this->formatImagePath($blog['image']);
+
+        return $blog;
+    }
+
+    private function makeExcerpt($content, $length = 160)
+    {
+        $content = trim(strip_tags($content));
+
+        if (mb_strlen($content, 'UTF-8') <= $length) {
+            return $content;
+        }
+
+        return mb_substr($content, 0, $length, 'UTF-8') . '...';
+    }
+
+    private function formatImagePath($image)
+    {
+        if (empty($image)) {
+            return 'https://images.unsplash.com/photo-1513694203232-719a280e022f?auto=format&fit=crop&w=1200&q=80';
+        }
+
+        if (str_starts_with($image, 'http')) {
+            return $image;
+        }
+
+        $imageMap = [
+            'BL001_ZeroWaste.jpg' => 'https://images.unsplash.com/photo-1542601906990-b4d3fb778b09?auto=format&fit=crop&w=1200&q=80',
+            'BL002_VaiSoiCafe.webp' => 'https://images.unsplash.com/photo-1441986300917-64674bd600d8?auto=format&fit=crop&w=1200&q=80',
+            'BL003_HatViNhua.jpg' => 'https://images.unsplash.com/photo-1611284446314-60a58ac0deb9?auto=format&fit=crop&w=1200&q=80',
+        ];
+
+        return $imageMap[$image] ?? 'https://images.unsplash.com/photo-1513694203232-719a280e022f?auto=format&fit=crop&w=1200&q=80';
     }
 }
