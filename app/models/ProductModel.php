@@ -1,257 +1,189 @@
 <?php
+// models/ProductModel.php
+require_once __DIR__ . '/../../core/Database.php';
 
-class ProductModel extends Model
+class ProductModel
 {
-    public function getAll($filters = [])
+    // ─── PRODUCT LIST (with filters) ────────────────────────────────────────
+    public function getAll(array $filters = []): array
     {
-        $sql = "
-            SELECT
-                sp.MaSanPham,
-                sp.TenSanPham,
-                sp.MaDanhMuc,
-                sp.MoTa,
-                sp.DiemXanh,
-                sp.TacDongMoiTruong,
-                sp.CoTaiChe,
-                sp.ThanThienMoiTruong,
-                dm.TenDanhMuc,
-                MIN(bt.GiaTien) AS GiaTien,
-                SUM(bt.SoLuongTon) AS TongTon,
-                (
-                    SELECT bt2.MaBienThe
-                    FROM bienthesanpham bt2
-                    WHERE bt2.MaSanPham = sp.MaSanPham
-                    ORDER BY bt2.MaBienThe ASC
-                    LIMIT 1
-                ) AS MaBienTheMacDinh,
-                (
-                    SELECT ha.DuongDan
-                    FROM hinhanhsanpham ha
-                    WHERE ha.MaSanPham = sp.MaSanPham
-                    LIMIT 1
-                ) AS HinhAnh
-            FROM sanpham sp
-            LEFT JOIN danhmuc dm ON dm.MaDanhMuc = sp.MaDanhMuc
-            LEFT JOIN bienthesanpham bt ON bt.MaSanPham = sp.MaSanPham
-            WHERE sp.TrangThai = 1
-        ";
-
+        $where  = ['sp.TrangThai = 1'];
         $params = [];
 
         if (!empty($filters['keyword'])) {
-            $sql .= " AND (sp.TenSanPham LIKE ? OR sp.MoTa LIKE ?)";
-            $keyword = '%' . trim($filters['keyword']) . '%';
-            $params[] = $keyword;
-            $params[] = $keyword;
+            $where[]          = '(sp.TenSanPham LIKE :kw OR sp.MoTa LIKE :kw2)';
+            $params[':kw']    = '%' . $filters['keyword'] . '%';
+            $params[':kw2']   = '%' . $filters['keyword'] . '%';
         }
-
         if (!empty($filters['category'])) {
-            $sql .= " AND sp.MaDanhMuc = ?";
-            $params[] = $filters['category'];
+            $where[]            = 'sp.MaDanhMuc = :cat';
+            $params[':cat']     = $filters['category'];
         }
-
         if (!empty($filters['impact'])) {
-            if ($filters['impact'] === 'recycle') {
-                $sql .= " AND sp.CoTaiChe = 1";
-            } elseif ($filters['impact'] === 'eco') {
-                $sql .= " AND sp.ThanThienMoiTruong = 1";
-            } elseif ($filters['impact'] === 'high-score') {
-                $sql .= " AND sp.DiemXanh >= 90";
-            }
+            // impact maps to TacDongMoiTruong keyword search
+            $where[]            = 'sp.TacDongMoiTruong LIKE :imp';
+            $params[':imp']     = '%' . $filters['impact'] . '%';
         }
-
-        $sql .= "
-            GROUP BY
-                sp.MaSanPham,
-                sp.TenSanPham,
-                sp.MaDanhMuc,
-                sp.MoTa,
-                sp.DiemXanh,
-                sp.TacDongMoiTruong,
-                sp.CoTaiChe,
-                sp.ThanThienMoiTruong,
-                dm.TenDanhMuc
-        ";
-
         if (isset($filters['price_max']) && $filters['price_max'] !== '') {
-            $sql .= " HAVING GiaTien <= ?";
-            $params[] = (float)$filters['price_max'];
+            $where[]            = '(SELECT MIN(bt.GiaTien) FROM bienthesanpham bt WHERE bt.MaSanPham = sp.MaSanPham) <= :pmax';
+            $params[':pmax']    = (float)$filters['price_max'];
         }
 
-        if (($filters['sort'] ?? '') === 'price_asc') {
-            $sql .= " ORDER BY GiaTien ASC";
-        } elseif (($filters['sort'] ?? '') === 'price_desc') {
-            $sql .= " ORDER BY GiaTien DESC";
-        } elseif (($filters['sort'] ?? '') === 'impact_desc') {
-            $sql .= " ORDER BY sp.DiemXanh DESC";
-        } else {
-            $sql .= " ORDER BY sp.MaSanPham ASC";
-        }
+        $orderBy = match ($filters['sort'] ?? '') {
+            'price_asc'    => 'min_price ASC',
+            'price_desc'   => 'min_price DESC',
+            'impact_desc'  => 'sp.DiemXanh DESC',
+            default        => 'sp.MaSanPham ASC',
+        };
 
-        $stmt = $this->db->prepare($sql);
-        $stmt->execute($params);
-        $rows = $stmt->fetchAll(PDO::FETCH_ASSOC);
-
-        $products = [];
-
-        foreach ($rows as $row) {
-            $products[] = [
-                'id' => $row['MaSanPham'],
-                'name' => $row['TenSanPham'],
-                'price' => (float)$row['GiaTien'],
-                'category' => $row['MaDanhMuc'],
-                'impact' => $row['TacDongMoiTruong'] ?? '',
-                'rating' => ((int)$row['DiemXanh']) / 20,
-                'image' => $this->imageUrl($row['HinhAnh'] ?? ''),
-                'description' => $row['MoTa'] ?? '',
-                'eco_tag' => $this->getEcoTag($row),
-                'is_bestseller' => ((int)$row['DiemXanh'] >= 95),
-
-                'MaSanPham' => $row['MaSanPham'],
-                'TenSanPham' => $row['TenSanPham'],
-                'MaDanhMuc' => $row['MaDanhMuc'],
-                'TenDanhMuc' => $row['TenDanhMuc'] ?? '',
-                'GiaTien' => (float)$row['GiaTien'],
-                'DiemXanh' => (int)$row['DiemXanh'],
-                'MaBienTheMacDinh' => $row['MaBienTheMacDinh'] ?? '',
-                'TongTon' => (int)($row['TongTon'] ?? 0),
-            ];
-        }
-
-        return $products;
-    }
-
-    public function getById($id)
-    {
-        return $this->getProductById($id);
-    }
-
-    public function getProductById($id)
-    {
         $sql = "
-            SELECT 
-                sp.*,
-                dm.TenDanhMuc,
-                th.TenThuongHieu,
-                vl.TenVatLieu
+            SELECT
+                sp.MaSanPham        AS id,
+                sp.TenSanPham       AS name,
+                sp.MaDanhMuc        AS category,
+                sp.DiemXanh         AS eco_score,
+                sp.TacDongMoiTruong AS eco_tag,
+                dm.TenDanhMuc       AS category_name,
+                th.TenThuongHieu    AS brand,
+                (SELECT MIN(bt.GiaTien) FROM bienthesanpham bt WHERE bt.MaSanPham = sp.MaSanPham) AS min_price,
+                (SELECT MAX(bt.GiaTien) FROM bienthesanpham bt WHERE bt.MaSanPham = sp.MaSanPham) AS max_price,
+                (SELECT ha.DuongDan  FROM hinhanhsanpham ha  WHERE ha.MaSanPham = sp.MaSanPham LIMIT 1) AS image
             FROM sanpham sp
-            LEFT JOIN danhmuc dm ON dm.MaDanhMuc = sp.MaDanhMuc
+            LEFT JOIN danhmuc   dm ON dm.MaDanhMuc    = sp.MaDanhMuc
             LEFT JOIN thuonghieu th ON th.MaThuongHieu = sp.MaThuongHieu
-            LEFT JOIN vatlieu vl ON vl.MaVatLieu = sp.MaVatLieu
-            WHERE sp.MaSanPham = ?
-            LIMIT 1
+            WHERE " . implode(' AND ', $where) . "
+            ORDER BY $orderBy
         ";
 
-        $stmt = $this->db->prepare($sql);
-        $stmt->execute([$id]);
-
-        return $stmt->fetch(PDO::FETCH_ASSOC);
+        $stmt = db()->prepare($sql);
+        $stmt->execute($params);
+        return $stmt->fetchAll();
     }
 
-    public function getVariantsByProductId($id)
-    {
-        $sql = "
-            SELECT *
-            FROM bienthesanpham
-            WHERE MaSanPham = ?
-            ORDER BY MaBienThe ASC
-        ";
-
-        $stmt = $this->db->prepare($sql);
-        $stmt->execute([$id]);
-
-        return $stmt->fetchAll(PDO::FETCH_ASSOC);
-    }
-
-    public function getImagesByProductId($id)
+    // ─── SINGLE PRODUCT DETAIL ───────────────────────────────────────────────
+    public function getById(string $id): ?array
     {
         $sql = "
             SELECT
-                MaHinhAnh,
-                MaSanPham,
-                DuongDan
-            FROM hinhanhsanpham
-            WHERE MaSanPham = ?
-            ORDER BY MaHinhAnh ASC
+                sp.*,
+                dm.TenDanhMuc,
+                th.TenThuongHieu,
+                vl.TenVatLieu,
+                vl.MoTa AS MoTaVatLieu
+            FROM sanpham sp
+            LEFT JOIN danhmuc    dm ON dm.MaDanhMuc    = sp.MaDanhMuc
+            LEFT JOIN thuonghieu th ON th.MaThuongHieu = sp.MaThuongHieu
+            LEFT JOIN vatlieu    vl ON vl.MaVatLieu    = sp.MaVatLieu
+            WHERE sp.MaSanPham = :id AND sp.TrangThai = 1
+            LIMIT 1
         ";
-
-        $stmt = $this->db->prepare($sql);
-        $stmt->execute([$id]);
-
-        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+        $stmt = db()->prepare($sql);
+        $stmt->execute([':id' => $id]);
+        $row = $stmt->fetch();
+        return $row ?: null;
     }
 
-    public function getReviewsByProductId($id)
+    // ─── IMAGES ─────────────────────────────────────────────────────────────
+    public function getImages(string $productId): array
     {
-        $sql = "
-            SELECT 
-                dg.*,
-                nd.HoTen
-            FROM danhgia dg
-            LEFT JOIN nguoidung nd ON nd.MaNguoiDung = dg.MaNguoiDung
-            WHERE dg.MaSanPham = ?
-            AND dg.TrangThai = 1
-            ORDER BY dg.NgayDanhGia DESC
-        ";
-
-        $stmt = $this->db->prepare($sql);
-        $stmt->execute([$id]);
-
-        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+        $stmt = db()->prepare(
+            "SELECT MaHinhAnh, DuongDan FROM hinhanhsanpham WHERE MaSanPham = :id ORDER BY MaHinhAnh"
+        );
+        $stmt->execute([':id' => $productId]);
+        return $stmt->fetchAll();
     }
 
-    public function getCategories()
+    // ─── VARIANTS ────────────────────────────────────────────────────────────
+    public function getVariants(string $productId): array
     {
-        $stmt = $this->db->query("
-            SELECT MaDanhMuc, TenDanhMuc
-            FROM danhmuc
-            ORDER BY MaDanhMuc ASC
-        ");
+        $stmt = db()->prepare(
+            "SELECT MaBienThe, MaSanPham, KichThuoc, MauSac, GiaTien, SoLuongTon
+             FROM bienthesanpham
+             WHERE MaSanPham = :id
+             ORDER BY MaBienThe"
+        );
+        $stmt->execute([':id' => $productId]);
+        return $stmt->fetchAll();
+    }
 
-        $rows = $stmt->fetchAll(PDO::FETCH_ASSOC);
-        $categories = [];
+    // ─── REVIEWS ────────────────────────────────────────────────────────────
+    public function getReviews(string $productId): array
+    {
+        $stmt = db()->prepare(
+            "SELECT dg.MaDanhGia, dg.SoSao, dg.NoiDung, dg.NgayDanhGia,
+                    nd.HoTen
+             FROM danhgia dg
+             LEFT JOIN nguoidung nd ON nd.MaNguoiDung = dg.MaNguoiDung
+             WHERE dg.MaSanPham = :id AND dg.TrangThai = 1
+             ORDER BY dg.NgayDanhGia DESC"
+        );
+        $stmt->execute([':id' => $productId]);
+        return $stmt->fetchAll();
+    }
 
-        foreach ($rows as $row) {
-            $categories[$row['MaDanhMuc']] = $row['TenDanhMuc'];
+    // ─── CATEGORIES / IMPACTS (for filter sidebar) ──────────────────────────
+    public function getCategories(): array
+    {
+        $stmt = db()->query("SELECT MaDanhMuc, TenDanhMuc FROM danhmuc ORDER BY MaDanhMuc");
+        $rows = $stmt->fetchAll();
+        $out  = [];
+        foreach ($rows as $r) {
+            $out[$r['MaDanhMuc']] = $r['TenDanhMuc'];
         }
-
-        return $categories;
+        return $out;
     }
 
-    public function getImpacts()
+    public function getImpacts(): array
     {
+        // Static mapping matching TacDongMoiTruong keywords
         return [
-            'high-score' => 'Điểm xanh cao',
-            'recycle' => 'Có thể tái chế',
-            'eco' => 'Thân thiện môi trường',
+            'thuần chay'    => 'Thuần chay / Vegan',
+            'phân hủy'      => 'Tự phân hủy sinh học',
+            'tái chế'       => 'Vật liệu tái chế',
+            'không nhựa'    => 'Không nhựa',
         ];
     }
 
-    private function imageUrl($fileName)
+    // ─── SEARCH ─────────────────────────────────────────────────────────────
+    public function search(string $keyword): array
     {
-        if (empty($fileName)) {
-            return BASE_URL . 'public/images/products/default.jpg';
-        }
-
-        if (preg_match('/^https?:\/\//', $fileName)) {
-            return $fileName;
-        }
-
-        $fileName = basename($fileName);
-
-        return BASE_URL . 'public/images/products/' . $fileName;
+        return $this->getAll(['keyword' => $keyword]);
     }
 
-    private function getEcoTag($row)
+    // ─── STOCK CHECK & DECREMENT ─────────────────────────────────────────────
+    public function checkStock(string $variantId, int $qty): bool
     {
-        if ((int)($row['DiemXanh'] ?? 0) >= 95) {
-            return 'ĐIỂM XANH CAO';
-        }
+        $stmt = db()->prepare(
+            "SELECT SoLuongTon FROM bienthesanpham WHERE MaBienThe = :vid LIMIT 1"
+        );
+        $stmt->execute([':vid' => $variantId]);
+        $row = $stmt->fetch();
+        return $row && (int)$row['SoLuongTon'] >= $qty;
+    }
 
-        if (!empty($row['CoTaiChe'])) {
-            return 'CÓ THỂ TÁI CHẾ';
-        }
+    public function decrementStock(string $variantId, int $qty): void
+    {
+        $pdo  = db();
+        $stmt = $pdo->prepare(
+            "UPDATE bienthesanpham
+             SET SoLuongTon = SoLuongTon - :qty
+             WHERE MaBienThe = :vid AND SoLuongTon >= :qty2"
+        );
+        $stmt->execute([':qty' => $qty, ':vid' => $variantId, ':qty2' => $qty]);
+    }
 
-        return 'THÂN THIỆN MÔI TRƯỜNG';
+    // ─── VARIANT BY ID ───────────────────────────────────────────────────────
+    public function getVariantById(string $variantId): ?array
+    {
+        $stmt = db()->prepare(
+            "SELECT bt.*, sp.TenSanPham,
+                    (SELECT ha.DuongDan FROM hinhanhsanpham ha WHERE ha.MaSanPham = bt.MaSanPham LIMIT 1) AS image
+             FROM bienthesanpham bt
+             LEFT JOIN sanpham sp ON sp.MaSanPham = bt.MaSanPham
+             WHERE bt.MaBienThe = :vid LIMIT 1"
+        );
+        $stmt->execute([':vid' => $variantId]);
+        $row = $stmt->fetch();
+        return $row ?: null;
     }
 }
