@@ -82,6 +82,12 @@ class Router
                 $controller->login();
                 break;
 
+            case 'logout':
+                require_once __DIR__ . '/../app/controllers/AuthController.php';
+                $controller = new AuthController();
+                $controller->logout();
+                break;
+
             case 'register':
                 require_once __DIR__ . '/../app/controllers/AuthController.php';
                 $controller = new AuthController();

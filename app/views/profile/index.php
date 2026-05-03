@@ -1,137 +1,41 @@
-<?php $base = BASE_URL; ?>
-<!DOCTYPE html>
-<html lang="en">
-<head>
-<meta charset="utf-8"/>
-<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
-<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
-<link href="https://fonts.googleapis.com/css2?family=Epilogue:wght@400;700;800;900&amp;family=Be+Vietnam+Pro:wght@300;400;500;600&amp;display=swap" rel="stylesheet"/>
-<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
-<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
-<script id="tailwind-config">
-tailwind.config = {
-  darkMode: "class",
-  theme: {
-    extend: {
-      colors: {
-        "tertiary-container": "#5e605c",
-        "primary": "#384e21",
-        "error-container": "#ffdad6",
-        "outline-variant": "#c5c8ba",
-        "surface-variant": "#e1e3dc",
-        "error": "#ba1a1a",
-        "outline": "#75796d",
-        "inverse-primary": "#b5cf95",
-        "surface": "#f9faf2",
-        "tertiary-fixed-dim": "#c6c7c2",
-        "surface-container-lowest": "#ffffff",
-        "primary-fixed-dim": "#b5cf95",
-        "surface-bright": "#f9faf2",
-        "on-surface": "#191c18",
-        "background": "#f9faf2",
-        "on-tertiary": "#ffffff",
-        "on-secondary": "#ffffff",
-        "surface-dim": "#d9dbd3",
-        "on-background": "#191c18",
-        "on-tertiary-container": "#dadad6",
-        "on-error": "#ffffff",
-        "on-surface-variant": "#44483e",
-        "tertiary-fixed": "#e3e3de",
-        "on-secondary-container": "#7a5b3b",
-        "inverse-surface": "#2e312c",
-        "tertiary": "#474845",
-        "surface-container": "#edefe7",
-        "on-primary-fixed-variant": "#374d20",
-        "inverse-on-surface": "#f0f1ea",
-        "on-error-container": "#93000a",
-        "secondary-fixed": "#ffdcbd",
-        "primary-container": "#4f6636",
-        "secondary": "#775839",
-        "on-secondary-fixed-variant": "#5d4123",
-        "secondary-container": "#ffd5ae",
-        "primary-fixed": "#d0ecaf",
-        "surface-container-high": "#e7e9e1",
-        "surface-tint": "#4e6535",
-        "on-primary-container": "#c7e3a7",
-        "surface-container-low": "#f3f4ed",
-        "on-secondary-fixed": "#2c1701",
-        "secondary-fixed-dim": "#e8bf98",
-        "on-tertiary-fixed-variant": "#454744",
-        "on-primary-fixed": "#0f2000",
-        "surface-container-highest": "#e1e3dc",
-        "on-primary": "#ffffff",
-        "on-tertiary-fixed": "#1a1c19"
-      },
-      fontFamily: {
-        "headline": ["Epilogue"],
-        "body": ["Be Vietnam Pro"],
-        "label": ["Be Vietnam Pro"]
-      },
-      borderRadius: {"DEFAULT": "0.25rem", "lg": "1rem", "xl": "1.5rem", "full": "9999px"},
-    },
-  },
-}
-</script>
-<style>
-.material-symbols-outlined {
-    font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
-    vertical-align: middle;
-}
-body { font-family: 'Be Vietnam Pro', sans-serif; }
-h1, h2, h3 { font-family: 'Epilogue', sans-serif; }
-</style>
-</head>
-<body class="bg-surface text-on-surface selection:bg-primary-fixed-dim selection:text-on-primary-fixed">
+<?php include __DIR__ . '/../layouts/header.php'; ?>
+<?php 
+$base = defined('BASE_URL') ? BASE_URL : 'index.php'; 
+$u = $data['user'] ?? [];
 
-<header class="w-full sticky top-0 z-50 bg-[#f9faf2] dark:bg-stone-900">
-  <nav class="flex justify-between items-center px-8 py-6 max-w-full mx-auto">
-    <div class="flex items-center gap-12">
-      <a class="text-2xl font-bold text-[#384e21] dark:text-[#b5cf95] tracking-tighter" href="<?= $base ?>">Zentro</a>
-      <div class="hidden md:flex items-center gap-8">
-        <a class="text-[#191c18]/70 dark:text-stone-400 hover:text-[#4f6636] transition-colors duration-300" href="<?= $base ?>">Cửa hàng</a>
-        <a class="text-[#191c18]/70 dark:text-stone-400 hover:text-[#4f6636] transition-colors duration-300" href="#">Sustainability</a>
-        <a class="text-[#191c18]/70 dark:text-stone-400 hover:text-[#4f6636] transition-colors duration-300" href="<?= $base ?>?url=blog">Blog</a>
-        <a class="text-[#191c18]/70 dark:text-stone-400 hover:text-[#4f6636] transition-colors duration-300" href="#">About</a>
-      </div>
-    </div>
-    <div class="flex items-center gap-6">
-      <a href="<?= $base ?>?url=cart" class="material-symbols-outlined text-[#384e21] dark:text-[#b5cf95] text-2xl" data-icon="shopping_cart">shopping_cart</a>
-      <a href="<?= $base ?>?url=profile" class="material-symbols-outlined text-[#384e21] dark:text-[#b5cf95] text-2xl border-b-2 border-[#384e21] pb-1" data-icon="person">person</a>
-    </div>
-  </nav>
-</header>
+// Nối chuỗi địa chỉ từ DB
+$diaChiDayDu = 'Bạn chưa cập nhật địa chỉ giao hàng.';
+if (!empty($u['SoNha_Duong'])) {
+    $diaChiDayDu = $u['SoNha_Duong'] . ', ' . $u['PhuongXa'] . ', ' . $u['QuanHuyen'] . ', ' . $u['TinhThanh'];
+}
+?>
 
 <main class="max-w-7xl mx-auto px-6 md:px-12 py-12 md:py-20">
   <div class="flex flex-col md:flex-row gap-16">
     <aside class="w-full md:w-64 flex flex-col gap-2">
       <div class="mb-8">
-        <div class="w-20 h-20 rounded-xl overflow-hidden mb-4 bg-surface-container-high">
-          <img alt="User Profile Photo" class="w-full h-full object-cover" data-alt="Portrait of a person with a warm smile, natural outdoor lighting, minimalist aesthetic with soft earthy background" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDkNfC_P5iY2cYgZAkfUmKWfHhSz3rzRSJnbh-ZeBeSLDrH7ZWRjlDW5EQbCSna7qaVrwn8SEinzJmMlx3CMU0xHJlaDtblfTN0Vo9MvRs2Zaxl5EQooPQ1rrpWeMlIVH71pNUvDJWAxSpe4KMQe-vNJUF-01ADWsAJ3tyGJlOKQwt7XBDKlvOjyP3VDaeQgW1pGWhxYzsP2FhpUW9EtFxNkT3TkQPwNaRBHtxTug3Q0BYHlF2AKr2OpO22UChBfA_Bfhj66FLXHpY"/>
+        <div class="w-20 h-20 rounded-xl overflow-hidden mb-4 bg-surface-container-high border border-outline-variant/20 flex items-center justify-center">
+            <span class="text-3xl font-bold text-primary uppercase">
+                <?php echo mb_substr($u['HoTen'] ?? 'U', 0, 1, "UTF-8"); ?>
+            </span>
         </div>
-        <h2 class="text-xl font-bold text-on-surface">Elena Green</h2>
-        <p class="text-on-surface-variant text-sm">Member since Nov 2023</p>
+        <h2 class="text-xl font-bold text-on-surface"><?php echo htmlspecialchars($u['HoTen'] ?? 'Khách hàng'); ?></h2>
+        <p class="text-on-surface-variant text-sm truncate"><?php echo htmlspecialchars($u['Email'] ?? ''); ?></p>
       </div>
 
       <nav class="flex flex-col gap-1">
-        <a class="flex items-center gap-3 px-4 py-3 rounded-lg bg-primary text-on-primary" href="<?= $base ?>?url=profile">
-          <span class="material-symbols-outlined" data-icon="person" style="font-variation-settings: 'FILL' 1;">person</span>
-          <span class="font-medium">Personal Information</span>
+        <a class="flex items-center gap-3 px-4 py-3 rounded-lg bg-primary text-on-primary" href="<?php echo $base; ?>?url=profile">
+          <span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">person</span>
+          <span class="font-medium">Thông tin cá nhân</span>
         </a>
-        <a class="flex items-center gap-3 px-4 py-3 rounded-lg text-on-surface-variant hover:bg-surface-container transition-colors" href="#">
-          <span class="material-symbols-outlined" data-icon="local_shipping">local_shipping</span>
-          <span class="font-medium">Địa chỉ đã lưu</span>
-        </a>
-        <a class="flex items-center gap-3 px-4 py-3 rounded-lg text-on-surface-variant hover:bg-surface-container transition-colors" href="<?= $base ?>?url=order/history">
-          <span class="material-symbols-outlined" data-icon="shopping_basket">shopping_basket</span>
+        <a class="flex items-center gap-3 px-4 py-3 rounded-lg text-on-surface-variant hover:bg-surface-container transition-colors" href="<?php echo $base; ?>?url=order/history">
+          <span class="material-symbols-outlined">shopping_basket</span>
           <span class="font-medium">Lịch sử đơn hàng</span>
         </a>
-        <a class="flex items-center gap-3 px-4 py-3 rounded-lg text-on-surface-variant hover:bg-surface-container transition-colors" href="#">
-          <span class="material-symbols-outlined" data-icon="favorite">favorite</span>
-          <span class="font-medium">Wishlist</span>
-        </a>
-        <a class="flex items-center gap-3 px-4 py-3 rounded-lg text-on-surface-variant hover:bg-surface-container transition-colors" href="#">
-          <span class="material-symbols-outlined" data-icon="settings">settings</span>
-          <span class="font-medium">Account Cài đặt</span>
+        <hr class="my-2 border-outline-variant/20">
+        <a class="flex items-center gap-3 px-4 py-3 rounded-lg text-red-600 hover:bg-red-50 transition-colors" 
+          href="index.php?url=logout"> <span class="material-symbols-outlined">logout</span>
+          <span class="font-medium">Đăng xuất</span>
         </a>
       </nav>
     </aside>
@@ -140,8 +44,8 @@ h1, h2, h3 { font-family: 'Epilogue', sans-serif; }
       <div class="space-y-8">
         <div class="flex justify-between items-end">
           <div>
-            <span class="text-primary font-semibold tracking-wider text-xs uppercase mb-2 block">Account Details</span>
-            <h1 class="text-4xl font-bold text-on-surface tracking-tight">Personal Information</h1>
+            <span class="text-primary font-semibold tracking-wider text-xs uppercase mb-2 block">Chi tiết tài khoản</span>
+            <h1 class="text-4xl font-bold text-on-surface tracking-tight">Thông tin cá nhân</h1>
           </div>
           <button class="px-6 py-2 rounded-full border border-outline-variant text-primary font-medium hover:bg-surface-container transition-colors">
             Sửa Profile
@@ -150,120 +54,36 @@ h1, h2, h3 { font-family: 'Epilogue', sans-serif; }
 
         <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
           <div class="p-8 rounded-xl bg-surface-container-lowest border border-outline-variant/10">
-            <label class="text-on-surface-variant text-xs font-semibold uppercase tracking-widest block mb-1">Full Name</label>
-            <p class="text-lg font-medium text-on-surface">Elena Green</p>
+            <label class="text-on-surface-variant text-xs font-semibold uppercase tracking-widest block mb-1">Họ và Tên</label>
+            <p class="text-lg font-medium text-on-surface"><?php echo htmlspecialchars($u['HoTen'] ?? 'Chưa cập nhật'); ?></p>
           </div>
           <div class="p-8 rounded-xl bg-surface-container-lowest border border-outline-variant/10">
             <label class="text-on-surface-variant text-xs font-semibold uppercase tracking-widest block mb-1">Địa chỉ email</label>
-            <p class="text-lg font-medium text-on-surface">elena.green@zentroliving.com</p>
+            <p class="text-lg font-medium text-on-surface"><?php echo htmlspecialchars($u['Email'] ?? 'Chưa cập nhật'); ?></p>
           </div>
           <div class="p-8 rounded-xl bg-surface-container-lowest border border-outline-variant/10">
             <label class="text-on-surface-variant text-xs font-semibold uppercase tracking-widest block mb-1">Số điện thoại</label>
-            <p class="text-lg font-medium text-on-surface">+1 (555) 234-8910</p>
+            <p class="text-lg font-medium text-on-surface"><?php echo htmlspecialchars(!empty($u['SoDienThoai']) ? $u['SoDienThoai'] : 'Chưa cập nhật'); ?></p>
           </div>
           <div class="p-8 rounded-xl bg-surface-container-lowest border border-outline-variant/10">
-            <label class="text-on-surface-variant text-xs font-semibold uppercase tracking-widest block mb-1">Sustainability Badge</label>
-            <div class="flex items-center gap-2 mt-1">
-              <span class="material-symbols-outlined text-primary" data-icon="eco" style="font-variation-settings: 'FILL' 1;">eco</span>
-              <p class="text-lg font-medium text-primary">Eco-Guardian</p>
-            </div>
+            <label class="text-on-surface-variant text-xs font-semibold uppercase tracking-widest block mb-1">Ngày tham gia</label>
+            <p class="text-lg font-medium text-on-surface"><?php echo date('d/m/Y', strtotime($u['NgayTao'])); ?></p>
           </div>
         </div>
       </div>
 
       <div class="space-y-8">
-        <div class="flex flex-col md:flex-row justify-between items-start md:items-end gap-4">
-          <div>
-            <span class="text-secondary font-semibold tracking-wider text-xs uppercase mb-2 block">Quản lý giao hàng</span>
-            <h2 class="text-3xl font-bold text-on-surface tracking-tight">Địa chỉ đã lưu</h2>
-          </div>
-          <button class="px-8 py-3 rounded-full bg-secondary-container text-on-secondary-container font-bold flex items-center gap-2 hover:opacity-90 transition-opacity">
-            <span class="material-symbols-outlined" data-icon="add">add</span>
-            Thêm địa chỉ mới
-          </button>
-        </div>
-
-        <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
-          <div class="relative group p-10 rounded-xl bg-surface-container-lowest border border-outline-variant/20 shadow-sm overflow-hidden flex flex-col justify-between min-h-[280px]">
-            <div class="absolute top-0 right-0 p-6 flex gap-3">
-              <button class="w-10 h-10 rounded-full flex items-center justify-center bg-surface-container-high text-on-surface-variant hover:text-primary transition-colors">
-                <span class="material-symbols-outlined" data-icon="edit">edit</span>
-              </button>
-              <button class="w-10 h-10 rounded-full flex items-center justify-center bg-surface-container-high text-on-surface-variant hover:text-error transition-colors">
-                <span class="material-symbols-outlined" data-icon="delete">delete</span>
-              </button>
-            </div>
-            <div>
-              <div class="flex items-center gap-3 mb-6">
-                <span class="bg-primary text-on-primary text-[10px] font-bold uppercase tracking-widest px-3 py-1 rounded-full">Primary</span>
-                <h3 class="text-xl font-bold text-on-surface">Trang chủ Sanctuary</h3>
-              </div>
-              <address class="not-italic text-lg text-on-surface-variant leading-relaxed">
-                1248 Oakwood Avenue<br/>
-                Sustainable Meadows, OR 97205<br/>
-                United States
-              </address>
-            </div>
-            <div class="mt-8 flex items-center gap-2 text-primary font-medium">
-              <span class="material-symbols-outlined text-xl" data-icon="check_circle" style="font-variation-settings: 'FILL' 1;">check_circle</span>
-              <span class="text-sm">Default shipping address</span>
-            </div>
-          </div>
-
-          <div class="p-10 rounded-xl bg-surface-container-low border border-transparent hover:border-outline-variant/30 transition-all flex flex-col justify-between min-h-[280px]">
-            <div class="flex justify-between items-start">
-              <div class="flex items-center gap-3">
-                <span class="bg-outline-variant/40 text-on-surface-variant text-[10px] font-bold uppercase tracking-widest px-3 py-1 rounded-full">Office</span>
-                <h3 class="text-xl font-bold text-on-surface">Zentro Workshop</h3>
-              </div>
-              <div class="flex gap-2">
-                <button class="text-on-surface-variant hover:text-primary p-2">
-                  <span class="material-symbols-outlined" data-icon="edit">edit</span>
-                </button>
-                <button class="text-on-surface-variant hover:text-error p-2">
-                  <span class="material-symbols-outlined" data-icon="delete">delete</span>
-                </button>
-              </div>
-            </div>
-            <address class="not-italic text-lg text-on-surface-variant leading-relaxed mt-4">
-              45 Design Quarter St.<br/>
-              Loft 4B, Portland, OR 97209<br/>
-              United States
+        <h2 class="text-3xl font-bold text-on-surface tracking-tight">Địa chỉ giao hàng (Mặc định)</h2>
+        <div class="grid grid-cols-1 gap-8">
+          <div class="p-10 rounded-xl bg-surface-container-lowest border border-outline-variant/20 shadow-sm">
+            <address class="not-italic text-lg text-on-surface-variant leading-relaxed">
+                <?php echo htmlspecialchars($diaChiDayDu); ?>
             </address>
-            <button class="mt-8 text-secondary font-bold text-sm text-left hover:underline underline-offset-4">
-              Set as default
-            </button>
           </div>
         </div>
-      </div>
-
-      <div class="rounded-xl bg-primary-container p-12 text-on-primary-container flex flex-col md:flex-row items-center gap-8">
-        <div class="flex-1 space-y-2">
-          <h3 class="text-2xl font-bold">Your information is protected.</h3>
-          <p class="opacity-80 leading-relaxed max-w-xl">We use industry-standard encryption to ensure your personal data and addresses remain private. Zentro never shares your data with third-party logistics without your explicit consent.</p>
-        </div>
-        <span class="material-symbols-outlined text-7xl opacity-30" data-icon="lock" style="font-variation-settings: 'FILL' 1;">lock</span>
       </div>
     </section>
   </div>
 </main>
 
-<footer class="w-full border-t border-[#c5c8ba]/10 bg-[#f3f4ed] dark:bg-stone-900">
-  <div class="flex flex-col md:flex-row justify-between items-center px-12 py-16 mt-20 max-w-7xl mx-auto">
-    <div class="mb-8 md:mb-0 space-y-4">
-      <span class="font-['Epilogue'] font-bold text-[#384e21] text-2xl">Zentro</span>
-      <p class="font-['Be_Vietnam_Pro'] text-sm tracking-wide text-[#191c18]/50 max-w-xs">
-        © 2026 Zentro Sustainable Living. Được xây dựng cho lối sống xanh.
-      </p>
-    </div>
-    <div class="flex flex-wrap justify-center gap-8">
-      <a class="text-[#191c18]/50 hover:text-[#384e21] underline underline-offset-4 transition-opacity opacity-80 hover:opacity-100 font-['Be_Vietnam_Pro'] text-sm tracking-wide" href="#">Chính sách bảo mật</a>
-      <a class="text-[#191c18]/50 hover:text-[#384e21] underline underline-offset-4 transition-opacity opacity-80 hover:opacity-100 font-['Be_Vietnam_Pro'] text-sm tracking-wide" href="#">Điều khoản dịch vụ</a>
-      <a class="text-[#191c18]/50 hover:text-[#384e21] underline underline-offset-4 transition-opacity opacity-80 hover:opacity-100 font-['Be_Vietnam_Pro'] text-sm tracking-wide" href="#">Phí vận chuyển &amp; Returns</a>
-      <a class="text-[#191c18]/50 hover:text-[#384e21] underline underline-offset-4 transition-opacity opacity-80 hover:opacity-100 font-['Be_Vietnam_Pro'] text-sm tracking-wide" href="#">Liên hệ</a>
-    </div>
-  </div>
-</footer>
-
-</body>
-</html>
+<?php include __DIR__ . '/../layouts/footer.php'; ?>
