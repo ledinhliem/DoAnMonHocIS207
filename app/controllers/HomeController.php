@@ -8,12 +8,9 @@ class HomeController extends Controller
         // $userModel = $this->model('User');
         // $users = $userModel->getAllUsers();
 
-       $categoryModel = $this->model('CategoryModel');
-        $categories = $categoryModel->getAll();
-
         $data = [
             'title' => 'Trang chủ - Zentro',
-            'categories' => $categories
+            'message' => 'MVC core đã chạy thành công.'
         ];
 
         $this->view('home/index', $data);
