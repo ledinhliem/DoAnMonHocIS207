@@ -13,13 +13,11 @@ class OrderController extends Controller
         $this->orderModel = new OrderModel();
     }
 
-    // Lấy tóm tắt đơn hàng (tối ưu tính phí ship chuẩn MVC)
     private function getCheckoutSummary()
     {
         $subtotal = $this->cartModel->getSubtotal();
         $discount = $_SESSION['promo']['discount'] ?? 0;
-        $deliveryMethod = $_SESSION['checkout_data']['delivery_method'] ?? 'standard';
-        $shipping = $this->orderModel->getShippingFee($deliveryMethod);
+        $shipping = 5;
         $total = max(0, $subtotal - $discount + $shipping);
 
         return [
@@ -29,44 +27,6 @@ class OrderController extends Controller
             'total' => $total,
             'promo' => $_SESSION['promo'] ?? null,
         ];
-    }
-
-    // Hàm dùng chung để lưu đơn hàng vào SQL và dọn dẹp Session
-    private function completeOrder($paymentMethod, $extraData = [])
-    {
-        try {
-            $orderData = [
-                'customer' => $_SESSION['checkout_data'] ?? [],
-                'items' => $this->cartModel->getItems(),
-                'summary' => $this->getCheckoutSummary(),
-                'payment_method' => $paymentMethod,
-            ];
-            
-            // Gộp thêm dữ liệu phụ (như 4 số cuối thẻ)
-            $orderData = array_merge($orderData, $extraData);
-
-            $order = $this->orderModel->saveOrder($orderData);
-
-            // Xóa giỏ hàng và dữ liệu tạm
-            $this->cartModel->clear();
-            unset(
-                $_SESSION['promo'],
-                $_SESSION['payment_old'],
-                $_SESSION['payment_errors'],
-                $_SESSION['checkout_data']
-            );
-
-            // Lưu ID đơn hàng mới nhất để trang success hiển thị đúng
-            $_SESSION['latest_order_id'] = $order['MaDonHang'] ?? '';
-            $_SESSION['success'] = 'Đơn hàng đã được tạo thành công.';
-
-            header('Location: ?url=order/success');
-            exit;
-        } catch (Throwable $e) {
-            $_SESSION['error'] = $e->getMessage();
-            header('Location: ?url=checkout');
-            exit;
-        }
     }
 
     public function checkout()
@@ -133,8 +93,8 @@ class OrderController extends Controller
                 'full_name' => trim($_POST['full_name'] ?? ''),
                 'phone' => trim($_POST['phone'] ?? ''),
                 'address' => trim($_POST['address'] ?? ''),
-                'delivery_method' => trim($_POST['delivery_method'] ?? 'standard'),
-                'payment_method' => trim($_POST['payment_method'] ?? 'card'),
+                'delivery_method' => trim($_POST['delivery_method'] ?? ''),
+                'payment_method' => trim($_POST['payment_method'] ?? ''),
             ];
 
             $_SESSION['checkout_data'] = $checkoutData;
@@ -146,11 +106,18 @@ class OrderController extends Controller
                 exit;
             }
 
-            // Điều hướng theo phương thức thanh toán
             if ($checkoutData['payment_method'] === 'cod') {
-                $this->completeOrder('COD');
-            } elseif ($checkoutData['payment_method'] === 'transfer') {
-                header('Location: ?url=order/transfer');
+                $this->orderModel->saveOrder([
+                    'customer' => $checkoutData,
+                    'items' => $this->cartModel->getItems(),
+                    'summary' => $this->getCheckoutSummary(),
+                    'payment_method' => 'COD',
+                ]);
+
+                $this->cartModel->clear();
+                unset($_SESSION['promo']);
+
+                header('Location: ?url=order/success');
                 exit;
             }
         }
@@ -195,87 +162,27 @@ class OrderController extends Controller
             exit;
         }
 
-        $last4 = substr(preg_replace('/\D/', '', $paymentData['card_number']), -4);
-        $this->completeOrder('Card', ['card_last4' => $last4]);
+        $this->orderModel->saveOrder([
+            'customer' => $_SESSION['checkout_data'] ?? [],
+            'items' => $this->cartModel->getItems(),
+            'summary' => $this->getCheckoutSummary(),
+            'payment_method' => 'Card',
+            'card_last4' => substr(preg_replace('/\D/', '', $paymentData['card_number']), -4),
+        ]);
+
+        $this->cartModel->clear();
+        unset($_SESSION['promo'], $_SESSION['payment_old'], $_SESSION['payment_errors']);
+
+        header('Location: ?url=order/success');
+        exit;
     }
 
     public function transfer()
     {
-        if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-            $this->completeOrder('Transfer');
-        }
-
         $this->view('order/transfer', [
             'title' => 'Chuyển khoản',
             'summary' => $this->getCheckoutSummary(),
         ]);
-    }
-
-    public function success()
-    {
-        $orderId = $_SESSION['latest_order_id'] ?? '';
-        $userId = $_SESSION['user_id'] ?? null;
-        $order = ($orderId !== '' && $userId)
-            ? $this->orderModel->getOrderById($orderId, $userId)
-            : $this->orderModel->getLatestOrder();
-
-        $this->view('order/success', [
-            'title' => 'Đặt hàng thành công',
-            'order' => $order,
-            'success' => $_SESSION['success'] ?? '',
-        ]);
-
-        unset($_SESSION['success'], $_SESSION['latest_order_id']);
-    }
-
-    public function history() 
-    {
-        if (!isset($_SESSION['user_id'])) {
-            header('Location: ?url=login');
-            exit;
-        }
-
-        $orders = $this->orderModel->getOrdersByUserId($_SESSION['user_id']); 
-
-        $this->view('order/history', [
-            'title' => 'Lịch sử đơn hàng',
-            'orders' => $orders,
-        ]);
-    }
-
-    public function tracking()
-    {
-        if (!isset($_SESSION['user_id'])) {
-            header('Location: ?url=login');
-            exit;
-        }
-
-        $maDonHang = $_GET['id'] ?? null;
-        if (!$maDonHang) {
-            header('Location: ?url=order/history');
-            exit;
-        }
-
-        $order = $this->orderModel->getOrderById($maDonHang, $_SESSION['user_id']);
-        if (!$order) {
-            die("Không tìm thấy đơn hàng, hoặc bạn không có quyền xem đơn này!");
-        }
-
-        $this->view('order/tracking', [
-            'title' => 'Theo dõi đơn hàng',
-            'order' => $order,
-            'helpMessage' => $_SESSION['help_message'] ?? '',
-        ]);
-
-        unset($_SESSION['help_message']);
-    }
-
-    public function help()
-    {
-        $_SESSION['help_message'] = 'Yêu cầu hỗ trợ đã được ghi nhận. CSKH sẽ liên hệ sớm.';
-        $orderId = $_POST['MaDonHang'] ?? $_GET['id'] ?? '';
-        header('Location: ?url=order/tracking' . ($orderId ? '&id=' . $orderId : ''));
-        exit;
     }
 
     public function feedback()
@@ -287,6 +194,7 @@ class OrderController extends Controller
             'success' => $_SESSION['success'] ?? '',
             'old' => $_SESSION['feedback_old'] ?? [],
         ]);
+
         unset($_SESSION['feedback_errors'], $_SESSION['success'], $_SESSION['feedback_old']);
     }
 
@@ -297,7 +205,11 @@ class OrderController extends Controller
             exit;
         }
 
-        $data = ['rating' => $_POST['rating'] ?? '', 'message' => trim($_POST['message'] ?? '')];
+        $data = [
+            'rating' => $_POST['rating'] ?? '',
+            'message' => trim($_POST['message'] ?? ''),
+        ];
+
         $_SESSION['feedback_old'] = $data;
         $errors = $this->orderModel->validateFeedback($data);
 
@@ -308,7 +220,46 @@ class OrderController extends Controller
         }
 
         $_SESSION['success'] = 'Cảm ơn bạn đã gửi feedback.';
+        $_SESSION['last_feedback'] = $data;
+
         header('Location: ?url=order/success');
+        exit;
+    }
+
+    public function success()
+    {
+        $this->view('order/success', [
+            'title' => 'Đặt hàng thành công',
+            'order' => $this->orderModel->getLatestOrder(),
+            'success' => $_SESSION['success'] ?? '',
+        ]);
+
+        unset($_SESSION['success']);
+    }
+
+    public function history()
+    {
+        $this->view('order/history', [
+            'title' => 'Lịch sử đơn hàng',
+            'orders' => $this->orderModel->getOrders(),
+        ]);
+    }
+
+    public function tracking()
+    {
+        $this->view('order/tracking', [
+            'title' => 'Theo dõi đơn hàng',
+            'order' => $this->orderModel->getLatestOrder(),
+            'helpMessage' => $_SESSION['help_message'] ?? '',
+        ]);
+
+        unset($_SESSION['help_message']);
+    }
+
+    public function help()
+    {
+        $_SESSION['help_message'] = 'Yêu cầu hỗ trợ đơn hàng đã được ghi nhận. Bộ phận CSKH sẽ liên hệ sớm.';
+        header('Location: ?url=order/tracking');
         exit;
     }
 }

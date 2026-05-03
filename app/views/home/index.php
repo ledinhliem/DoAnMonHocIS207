@@ -165,6 +165,7 @@ if (!empty($data['categories'])) {
     <section class="bg-surface-container-low py-24">
         <div class="max-w-7xl mx-auto px-8">
             <div class="grid grid-cols-1 md:grid-cols-2 gap-16 items-center">
+
                 <div class="order-2 md:order-1">
                     <div
                         class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-surface-tint/10 text-primary font-bold text-xs uppercase tracking-tighter mb-6">

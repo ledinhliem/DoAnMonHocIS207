@@ -82,12 +82,6 @@ class Router
                 $controller->login();
                 break;
 
-            case 'logout':
-                require_once __DIR__ . '/../app/controllers/AuthController.php';
-                $controller = new AuthController();
-                $controller->logout();
-                break;
-
             case 'register':
                 require_once __DIR__ . '/../app/controllers/AuthController.php';
                 $controller = new AuthController();
@@ -201,18 +195,6 @@ class Router
                 require_once __DIR__ . '/../app/controllers/ProfileController.php';
                 $controller = new ProfileController();
                 $controller->index();
-                break;
-
-            case 'profile/edit':
-                require_once __DIR__ . '/../app/controllers/ProfileController.php';
-                $controller = new ProfileController();
-                $controller->edit();
-                break;
-
-            case 'profile/update':
-                require_once __DIR__ . '/../app/controllers/ProfileController.php';
-                $controller = new ProfileController();
-                $controller->update();
                 break;
 
             case 'admin':

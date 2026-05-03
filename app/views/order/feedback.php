@@ -1,5 +1,4 @@
 <?php include __DIR__ . '/../layouts/header.php'; ?>
-<?php $orderCode = $order['MaDonHang'] ?? $order['order_id'] ?? ''; ?>
 
 <main class="max-w-3xl mx-auto px-8 py-12">
     <h1 class="text-4xl font-black font-headline text-primary mb-8">Phản hồi đơn hàng</h1>
@@ -13,7 +12,7 @@
     <div class="bg-white rounded-2xl border border-outline-variant/30 p-6">
         <?php if (!empty($order)): ?>
             <div class="mb-6 text-sm text-on-surface-variant">
-                Phản hồi cho đơn hàng: <span class="font-semibold text-primary"><?= htmlspecialchars($orderCode) ?></span>
+                Phản hồi cho đơn hàng: <span class="font-semibold text-primary"><?= htmlspecialchars($order['order_id']) ?></span>
             </div>
         <?php endif; ?>
 
