@@ -106,17 +106,24 @@ document.addEventListener("DOMContentLoaded", function () {
       }
 
       const btn = document.getElementById("btn-add-cart");
-      const originalText = btn?.textContent;
-      if (btn) { btn.textContent = "Đang thêm..."; btn.disabled = true; }
+      const originalHtml = btn?.innerHTML;
+      if (btn) { btn.innerHTML = "Đang thêm..."; btn.disabled = true; }
 
       try {
-        const res  = await fetch(cartForm.action, { method: "POST", body: new FormData(cartForm) });
+        const res  = await fetch(cartForm.action, {
+          method: "POST",
+          body: new FormData(cartForm),
+          headers: {
+            "Accept": "application/json",
+            "X-Requested-With": "XMLHttpRequest"
+          }
+        });
         const data = await res.json();
         showToast(data.message || "Đã thêm vào giỏ hàng!", data.success ? "success" : "error");
       } catch {
-        showToast("Đã thêm vào giỏ hàng!", "success");
+        showToast("Không thể thêm vào giỏ hàng. Vui lòng thử lại.", "error");
       } finally {
-        if (btn) { btn.textContent = originalText; btn.disabled = false; }
+        if (btn) { btn.innerHTML = originalHtml; btn.disabled = false; }
       }
     });
   }

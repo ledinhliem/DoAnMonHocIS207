@@ -66,7 +66,7 @@ class CartModel extends Model
             'price' => (float)$variant['GiaTien'],
             'stock' => $stock,
             'image' => !empty($variant['HinhAnh'])
-                ? BASE_URL . 'public/images/products/' . basename($variant['HinhAnh'])
+                ? BASE_URL . 'public/images/Products/' . basename($variant['HinhAnh'])
                 : '',
             'quantity' => $currentQty + $quantity,
         ];

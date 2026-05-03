@@ -6,11 +6,22 @@
  */
 include __DIR__ . '/../layouts/header.php';
 
+$product = $product ?? [];
+$images = $images ?? [];
+$variants = $variants ?? [];
+$reviews = $reviews ?? [];
+
 // ── Image URL helper ────────────────────────────────────────────────────────
 if (!function_exists('productImageUrl')) {
     function productImageUrl(string $path): string {
         if (preg_match('/^https?:\/\//', $path)) return $path;
-        return BASE_URL . 'public/images/' . ltrim($path, '/');
+
+        $fileName = basename($path);
+        if ($fileName === 'P005_V005_Giayshoex_den.png') {
+            $fileName = 'P005_V006_Giayshoex_den.png';
+        }
+
+        return BASE_URL . 'public/images/Products/' . $fileName;
     }
 }
 
@@ -26,6 +37,8 @@ if ($minPrice === PHP_INT_MAX) $minPrice = 0;
 $priceDisplay = ($minPrice === $maxPrice)
     ? number_format($minPrice, 0, ',', '.') . ' ₫'
     : number_format($minPrice, 0, ',', '.') . ' – ' . number_format($maxPrice, 0, ',', '.') . ' ₫';
+
+$defaultVariant = $variants[0] ?? null;
 
 // ── Average rating ───────────────────────────────────────────────────────────
 $avgRating = 0;
@@ -151,7 +164,7 @@ if (!empty($reviews)) {
       <!-- ── VARIANT SELECTION FORM ──────────────────────────────────── -->
       <form id="cart-form" action="<?= BASE_URL ?>?url=cart/add" method="POST" class="space-y-6">
         <input type="hidden" name="MaSanPham"   value="<?= htmlspecialchars($product['MaSanPham']) ?>">
-        <input type="hidden" name="MaBienThe"   id="selected-variant-id" value="">
+        <input type="hidden" name="MaBienThe"   id="selected-variant-id" value="<?= htmlspecialchars($defaultVariant['MaBienThe'] ?? '') ?>">
 
         <?php
           // Group variants: get unique colors and sizes
@@ -200,9 +213,9 @@ if (!empty($reviews)) {
         <?php endif; ?>
 
         <!-- Stock indicator -->
-        <p id="stock-info" class="text-sm text-on-surface-variant hidden">
+        <p id="stock-info" class="text-sm text-on-surface-variant <?= $defaultVariant ? '' : 'hidden' ?>">
           <span class="material-symbols-outlined text-sm align-middle text-green-600">inventory_2</span>
-          Còn <strong id="stock-qty" class="text-green-700">--</strong> sản phẩm
+          Còn <strong id="stock-qty" class="text-green-700"><?= htmlspecialchars((string)($defaultVariant['SoLuongTon'] ?? '--')) ?></strong> sản phẩm
         </p>
 
         <!-- Quantity -->
@@ -391,6 +404,6 @@ window.productVariants = <?= json_encode(array_values($variants), JSON_UNESCAPED
 window.hasColors = <?= json_encode(!empty($colors)) ?>;
 window.hasSizes  = <?= json_encode(!empty($sizes)) ?>;
 </script>
-<script src="<?= BASE_URL ?>public/assets/js/product-detail.js"></script>
+<script src="<?= BASE_URL ?>public/assets/js/product.js"></script>
 
 <?php include __DIR__ . '/../layouts/footer.php'; ?>

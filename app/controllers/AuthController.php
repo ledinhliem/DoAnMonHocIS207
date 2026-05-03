@@ -100,5 +100,29 @@ class AuthController extends Controller {
         header("Location: index.php");
         exit;
     }
+    public function forgot() {
+    $data = ['title' => 'Quên mật khẩu'];
+
+    $this->view('auth/forgot', $data);
+}
+
+public function reset() {
+    $data = ['title' => 'Đặt lại mật khẩu'];
+
+    $this->view('auth/reset', $data);
+}
+
+public function googleLogin() {
+    $_SESSION['auth_message'] = 'Chức năng đăng nhập Google chưa được cấu hình.';
+    header('Location: index.php?url=login');
+    exit;
+}
+
+public function appleLogin() {
+    $_SESSION['auth_message'] = 'Chức năng đăng nhập Apple chưa được cấu hình.';
+    header('Location: index.php?url=login');
+    exit;
+}
+
 
 }

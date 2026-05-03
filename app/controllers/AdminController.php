@@ -2,6 +2,26 @@
 
 class AdminController extends Controller
 {
+    public function __construct()
+    {
+        $this->checkAdminAccess();
+    }
+
+    private function checkAdminAccess()
+    {
+        if (!isset($_SESSION['user_id'])) {
+            header('Location: index.php?url=login');
+            exit;
+        }
+
+        $role = $_SESSION['role'] ?? $_SESSION['MaQuyen'] ?? null;
+
+        if ((string)$role !== '1') {
+            header('Location: index.php');
+            exit;
+        }
+    }
+
     public function dashboard()
     {
     $status = null;

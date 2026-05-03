@@ -51,6 +51,15 @@ class CartController extends Controller
 
         $_SESSION[$result['success'] ? 'success' : 'error'] = $result['message'];
 
+        $wantsJson = !empty($_SERVER['HTTP_X_REQUESTED_WITH'])
+            || str_contains($_SERVER['HTTP_ACCEPT'] ?? '', 'application/json');
+
+        if ($wantsJson) {
+            header('Content-Type: application/json; charset=utf-8');
+            echo json_encode($result);
+            exit;
+        }
+
         header('Location: ?url=cart');
         exit;
     }

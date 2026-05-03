@@ -203,6 +203,18 @@ class Router
                 $controller->index();
                 break;
 
+            case 'profile/edit':
+                require_once __DIR__ . '/../app/controllers/ProfileController.php';
+                $controller = new ProfileController();
+                $controller->edit();
+                break;
+
+            case 'profile/update':
+                require_once __DIR__ . '/../app/controllers/ProfileController.php';
+                $controller = new ProfileController();
+                $controller->update();
+                break;
+
             case 'admin':
                 require_once __DIR__ . '/../app/controllers/AdminController.php';
                 $controller = new AdminController();

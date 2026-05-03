@@ -1,3 +1,12 @@
+<?php
+$items = $items ?? [];
+$summary = $summary ?? [];
+$checkoutData = $checkoutData ?? [];
+$errors = $errors ?? [];
+$success = $success ?? '';
+$error = $error ?? '';
+?>
+
 <?php include __DIR__ . '/../layouts/header.php'; ?>
 
 <main class="max-w-6xl mx-auto px-8 py-12">
@@ -92,6 +101,9 @@
                         </option>
                         <option value="cod" <?= (($checkoutData['payment_method'] ?? '') === 'cod') ? 'selected' : '' ?>>
                             Thanh toán khi nhận hàng
+                        </option>
+                        <option value="transfer" <?= (($checkoutData['payment_method'] ?? '') === 'transfer') ? 'selected' : '' ?>>
+                            Chuyển khoản ngân hàng
                         </option>
                     </select>
 

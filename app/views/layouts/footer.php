@@ -34,8 +34,7 @@
                 </li>
                 <li><a class="hover:underline underline-offset-4 decoration-primary/30"
                         href="index.php">Sustainability</a></li>
-                <li><a class="hover:underline underline-offset-4 decoration-primary/30" href="index.php?url=blog"
-                        Blog</a></li>
+                <li><a class="hover:underline underline-offset-4 decoration-primary/30" href="index.php?url=blog">Blog</a></li>
                 <li><a class="hover:underline underline-offset-4 decoration-primary/30" href="index.php">Careers</a>
                 </li>
             </ul>
@@ -68,7 +67,7 @@
     </div>
 </footer>
 
-<script src="public/js/auth.js"></script>
+<script src="public/assets/js/auth.js"></script>
 
 </body>
 

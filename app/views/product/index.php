@@ -1,5 +1,27 @@
 <?php include __DIR__ . '/../layouts/header.php'; ?>
 
+<?php
+if (!function_exists('productImageUrl')) {
+    function productImageUrl(string $path): string
+    {
+        if ($path === '') {
+            return '';
+        }
+
+        if (preg_match('/^https?:\/\//', $path)) {
+            return $path;
+        }
+
+        $fileName = basename($path);
+        if ($fileName === 'P005_V005_Giayshoex_den.png') {
+            $fileName = 'P005_V006_Giayshoex_den.png';
+        }
+
+        return BASE_URL . 'public/images/Products/' . $fileName;
+    }
+}
+?>
+
 <main class="min-h-screen bg-[#FAFAF2] px-8 py-14">
     <section class="max-w-7xl mx-auto">
         <div class="grid grid-cols-1 lg:grid-cols-4 gap-10">
@@ -10,6 +32,23 @@
                     <input type="hidden" name="url" value="product">
 
                     <div class="bg-[#FAFAF2] rounded-2xl p-4 sticky top-28">
+                      <h2 class="text-2xl font-bold text-[#2F512A] mb-6">
+    Tìm kiếm
+</h2>
+
+<div class="relative mb-8">
+    <input type="text"
+           name="keyword"
+           value="<?= htmlspecialchars($filters['keyword'] ?? '') ?>"
+           placeholder="Tên sản phẩm..."
+           class="w-full rounded-xl border border-[#D8DDCB] bg-white px-10 py-3">
+    <span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-[#8B8F7A]">
+        search
+    </span>
+</div>
+
+<hr class="my-8 border-[#E0E3D5]">
+
                         <h2 class="text-2xl font-bold text-[#2F512A] mb-6">
                             Danh mục
                         </h2>
@@ -152,7 +191,7 @@
                                 <div class="relative rounded-2xl overflow-hidden bg-[#EEF1E7] border border-[#E5E7D8] h-[300px]">
                                     <a href="?url=product/detail&id=<?= urlencode($maSanPham) ?>">
                                         <?php if (!empty($image)): ?>
-                                            <img src="<?= htmlspecialchars($image) ?>"
+                                            <img src="<?= htmlspecialchars(productImageUrl($image)) ?>"
                                                  alt="<?= htmlspecialchars($name) ?>"
                                                  class="w-full h-full object-cover group-hover:scale-105 transition duration-300">
                                         <?php else: ?>

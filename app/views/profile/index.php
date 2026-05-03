@@ -1,7 +1,7 @@
 <?php include __DIR__ . '/../layouts/header.php'; ?>
 <?php 
 $base = defined('BASE_URL') ? BASE_URL : 'index.php'; 
-$u = $data['user'] ?? [];
+$u = $user ?? ($data['user'] ?? []);
 
 // Nối chuỗi địa chỉ từ DB
 $diaChiDayDu = 'Bạn chưa cập nhật địa chỉ giao hàng.';
@@ -41,15 +41,27 @@ if (!empty($u['SoNha_Duong'])) {
     </aside>
 
     <section class="flex-1 space-y-16">
+      <?php if (!empty($success)): ?>
+        <div class="rounded-xl bg-green-50 border border-green-200 text-green-700 px-5 py-4">
+          <?php echo htmlspecialchars($success); ?>
+        </div>
+      <?php endif; ?>
+
+      <?php if (!empty($error)): ?>
+        <div class="rounded-xl bg-red-50 border border-red-200 text-red-700 px-5 py-4">
+          <?php echo htmlspecialchars($error); ?>
+        </div>
+      <?php endif; ?>
+
       <div class="space-y-8">
         <div class="flex justify-between items-end">
           <div>
             <span class="text-primary font-semibold tracking-wider text-xs uppercase mb-2 block">Chi tiết tài khoản</span>
             <h1 class="text-4xl font-bold text-on-surface tracking-tight">Thông tin cá nhân</h1>
           </div>
-          <button class="px-6 py-2 rounded-full border border-outline-variant text-primary font-medium hover:bg-surface-container transition-colors">
+          <a href="<?php echo $base; ?>?url=profile/edit" class="px-6 py-2 rounded-full border border-outline-variant text-primary font-medium hover:bg-surface-container transition-colors">
             Sửa Profile
-          </button>
+          </a>
         </div>
 
         <div class="grid grid-cols-1 md:grid-cols-2 gap-6">

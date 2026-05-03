@@ -1,5 +1,8 @@
 <?php include __DIR__ . '/../layouts/header.php'; ?>
-<?php $products = $products ?? []; ?>
+<?php
+$products = $products ?? [];
+$keyword = $keyword ?? '';
+?>
 
 <main class="max-w-7xl mx-auto px-8 py-12">
     <section class="mb-16">
@@ -8,6 +11,28 @@
             <span class="material-symbols-outlined text-xs">chevron_right</span>
             <span class="font-medium text-primary">Kết quả tìm kiếm</span>
         </nav>
+
+        <form method="GET" action="<?= BASE_URL ?>" class="mb-10">
+            <input type="hidden" name="url" value="product/search">
+
+            <div class="relative max-w-2xl">
+                <input
+                    type="text"
+                    name="keyword"
+                    value="<?= htmlspecialchars($keyword) ?>"
+                    placeholder="Nhập tên sản phẩm cần tìm..."
+                    class="w-full rounded-2xl border border-outline-variant bg-surface-container-lowest px-5 py-4 pl-12 pr-24 text-on-surface focus:border-primary outline-none transition-colors"
+                >
+                <span class="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-outline">
+                    search
+                </span>
+                <button
+                    type="submit"
+                    class="absolute right-2 top-1/2 -translate-y-1/2 rounded-xl bg-primary text-white px-5 py-2.5 font-semibold">
+                    Tìm
+                </button>
+            </div>
+        </form>
 
         <div class="flex flex-col md:flex-row md:items-end justify-between gap-6">
             <div>
@@ -38,17 +63,25 @@
     <?php if (!empty($products)): ?>
         <section class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-10">
             <?php foreach ($products as $p): ?>
+                <?php
+                    $maSanPham = $p['MaSanPham'] ?? $p['id'] ?? '';
+                    $maBienThe = $p['MaBienTheMacDinh'] ?? '';
+                    $stock = (int)($p['TongTon'] ?? 0);
+                ?>
                 <div class="group flex flex-col space-y-4 cursor-pointer"
-                     onclick="window.location.href='<?= BASE_URL ?>?url=product/detail&id=<?= htmlspecialchars($p['id']) ?>'">
+                     onclick="window.location.href='<?= BASE_URL ?>?url=product/detail&id=<?= htmlspecialchars($maSanPham) ?>'">
                     <div class="relative aspect-[4/5] overflow-hidden rounded-xl bg-surface-container-low">
                         <img class="w-full h-full object-cover"
                              src="<?= htmlspecialchars($p['image'] ?? 'https://via.placeholder.com/300') ?>"
                              alt="<?= htmlspecialchars($p['name']) ?>" />
 
                         <form method="POST" action="<?= BASE_URL ?>?url=cart/add" class="absolute bottom-4 right-4" onclick="event.stopPropagation()">
-                            <input type="hidden" name="ma_san_pham" value="<?= htmlspecialchars($p['id']) ?>">
-                            <input type="hidden" name="so_luong" value="1">
-                            <button type="submit" class="bg-white/90 p-3 rounded-full">
+                            <input type="hidden" name="MaSanPham" value="<?= htmlspecialchars($maSanPham) ?>">
+                            <input type="hidden" name="MaBienThe" value="<?= htmlspecialchars($maBienThe) ?>">
+                            <input type="hidden" name="SoLuong" value="1">
+                            <button type="submit"
+                                    <?= (empty($maSanPham) || empty($maBienThe) || $stock <= 0) ? 'disabled' : '' ?>
+                                    class="bg-white/90 p-3 rounded-full disabled:opacity-50 disabled:cursor-not-allowed">
                                 <span class="material-symbols-outlined">add_shopping_cart</span>
                             </button>
                         </form>

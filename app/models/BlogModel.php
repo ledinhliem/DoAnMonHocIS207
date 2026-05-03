@@ -51,7 +51,7 @@ class BlogModel
                 LIMIT 1";
 
         $stmt = $this->db->prepare($sql);
-        $stmt->bindValue(':id', (int)$id, PDO::PARAM_INT);
+        $stmt->bindValue(':id', trim((string)$id), PDO::PARAM_STR);
         $stmt->execute();
 
         $blog = $stmt->fetch();
