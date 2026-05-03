@@ -1,5 +1,6 @@
 <?php
-class OrderModel
+
+class OrderModel extends Model
 {
     public function calculateDiscount($subtotal, $promoCode)
     {
@@ -14,13 +15,17 @@ class OrderModel
             ];
         }
 
-        $promos = [
-            'SAVE10'   => ['type' => 'percent', 'value' => 10],
-            'GREEN20'  => ['type' => 'percent', 'value' => 20],
-            'FREESHIP' => ['type' => 'fixed',   'value' => 5],
-        ];
+        $stmt = $this->db->prepare("
+            SELECT MaCode, PhamTramGiam, SoLuong, NgayHetHan
+            FROM magiamgia
+            WHERE MaCode = ?
+            LIMIT 1
+        ");
 
-        if (!isset($promos[$promoCode])) {
+        $stmt->execute([$promoCode]);
+        $promo = $stmt->fetch(PDO::FETCH_ASSOC);
+
+        if (!$promo) {
             return [
                 'valid' => false,
                 'message' => 'Mã giảm giá không hợp lệ.',
@@ -29,21 +34,33 @@ class OrderModel
             ];
         }
 
-        $promo = $promos[$promoCode];
-
-        if ($promo['type'] === 'percent') {
-            $discount = $subtotal * ($promo['value'] / 100);
-        } else {
-            $discount = $promo['value'];
+        if ((int)$promo['SoLuong'] <= 0) {
+            return [
+                'valid' => false,
+                'message' => 'Mã giảm giá đã hết lượt dùng.',
+                'discount' => 0,
+                'code' => $promoCode,
+            ];
         }
 
-        $discount = min($discount, $subtotal);
+        if (!empty($promo['NgayHetHan']) && $promo['NgayHetHan'] < date('Y-m-d')) {
+            return [
+                'valid' => false,
+                'message' => 'Mã giảm giá đã hết hạn.',
+                'discount' => 0,
+                'code' => $promoCode,
+            ];
+        }
+
+        $discount = (float)$subtotal * ((int)$promo['PhamTramGiam'] / 100);
+        $discount = min($discount, (float)$subtotal);
 
         return [
             'valid' => true,
             'message' => 'Áp dụng mã ' . $promoCode . ' thành công.',
             'discount' => $discount,
             'code' => $promoCode,
+            'percent' => (int)$promo['PhamTramGiam'],
         ];
     }
 
@@ -64,11 +81,11 @@ class OrderModel
         }
 
         if (trim($data['delivery_method'] ?? '') === '') {
-            $errors['delivery_method'] = 'Vui lòng chọn delivery method.';
+            $errors['delivery_method'] = 'Vui lòng chọn phương thức giao hàng.';
         }
 
         if (trim($data['payment_method'] ?? '') === '') {
-            $errors['payment_method'] = 'Vui lòng chọn payment method.';
+            $errors['payment_method'] = 'Vui lòng chọn phương thức thanh toán.';
         }
 
         return $errors;
@@ -112,8 +129,6 @@ class OrderModel
 
         if (trim($data['message'] ?? '') === '') {
             $errors['message'] = 'Vui lòng nhập nội dung feedback.';
-        } elseif (mb_strlen(trim($data['message'])) < 10) {
-            $errors['message'] = 'Nội dung feedback tối thiểu 10 ký tự.';
         }
 
         return $errors;
@@ -121,29 +136,307 @@ class OrderModel
 
     public function saveOrder($orderData)
     {
-        if (!isset($_SESSION['orders'])) {
-            $_SESSION['orders'] = [];
+        $items = $orderData['items'] ?? [];
+        $summary = $orderData['summary'] ?? [];
+        $customer = $orderData['customer'] ?? [];
+
+        if (empty($items)) {
+            throw new Exception('Giỏ hàng đang trống.');
         }
 
-        $orderId = 'ORD' . str_pad((string)(count($_SESSION['orders']) + 1), 4, '0', STR_PAD_LEFT);
+        $stockCheck = $this->checkStock($items);
 
-        $orderData['order_id'] = $orderId;
-        $orderData['created_at'] = date('Y-m-d H:i:s');
-        $orderData['status'] = 'Processing';
+        if (!$stockCheck['ok']) {
+            throw new Exception($stockCheck['message']);
+        }
 
-        $_SESSION['orders'][] = $orderData;
-        $_SESSION['latest_order'] = $orderData;
+        $this->db->beginTransaction();
 
-        return $orderData;
+        try {
+            $orderId = $this->generateOrderId();
+
+            $paymentMethod = $orderData['payment_method'] ?? ($customer['payment_method'] ?? 'cod');
+            $deliveryMethod = $customer['delivery_method'] ?? 'standard';
+            $promoCode = $summary['promo']['code'] ?? null;
+
+            $stmt = $this->db->prepare("
+                INSERT INTO donhang
+                (
+                    MaDonHang,
+                    MaNguoiDung,
+                    NgayDat,
+                    TongTien,
+                    TrangThai,
+                    DiaChiGiaoHang,
+                    MaPTTT,
+                    MaPTVC,
+                    MaCode,
+                    MaDiaChi,
+                    TenNguoiNhan,
+                    SDTNguoiNhan,
+                    SoTienGiam,
+                    PhiVanChuyen,
+                    ThanhTienCuoi
+                )
+                VALUES
+                (?, ?, NOW(), ?, 0, ?, ?, ?, ?, NULL, ?, ?, ?, ?, ?)
+            ");
+
+            $stmt->execute([
+                $orderId,
+                $this->getCurrentUserId(),
+                (float)($summary['subtotal'] ?? 0),
+                $customer['address'] ?? '',
+                $this->mapPaymentMethod($paymentMethod),
+                $this->mapShippingMethod($deliveryMethod),
+                $promoCode,
+                $customer['full_name'] ?? '',
+                $customer['phone'] ?? '',
+                (float)($summary['discount'] ?? 0),
+                (float)($summary['shipping'] ?? 0),
+                (float)($summary['total'] ?? 0),
+            ]);
+
+            $detailStmt = $this->db->prepare("
+                INSERT INTO chitietdonhang
+                (MaDonHang, MaBienThe, SoLuong, DonGia)
+                VALUES (?, ?, ?, ?)
+            ");
+
+            $stockStmt = $this->db->prepare("
+                UPDATE bienthesanpham
+                SET SoLuongTon = SoLuongTon - ?
+                WHERE MaBienThe = ?
+                AND SoLuongTon >= ?
+            ");
+
+            foreach ($items as $item) {
+                $qty = (int)$item['quantity'];
+
+                $detailStmt->execute([
+                    $orderId,
+                    $item['MaBienThe'],
+                    $qty,
+                    (float)$item['price'],
+                ]);
+
+                $stockStmt->execute([
+                    $qty,
+                    $item['MaBienThe'],
+                    $qty,
+                ]);
+
+                if ($stockStmt->rowCount() === 0) {
+                    throw new Exception('Không thể trừ tồn kho cho biến thể ' . $item['MaBienThe'] . '.');
+                }
+            }
+
+            if ($promoCode) {
+                $promoStmt = $this->db->prepare("
+                    UPDATE magiamgia
+                    SET SoLuong = SoLuong - 1
+                    WHERE MaCode = ?
+                    AND SoLuong > 0
+                ");
+
+                $promoStmt->execute([$promoCode]);
+            }
+
+            $this->db->commit();
+
+            $_SESSION['latest_order_id'] = $orderId;
+
+            return $this->getOrderById($orderId);
+        } catch (Throwable $e) {
+            if ($this->db->inTransaction()) {
+                $this->db->rollBack();
+            }
+
+            throw $e;
+        }
+    }
+
+    public function checkStock($items)
+    {
+        foreach ($items as $item) {
+            $stmt = $this->db->prepare("
+                SELECT SoLuongTon
+                FROM bienthesanpham
+                WHERE MaBienThe = ?
+                LIMIT 1
+            ");
+
+            $stmt->execute([$item['MaBienThe']]);
+            $stock = $stmt->fetchColumn();
+
+            if ($stock === false) {
+                return [
+                    'ok' => false,
+                    'message' => 'Không tìm thấy biến thể ' . $item['MaBienThe'] . '.'
+                ];
+            }
+
+            if ((int)$stock < (int)$item['quantity']) {
+                return [
+                    'ok' => false,
+                    'message' => 'Sản phẩm ' . $item['name'] . ' không đủ tồn kho. Còn ' . (int)$stock . ', cần ' . (int)$item['quantity'] . '.'
+                ];
+            }
+        }
+
+        return [
+            'ok' => true,
+            'message' => 'OK'
+        ];
     }
 
     public function getOrders()
     {
-        return $_SESSION['orders'] ?? [];
+        $stmt = $this->db->prepare("
+            SELECT *
+            FROM donhang
+            WHERE MaNguoiDung = ?
+            ORDER BY NgayDat DESC, MaDonHang DESC
+        ");
+
+        $stmt->execute([$this->getCurrentUserId()]);
+        $orders = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+        foreach ($orders as &$order) {
+            $order['items'] = $this->getOrderItems($order['MaDonHang']);
+        }
+
+        return $orders;
+    }
+
+    public function getOrderById($orderId)
+    {
+        $orderId = trim((string)$orderId);
+
+        if ($orderId === '') {
+            return null;
+        }
+
+        $stmt = $this->db->prepare("
+            SELECT *
+            FROM donhang
+            WHERE MaDonHang = ?
+            AND MaNguoiDung = ?
+            LIMIT 1
+        ");
+
+        $stmt->execute([
+            $orderId,
+            $this->getCurrentUserId()
+        ]);
+
+        $order = $stmt->fetch(PDO::FETCH_ASSOC);
+
+        if (!$order) {
+            return null;
+        }
+
+        $order['items'] = $this->getOrderItems($orderId);
+
+        return $order;
     }
 
     public function getLatestOrder()
     {
-        return $_SESSION['latest_order'] ?? null;
+        $stmt = $this->db->prepare("
+            SELECT MaDonHang
+            FROM donhang
+            WHERE MaNguoiDung = ?
+            ORDER BY NgayDat DESC, MaDonHang DESC
+            LIMIT 1
+        ");
+
+        $stmt->execute([$this->getCurrentUserId()]);
+        $orderId = $stmt->fetchColumn();
+
+        if (!$orderId) {
+            return null;
+        }
+
+        return $this->getOrderById($orderId);
+    }
+
+    private function getOrderItems($orderId)
+    {
+        $detailStmt = $this->db->prepare("
+            SELECT 
+                ctdh.MaDonHang,
+                ctdh.MaBienThe,
+                ctdh.SoLuong,
+                ctdh.DonGia,
+                bt.MaSanPham,
+                bt.KichThuoc,
+                bt.MauSac,
+                sp.TenSanPham,
+                (
+                    SELECT ha.DuongDan
+                    FROM hinhanhsanpham ha
+                    WHERE ha.MaSanPham = sp.MaSanPham
+                    LIMIT 1
+                ) AS HinhAnh
+            FROM chitietdonhang ctdh
+            JOIN bienthesanpham bt ON bt.MaBienThe = ctdh.MaBienThe
+            JOIN sanpham sp ON sp.MaSanPham = bt.MaSanPham
+            WHERE ctdh.MaDonHang = ?
+            ORDER BY ctdh.MaBienThe ASC
+        ");
+
+        $detailStmt->execute([$orderId]);
+
+        return $detailStmt->fetchAll(PDO::FETCH_ASSOC);
+    }
+
+    private function generateOrderId()
+    {
+        $stmt = $this->db->query("
+            SELECT MaDonHang
+            FROM donhang
+            WHERE MaDonHang LIKE 'O%'
+            ORDER BY CAST(SUBSTRING(MaDonHang, 2) AS UNSIGNED) DESC
+            LIMIT 1
+        ");
+
+        $last = $stmt->fetchColumn();
+        $num = $last ? ((int)preg_replace('/\D/', '', $last) + 1) : 1;
+
+        return 'O' . str_pad((string)$num, 3, '0', STR_PAD_LEFT);
+    }
+
+    private function getCurrentUserId()
+    {
+        return $_SESSION['user']['MaNguoiDung']
+            ?? $_SESSION['user']['id']
+            ?? $_SESSION['MaNguoiDung']
+            ?? $_SESSION['user_id']
+            ?? 'U002';
+    }
+
+    private function mapPaymentMethod($method)
+    {
+        $method = strtolower((string)$method);
+
+        if ($method === 'cod') {
+            return '1';
+        }
+
+        if ($method === 'transfer') {
+            return '2';
+        }
+
+        if ($method === 'card') {
+            return '3';
+        }
+
+        return '1';
+    }
+
+    private function mapShippingMethod($method)
+    {
+        return strtolower((string)$method) === 'express' ? '2' : '1';
     }
 }

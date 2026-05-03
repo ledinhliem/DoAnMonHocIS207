@@ -4,44 +4,91 @@
     <h1 class="text-4xl font-black font-headline text-primary mb-8">Thanh toán thẻ</h1>
 
     <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
-        <form id="paymentForm" method="POST" action="?url=order/process-payment" class="bg-white rounded-2xl border border-outline-variant/30 p-6 space-y-5">
+        <form id="paymentForm"
+              method="POST"
+              action="?url=order/process-payment"
+              class="bg-white rounded-2xl border border-outline-variant/30 p-6 space-y-5">
+
             <div>
                 <label class="block text-sm font-semibold mb-2">Tên trên thẻ</label>
-                <input id="card_name" type="text" name="card_name" value="<?= htmlspecialchars($old['card_name'] ?? '') ?>" class="w-full rounded-xl border border-outline-variant bg-white">
+                <input id="card_name"
+                       type="text"
+                       name="card_name"
+                       value="<?= htmlspecialchars($old['card_name'] ?? '') ?>"
+                       class="w-full rounded-xl border border-outline-variant bg-white px-4 py-3"
+                       placeholder="NGUYEN VAN A">
+
                 <?php if (!empty($errors['card_name'])): ?>
-                    <p class="text-red-600 text-sm mt-1"><?= htmlspecialchars($errors['card_name']) ?></p>
+                    <p class="text-red-600 text-sm mt-1">
+                        <?= htmlspecialchars($errors['card_name']) ?>
+                    </p>
                 <?php endif; ?>
             </div>
 
             <div>
                 <label class="block text-sm font-semibold mb-2">Số thẻ</label>
-                <input id="card_number" type="text" name="card_number" value="<?= htmlspecialchars($old['card_number'] ?? '') ?>" class="w-full rounded-xl border border-outline-variant bg-white" placeholder="4242424242424242">
+                <input id="card_number"
+                       type="text"
+                       name="card_number"
+                       value="<?= htmlspecialchars($old['card_number'] ?? '') ?>"
+                       class="w-full rounded-xl border border-outline-variant bg-white px-4 py-3"
+                       placeholder="4242424242424242">
+
                 <?php if (!empty($errors['card_number'])): ?>
-                    <p class="text-red-600 text-sm mt-1"><?= htmlspecialchars($errors['card_number']) ?></p>
+                    <p class="text-red-600 text-sm mt-1">
+                        <?= htmlspecialchars($errors['card_number']) ?>
+                    </p>
                 <?php endif; ?>
             </div>
 
             <div class="grid grid-cols-2 gap-4">
                 <div>
                     <label class="block text-sm font-semibold mb-2">Ngày hết hạn</label>
-                    <input id="card_expiry" type="text" name="card_expiry" value="<?= htmlspecialchars($old['card_expiry'] ?? '') ?>" class="w-full rounded-xl border border-outline-variant bg-white" placeholder="MM/YY">
+                    <input id="card_expiry"
+                           type="text"
+                           name="card_expiry"
+                           value="<?= htmlspecialchars($old['card_expiry'] ?? '') ?>"
+                           class="w-full rounded-xl border border-outline-variant bg-white px-4 py-3"
+                           placeholder="MM/YY">
+
                     <?php if (!empty($errors['card_expiry'])): ?>
-                        <p class="text-red-600 text-sm mt-1"><?= htmlspecialchars($errors['card_expiry']) ?></p>
+                        <p class="text-red-600 text-sm mt-1">
+                            <?= htmlspecialchars($errors['card_expiry']) ?>
+                        </p>
                     <?php endif; ?>
                 </div>
 
                 <div>
                     <label class="block text-sm font-semibold mb-2">CVV</label>
-                    <input id="card_cvv" type="password" name="card_cvv" value="<?= htmlspecialchars($old['card_cvv'] ?? '') ?>" class="w-full rounded-xl border border-outline-variant bg-white" placeholder="123">
+                    <input id="card_cvv"
+                           type="password"
+                           name="card_cvv"
+                           value="<?= htmlspecialchars($old['card_cvv'] ?? '') ?>"
+                           class="w-full rounded-xl border border-outline-variant bg-white px-4 py-3"
+                           placeholder="123">
+
                     <?php if (!empty($errors['card_cvv'])): ?>
-                        <p class="text-red-600 text-sm mt-1"><?= htmlspecialchars($errors['card_cvv']) ?></p>
+                        <p class="text-red-600 text-sm mt-1">
+                            <?= htmlspecialchars($errors['card_cvv']) ?>
+                        </p>
                     <?php endif; ?>
                 </div>
             </div>
 
+            <div class="bg-surface-container rounded-xl p-4 text-sm text-on-surface-variant">
+                Đây là thanh toán mô phỏng. Có thể test bằng:
+                <strong>4242424242424242</strong>, hạn thẻ <strong>12/30</strong>, CVV <strong>123</strong>.
+            </div>
+
             <div class="flex gap-4 pt-3">
-                <a href="?url=checkout" class="px-5 py-3 rounded-xl border border-outline-variant font-semibold">Quay lại thanh toán</a>
-                <button id="payNowBtn" type="submit" disabled class="px-5 py-3 rounded-xl bg-primary text-white font-semibold disabled:opacity-50 disabled:cursor-not-allowed">
+                <a href="?url=checkout"
+                   class="px-5 py-3 rounded-xl border border-outline-variant font-semibold">
+                    Quay lại checkout
+                </a>
+
+                <button id="payNowBtn"
+                        type="submit"
+                        class="px-5 py-3 rounded-xl bg-primary text-white font-semibold">
                     Thanh toán ngay
                 </button>
             </div>
@@ -49,22 +96,26 @@
 
         <div class="bg-surface-container rounded-2xl p-6 h-fit">
             <h2 class="text-xl font-bold mb-4">Tóm tắt thanh toán</h2>
+
             <div class="space-y-2">
                 <div class="flex justify-between">
                     <span>Tạm tính</span>
-                    <span>$<?= number_format($summary['subtotal'], 2) ?></span>
+                    <span><?= number_format($summary['subtotal'] ?? 0, 0, ',', '.') ?>₫</span>
                 </div>
+
                 <div class="flex justify-between">
                     <span>Giảm giá</span>
-                    <span>- $<?= number_format($summary['discount'], 2) ?></span>
+                    <span>- <?= number_format($summary['discount'] ?? 0, 0, ',', '.') ?>₫</span>
                 </div>
+
                 <div class="flex justify-between">
                     <span>Phí vận chuyển</span>
-                    <span>$<?= number_format($summary['shipping'], 2) ?></span>
+                    <span><?= number_format($summary['shipping'] ?? 0, 0, ',', '.') ?>₫</span>
                 </div>
+
                 <div class="flex justify-between font-bold text-primary text-lg pt-2">
                     <span>Tổng cộng</span>
-                    <span>$<?= number_format($summary['total'], 2) ?></span>
+                    <span><?= number_format($summary['total'] ?? 0, 0, ',', '.') ?>₫</span>
                 </div>
             </div>
         </div>
@@ -74,25 +125,6 @@
 <script>
     const paymentForm = document.getElementById('paymentForm');
     const payNowBtn = document.getElementById('payNowBtn');
-    const cardName = document.getElementById('card_name');
-    const cardNumber = document.getElementById('card_number');
-    const cardExpiry = document.getElementById('card_expiry');
-    const cardCvv = document.getElementById('card_cvv');
-
-    function validatePaymentForm() {
-        const nameValid = cardName.value.trim() !== '';
-        const numberValid = /^[0-9]{13,19}$/.test(cardNumber.value.trim().replace(/\s+/g, ''));
-        const expiryValid = /^(0[1-9]|1[0-2])\/([0-9]{2})$/.test(cardExpiry.value.trim());
-        const cvvValid = /^[0-9]{3,4}$/.test(cardCvv.value.trim());
-
-        payNowBtn.disabled = !(nameValid && numberValid && expiryValid && cvvValid);
-    }
-
-    [cardName, cardNumber, cardExpiry, cardCvv].forEach(input => {
-        input.addEventListener('input', validatePaymentForm);
-    });
-
-    validatePaymentForm();
 
     paymentForm.addEventListener('submit', function () {
         payNowBtn.disabled = true;

@@ -1,210 +1,236 @@
 <?php include __DIR__ . '/../layouts/header.php'; ?>
 
-<?php
-// Xử lý tiêu đề theo danh mục (Giả lập logic từ Controller)
-$categoryTitle = 'Tất cả sản phẩm';
-$categoriesList = $categories ?? [
-    '1' => 'Đồ bếp',
-    '2' => 'Phòng khách',
-    '3' => 'Phòng ngủ',
-    '4' => 'Chăm sóc sức khỏe'
-];
-if (!empty($filters['category']) && isset($categoriesList[$filters['category']])) {
-    $categoryTitle = $categoriesList[$filters['category']];
-}
-?>
+<main class="min-h-screen bg-[#FAFAF2] px-8 py-14">
+    <section class="max-w-7xl mx-auto">
+        <div class="grid grid-cols-1 lg:grid-cols-4 gap-10">
 
-<main class="max-w-7xl mx-auto px-6 md:px-8 py-12">
-  <nav aria-label="Breadcrumb" class="flex items-center space-x-2 text-sm text-on-surface-variant mb-12">
-    <a class="hover:text-primary transition-colors" href="<?= BASE_URL ?>">Trang chủ</a>
-    <span class="material-symbols-outlined text-xs">chevron_right</span>
-    <a class="hover:text-primary transition-colors" href="<?= BASE_URL ?>?url=product">Sản phẩm</a>
-    <span class="material-symbols-outlined text-xs">chevron_right</span>
-    <span class="font-semibold text-primary"><?= htmlspecialchars($categoryTitle) ?></span>
-  </nav>
+            <!-- FILTER SIDEBAR -->
+            <aside class="lg:col-span-1">
+                <form method="GET" action="">
+                    <input type="hidden" name="url" value="product">
 
-  <div class="flex flex-col md:flex-row gap-12 lg:gap-16">
-    <aside class="w-full md:w-64 flex-shrink-0 space-y-10">
-      <form id="filter-form" method="GET" action="<?= BASE_URL ?>">
-        <input type="hidden" name="url" value="product">
+                    <div class="bg-[#FAFAF2] rounded-2xl p-4 sticky top-28">
+                        <h2 class="text-2xl font-bold text-[#2F512A] mb-6">
+                            Danh mục
+                        </h2>
 
-        <div>
-          <h3 class="text-xl font-bold mb-4 text-primary">Tìm kiếm</h3>
-          <div class="relative">
-              <input type="text" name="keyword" value="<?= htmlspecialchars($filters['keyword'] ?? '') ?>"
-                     class="w-full rounded-xl border border-outline-variant bg-surface-container-lowest px-4 py-3 pl-10 focus:border-primary outline-none transition-colors"
-                     placeholder="Tên sản phẩm...">
-              <span class="material-symbols-outlined absolute left-3 top-3.5 text-outline">search</span>
-          </div>
-        </div>
-        
-        <div class="h-px bg-outline-variant/20 my-8"></div>
+                        <label class="flex items-center gap-3 mb-4 cursor-pointer">
+                            <input type="radio"
+                                   name="category"
+                                   value=""
+                                   <?= empty($filters['category']) ? 'checked' : '' ?>>
+                            <span>Tất cả</span>
+                        </label>
 
-        <div>
-          <h3 class="text-xl font-bold mb-6 text-primary">Danh mục</h3>
-          <ul class="space-y-4">
-            <li class="flex items-center justify-between group">
-               <label class="flex items-center gap-3 cursor-pointer w-full">
-                 <input type="radio" name="category" value="" onchange="this.form.submit()" class="accent-primary w-4 h-4" <?= empty($filters['category']) ? 'checked' : '' ?>>
-                 <span class="text-on-surface-variant group-hover:text-primary transition-colors">Tất cả</span>
-               </label>
-            </li>
-            <?php foreach ($categoriesList as $key => $label): ?>
-              <li class="flex items-center justify-between group">
-                <label class="flex items-center gap-3 cursor-pointer w-full">
-                  <input type="radio" name="category" value="<?= htmlspecialchars($key) ?>" onchange="this.form.submit()" class="accent-primary w-4 h-4" <?= (($filters['category'] ?? '') == $key) ? 'checked' : '' ?>>
-                  <span class="text-on-surface-variant group-hover:text-primary transition-colors">
-                    <?= htmlspecialchars($label) ?>
-                  </span>
-                </label>
-              </li>
-            <?php endforeach; ?>
-          </ul>
-        </div>
-        
-        <div class="h-px bg-outline-variant/20 my-8"></div>
+                        <?php foreach (($categories ?? []) as $categoryId => $categoryName): ?>
+                            <label class="flex items-center gap-3 mb-4 cursor-pointer">
+                                <input type="radio"
+                                       name="category"
+                                       value="<?= htmlspecialchars($categoryId) ?>"
+                                       <?= (($filters['category'] ?? '') === $categoryId) ? 'checked' : '' ?>>
+                                <span><?= htmlspecialchars($categoryName) ?></span>
+                            </label>
+                        <?php endforeach; ?>
 
-        <div>
-          <h3 class="text-xl font-bold mb-4 text-primary">Mức giá tối đa</h3>
-          <div class="relative">
-            <span class="absolute left-4 top-3 text-on-surface-variant font-bold">$</span>
-            <input type="number" name="price_max" min="0" step="1"
-              class="w-full rounded-xl border border-outline-variant bg-surface-container-lowest px-4 py-3 pl-8 focus:border-primary outline-none transition-colors"
-              placeholder="Không giới hạn"
-              value="<?= htmlspecialchars($filters['price_max'] ?? '') ?>"
-              onchange="this.form.submit()" />
-          </div>
-        </div>
+                        <hr class="my-8 border-[#E0E3D5]">
 
-        <div class="h-px bg-outline-variant/20 my-8"></div>
+                        <h2 class="text-2xl font-bold text-[#2F512A] mb-6">
+                            Mức giá tối đa
+                        </h2>
 
-        <div>
-          <h3 class="text-xl font-bold mb-6 text-primary">Tác động môi trường</h3>
-          <div class="space-y-4">
-            <?php 
-              $impacts = $impacts ?? ['carbon-neutral' => 'Trung hòa carbon', 'plastic-free' => 'Không nhựa', 'upcycled' => 'Vật liệu tái chế nâng cấp'];
-              foreach ($impacts as $key => $label): 
-            ?>
-              <label class="flex items-center space-x-3 cursor-pointer group">
-                <input type="radio" name="impact" value="<?= htmlspecialchars($key) ?>" onchange="this.form.submit()" class="accent-primary w-4 h-4" <?= (($filters['impact'] ?? '') === $key) ? 'checked' : '' ?>>
-                <span class="text-on-surface-variant group-hover:text-primary transition-colors font-medium">
-                  <?= htmlspecialchars($label) ?>
-                </span>
-              </label>
-            <?php endforeach; ?>
-          </div>
-        </div>
+                        <div class="relative mb-8">
+                            <span class="absolute left-4 top-1/2 -translate-y-1/2 font-bold text-[#2F512A]">
+                                ₫
+                            </span>
 
-        <div class="mt-8">
-            <a href="<?= BASE_URL ?>?url=product" class="block w-full text-center px-4 py-3 rounded-xl border-2 border-outline-variant text-on-surface hover:border-primary hover:text-primary transition-all font-bold">
-                Xóa bộ lọc
-            </a>
-        </div>
-      </form>
-    </aside>
+                            <input type="number"
+                                   name="price_max"
+                                   value="<?= htmlspecialchars($filters['price_max'] ?? '') ?>"
+                                   placeholder="Không giới hạn"
+                                   class="w-full rounded-xl border border-[#D8DDCB] bg-white px-10 py-3">
+                        </div>
 
-    <section class="flex-1 min-w-0">
-      <header class="flex flex-col xl:flex-row xl:items-end justify-between mb-12 gap-6">
-        <div>
-          <h1 class="text-4xl md:text-5xl font-extrabold text-primary mb-4 tracking-tight">
-            <?= htmlspecialchars($categoryTitle) ?>
-          </h1>
-          <p class="text-on-surface-variant max-w-lg leading-relaxed mb-2">
-            Những vật dụng thiết yếu cho một không gian sống xanh. Được tuyển chọn kỹ lưỡng vì tính bền vững và vẻ đẹp vượt thời gian.
-          </p>
-          <p class="text-sm font-bold text-secondary">
-            Tìm thấy <?= count($products ?? []) ?> sản phẩm
-          </p>
-        </div>
-        
-        <div class="flex items-center gap-4 bg-surface-container-lowest border border-outline-variant/50 p-2 rounded-xl">
-          <span class="text-sm font-bold text-on-surface-variant pl-2">Sắp xếp:</span>
-          <select name="sort" form="filter-form" onchange="document.getElementById('filter-form').submit()" class="bg-transparent border-none outline-none text-sm font-semibold text-primary cursor-pointer pr-2">
-            <option value="">Hàng mới về</option>
-            <option value="price_asc" <?= (($filters['sort'] ?? '') == 'price_asc') ? 'selected' : '' ?>>Giá: Thấp đến Cao</option>
-            <option value="price_desc" <?= (($filters['sort'] ?? '') == 'price_desc') ? 'selected' : '' ?>>Giá: Cao xuống Thấp</option>
-            <option value="impact_desc" <?= (($filters['sort'] ?? '') == 'impact_desc') ? 'selected' : '' ?>>Đánh giá tác động xanh</option>
-          </select>
-        </div>
-      </header>
+                        <hr class="my-8 border-[#E0E3D5]">
 
-      <?php if (empty($products)): ?>
-        <div class="bg-surface-container-low border-2 border-dashed border-outline-variant rounded-3xl p-12 text-center flex flex-col items-center justify-center">
-            <span class="material-symbols-outlined text-6xl text-outline mb-4">search_off</span>
-            <h3 class="text-2xl font-bold text-primary mb-2">Không tìm thấy sản phẩm</h3>
-            <p class="text-on-surface-variant">Thử thay đổi bộ lọc hoặc từ khóa tìm kiếm của bạn.</p>
-            <a href="<?= BASE_URL ?>?url=product" class="mt-6 px-6 py-3 bg-primary text-on-primary rounded-xl font-bold hover:opacity-90 transition-opacity">Khám phá tất cả</a>
-        </div>
-      <?php else: ?>
-        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-x-8 gap-y-12">
-          <?php foreach ($products as $product): ?>
-            <div class="group flex flex-col">
-              <div class="relative aspect-[4/5] mb-5 overflow-hidden rounded-2xl bg-surface-container shadow-sm border border-outline-variant/20">
-                <a href="<?= BASE_URL ?>?url=product/detail&id=<?= htmlspecialchars($product['id']) ?>" class="block h-full">
-                  <img alt="<?= htmlspecialchars($product['name']) ?>"
-                    class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
-                    src="<?= htmlspecialchars($product['image'] ?? 'default.jpg') ?>" />
-                </a>
+                        <h2 class="text-2xl font-bold text-[#2F512A] mb-6">
+                            Tác động môi trường
+                        </h2>
 
-                <?php if (!empty($product['is_bestseller'])): ?>
-                <div class="absolute top-4 left-4 pointer-events-none">
-                  <span class="bg-secondary-container text-on-secondary-container px-3 py-1.5 rounded-full text-[10px] font-black tracking-widest uppercase shadow-sm">
-                    Bán chạy
-                  </span>
-                </div>
-                <?php endif; ?>
+                        <?php foreach (($impacts ?? []) as $impactId => $impactName): ?>
+                            <label class="flex items-center gap-3 mb-4 cursor-pointer">
+                                <input type="radio"
+                                       name="impact"
+                                       value="<?= htmlspecialchars($impactId) ?>"
+                                       <?= (($filters['impact'] ?? '') === $impactId) ? 'checked' : '' ?>>
+                                <span><?= htmlspecialchars($impactName) ?></span>
+                            </label>
+                        <?php endforeach; ?>
 
-                <form method="POST" action="<?= BASE_URL ?>?url=cart/add" class="absolute bottom-4 right-4">
-                  <input type="hidden" name="ma_san_pham" value="<?= htmlspecialchars($product['id']) ?>">
-                  <input type="hidden" name="so_luong" value="1">
-                  
-                  <button type="submit" class="bg-primary text-on-primary p-3.5 rounded-full shadow-xl opacity-0 translate-y-4 group-hover:opacity-100 group-hover:translate-y-0 transition-all duration-300 hover:scale-110 active:scale-95">
-                    <span class="material-symbols-outlined text-[20px]">add_shopping_cart</span>
-                  </button>
-                </form>
-              </div>
+                        <label class="flex items-center gap-3 mb-6 cursor-pointer">
+                            <input type="radio"
+                                   name="impact"
+                                   value=""
+                                   <?= empty($filters['impact']) ? 'checked' : '' ?>>
+                            <span>Tất cả tác động</span>
+                        </label>
 
-              <div class="flex flex-col flex-grow">
-                <div class="text-[10px] font-black uppercase tracking-widest text-secondary mb-1.5">
-                    <?= htmlspecialchars($categoriesList[$product['category']] ?? 'Sản phẩm') ?>
-                </div>
-                
-                <div class="flex justify-between items-start gap-4 mb-3">
-                  <a href="<?= BASE_URL ?>?url=product/detail&id=<?= htmlspecialchars($product['id']) ?>" class="block">
-                    <h3 class="text-lg font-bold font-headline text-on-surface group-hover:text-primary transition-colors line-clamp-2">
-                      <?= htmlspecialchars($product['name']) ?>
-                    </h3>
-                  </a>
-                  <span class="text-secondary font-black text-lg whitespace-nowrap">$<?= number_format($product['price'], 2) ?></span>
-                </div>
-
-                <div class="mt-auto">
-                    <div class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-surface-tint/10 text-primary-container text-[10px] font-black uppercase">
-                      <span class="material-symbols-outlined text-[14px]" style="font-variation-settings: 'FILL' 1;">eco</span>
-                      <?= htmlspecialchars($product['eco_tag'] ?? 'THÂN THIỆN MÔI TRƯỜNG') ?>
+                        <button type="submit"
+                                class="w-full rounded-xl bg-[#2F512A] text-white font-bold py-3 hover:bg-[#244020] transition">
+                            Lọc sản phẩm
+                        </button>
                     </div>
-                </div>
-              </div>
-            </div>
-          <?php endforeach; ?>
-        </div>
+                </form>
+            </aside>
 
-        <div class="mt-20 flex justify-center items-center gap-3">
-          <button class="w-12 h-12 rounded-full flex items-center justify-center border-2 border-outline-variant hover:border-primary hover:text-primary transition-all">
-            <span class="material-symbols-outlined">arrow_back</span>
-          </button>
-          <div class="flex gap-2">
-            <button class="w-12 h-12 rounded-full bg-primary text-on-primary font-bold shadow-md">1</button>
-            <button class="w-12 h-12 rounded-full hover:bg-surface-container-high font-bold transition-colors text-on-surface-variant">2</button>
-            <button class="w-12 h-12 rounded-full hover:bg-surface-container-high font-bold transition-colors text-on-surface-variant">3</button>
-          </div>
-          <button class="w-12 h-12 rounded-full flex items-center justify-center border-2 border-outline-variant hover:border-primary hover:text-primary transition-all">
-            <span class="material-symbols-outlined">arrow_forward</span>
-          </button>
+            <!-- PRODUCT LIST -->
+            <section class="lg:col-span-3">
+                <div class="mb-8">
+                    <h1 class="text-4xl md:text-5xl font-black text-[#2F512A] mb-4">
+                        Cửa hàng
+                    </h1>
+
+                    <p class="text-gray-700 max-w-3xl leading-7">
+                        Khám phá các sản phẩm xanh được tuyển chọn kỹ lưỡng vì tính bền vững và vẻ đẹp vượt thời gian.
+                    </p>
+                </div>
+
+                <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-4 mb-8">
+                    <p class="font-semibold text-[#6B4C2F]">
+                        Tìm thấy <?= count($products ?? []) ?> sản phẩm
+                    </p>
+
+                    <form method="GET" action="" class="flex items-center gap-3">
+                        <input type="hidden" name="url" value="product">
+                        <input type="hidden" name="keyword" value="<?= htmlspecialchars($filters['keyword'] ?? '') ?>">
+                        <input type="hidden" name="category" value="<?= htmlspecialchars($filters['category'] ?? '') ?>">
+                        <input type="hidden" name="impact" value="<?= htmlspecialchars($filters['impact'] ?? '') ?>">
+                        <input type="hidden" name="price_max" value="<?= htmlspecialchars($filters['price_max'] ?? '') ?>">
+
+                        <label class="font-semibold">Sắp xếp:</label>
+
+                        <select name="sort"
+                                onchange="this.form.submit()"
+                                class="rounded-xl border border-[#D8DDCB] bg-white px-4 py-3">
+                            <option value="" <?= empty($filters['sort']) ? 'selected' : '' ?>>
+                                Hàng mới về
+                            </option>
+
+                            <option value="price_asc" <?= (($filters['sort'] ?? '') === 'price_asc') ? 'selected' : '' ?>>
+                                Giá tăng dần
+                            </option>
+
+                            <option value="price_desc" <?= (($filters['sort'] ?? '') === 'price_desc') ? 'selected' : '' ?>>
+                                Giá giảm dần
+                            </option>
+
+                            <option value="impact_desc" <?= (($filters['sort'] ?? '') === 'impact_desc') ? 'selected' : '' ?>>
+                                Điểm xanh cao
+                            </option>
+                        </select>
+                    </form>
+                </div>
+
+                <?php if (empty($products)): ?>
+                    <div class="bg-white rounded-2xl border border-[#E5E7D8] p-8">
+                        Không tìm thấy sản phẩm phù hợp.
+                    </div>
+                <?php else: ?>
+                    <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-8">
+                        <?php foreach ($products as $product): ?>
+                            <?php
+                                $maSanPham = $product['MaSanPham'] ?? $product['id'] ?? '';
+                                $maBienThe = $product['MaBienTheMacDinh'] ?? '';
+                                $image = $product['image'] ?? '';
+                                $name = $product['TenSanPham'] ?? $product['name'] ?? 'Sản phẩm';
+                                $category = $product['TenDanhMuc'] ?? '';
+                                $price = (float)($product['GiaTien'] ?? $product['price'] ?? 0);
+                                $ecoTag = $product['eco_tag'] ?? 'ĐIỂM XANH CAO';
+                                $stock = (int)($product['TongTon'] ?? 0);
+                            ?>
+
+                            <article class="group">
+                                <div class="relative rounded-2xl overflow-hidden bg-[#EEF1E7] border border-[#E5E7D8] h-[300px]">
+                                    <a href="?url=product/detail&id=<?= urlencode($maSanPham) ?>">
+                                        <?php if (!empty($image)): ?>
+                                            <img src="<?= htmlspecialchars($image) ?>"
+                                                 alt="<?= htmlspecialchars($name) ?>"
+                                                 class="w-full h-full object-cover group-hover:scale-105 transition duration-300">
+                                        <?php else: ?>
+                                            <div class="w-full h-full flex items-center justify-center text-gray-500">
+                                                No image
+                                            </div>
+                                        <?php endif; ?>
+                                    </a>
+
+                                    <!-- Hover overlay -->
+                                    <div class="absolute inset-0 bg-black/0 group-hover:bg-black/10 transition-all duration-300 pointer-events-none"></div>
+
+                                    <?php if (!empty($product['is_bestseller'])): ?>
+                                        <span class="absolute top-5 left-5 rounded-full bg-[#FFD9A8] px-4 py-2 text-xs font-bold tracking-wider z-10">
+                                            BÁN CHẠY
+                                        </span>
+                                    <?php endif; ?>
+
+                                    <!-- Add to cart button: hidden by default, shown on card hover -->
+                                    <form method="POST" action="?url=cart/add">
+                                        <input type="hidden"
+                                               name="MaSanPham"
+                                               value="<?= htmlspecialchars($maSanPham) ?>">
+
+                                        <input type="hidden"
+                                               name="MaBienThe"
+                                               value="<?= htmlspecialchars($maBienThe) ?>">
+
+                                        <input type="hidden"
+                                               name="SoLuong"
+                                               value="1">
+
+                                        <button type="submit"
+                                                title="Thêm vào giỏ"
+                                                <?= (empty($maSanPham) || empty($maBienThe) || $stock <= 0) ? 'disabled' : '' ?>
+                                                class="absolute bottom-4 right-4 z-10 w-14 h-14 rounded-full bg-[#2F512A] text-white flex items-center justify-center shadow-lg
+                                                opacity-0 translate-y-3 pointer-events-none
+                                                group-hover:opacity-100 group-hover:translate-y-0 group-hover:pointer-events-auto
+                                                hover:bg-[#244020] transition-all duration-300
+                                                disabled:opacity-50 disabled:cursor-not-allowed">
+                                            <span class="material-symbols-outlined">shopping_cart</span>
+                                        </button>
+                                    </form>
+                                </div>
+
+                                <div class="pt-5">
+                                    <p class="text-xs tracking-widest uppercase font-bold text-[#8B5E34] mb-2">
+                                        <?= htmlspecialchars($category) ?>
+                                    </p>
+
+                                    <a href="?url=product/detail&id=<?= urlencode($maSanPham) ?>">
+                                        <h3 class="text-xl font-black text-black leading-snug mb-3 hover:text-[#2F512A] transition">
+                                            <?= htmlspecialchars($name) ?>
+                                        </h3>
+                                    </a>
+
+                                    <div class="flex items-center justify-between gap-4 mb-4">
+                                        <p class="text-xl font-bold text-[#8B5E34]">
+                                            <?= number_format($price, 0, ',', '.') ?>₫
+                                        </p>
+
+                                        <p class="text-sm text-gray-500">
+                                            Còn: <?= $stock ?>
+                                        </p>
+                                    </div>
+
+                                    <p class="text-xs font-bold text-[#2F512A] flex items-center gap-2">
+                                        <span>●</span>
+                                        <?= htmlspecialchars($ecoTag) ?>
+                                    </p>
+                                </div>
+                            </article>
+                        <?php endforeach; ?>
+                    </div>
+                <?php endif; ?>
+            </section>
         </div>
-      <?php endif; ?>
     </section>
-  </div>
 </main>
 
 <?php include __DIR__ . '/../layouts/footer.php'; ?>
