@@ -216,7 +216,8 @@ INSERT INTO `danhgia` (`MaDanhGia`, `MaNguoiDung`, `MaSanPham`, `SoSao`, `NoiDun
 CREATE TABLE `danhmuc` (
   `MaDanhMuc` varchar(20) NOT NULL,
   `TenDanhMuc` varchar(100) NOT NULL,
-  `HinhAnh` varchar(255) DEFAULT NULL
+  `HinhAnh` varchar(255) DEFAULT NULL,
+  `TrangThai` tinyint(1) DEFAULT 1
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 --

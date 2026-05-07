@@ -32,7 +32,16 @@ class Router
             $controller->inventory();
             return;
         }
+        if (preg_match('#^admin/products/(edit|delete)/(.+)$#', $url, $matches)) {
+            require_once __DIR__ . '/../app/controllers/AdminController.php';
+            $controller = new AdminController();
 
+            $_GET['action'] = $matches[1]; // edit | delete
+            $_GET['id'] = $matches[2];     // 123
+
+            $controller->products();
+            return;
+        }
         switch ($url) {
             case '':
                 require_once __DIR__ . '/../app/controllers/HomeController.php';
@@ -226,11 +235,11 @@ class Router
                 $controller->dashboard();
                 break;
             case 'admin/products':
+            case 'admin/products/create':
                 require_once __DIR__ . '/../app/controllers/AdminController.php';
                 $controller = new AdminController();
                 $controller->products();
                 break;
-
             case 'admin/orders':
                 require_once __DIR__ . '/../app/controllers/AdminController.php';
                 $controller = new AdminController();
