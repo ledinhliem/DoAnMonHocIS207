@@ -4,12 +4,17 @@
 $keyword = $_GET['keyword'] ?? '';
 $tab     = $_GET['tab'] ?? 'all';
 
+// Nhận $reviews từ AdminController (kết quả truy vấn DB thật)
 $reviewList = [];
 if (isset($reviews) && is_array($reviews)) {
     $reviewList = $reviews;
 } elseif (isset($data['reviews']) && is_array($data['reviews'])) {
     $reviewList = $data['reviews'];
 }
+
+// Hiển thị thông báo trạng thái từ controller (nếu có)
+$flashStatus  = $status ?? null;
+$flashMessage = $message ?? '';
 
 if (!function_exists('e')) {
     function e($value) {
@@ -68,7 +73,7 @@ $ratingCount = 0;
 foreach ($reviewList as $review) {
     $status = strtolower((string) reviewValue($review, ['status'], ''));
     $rating = (float) reviewValue($review, ['rating'], 0);
-
+                
     if ($status === 'pending') {
         $pendingCount++;
     }
@@ -148,6 +153,17 @@ $averageRating = $ratingCount > 0 ? round($ratingSum / $ratingCount, 1) : 0;
 </aside>
 
 <main class="ml-64 p-12 min-h-screen">
+
+    <?php if (!empty($flashStatus)): ?>
+    <div class="mb-8 px-6 py-4 rounded-2xl font-medium text-sm flex items-center gap-3
+        <?= $flashStatus === 'success' ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800' ?>">
+        <span class="material-symbols-outlined">
+            <?= $flashStatus === 'success' ? 'check_circle' : 'error' ?>
+        </span>
+        <?= e(str_replace(['**', '**'], ['<strong>', '</strong>'], $flashMessage)) ?>
+    </div>
+    <?php endif; ?>
+
     <header class="mb-12 flex flex-col xl:flex-row justify-between gap-6 xl:items-end">
         <div>
             <nav class="flex items-center gap-2 text-on-surface-variant text-sm mb-4">
@@ -183,17 +199,17 @@ $averageRating = $ratingCount > 0 ? round($ratingSum / $ratingCount, 1) : 0;
         <div class="col-span-12 lg:col-span-8 space-y-6">
             <div class="flex flex-col lg:flex-row lg:items-center justify-between gap-4 mb-4">
                 <div class="flex gap-2 flex-wrap">
-                    <a href="?tab=all"
+                    <a href="?url=admin/reviews&tab=all"
                        class="px-4 py-2 <?= $tab === 'all' ? 'bg-primary text-on-primary' : 'bg-surface-container-high text-on-surface-variant' ?> rounded-full text-sm font-medium transition-colors">
-                        All Đánh giá
+                        Tất cả
                     </a>
-                    <a href="?tab=pending"
+                    <a href="?url=admin/reviews&tab=pending"
                        class="px-4 py-2 <?= $tab === 'pending' ? 'bg-primary text-on-primary' : 'bg-surface-container-high text-on-surface-variant' ?> rounded-full text-sm font-medium transition-colors">
-                        Pending
+                        Chờ duyệt
                     </a>
-                    <a href="?tab=flagged"
-                       class="px-4 py-2 <?= $tab === 'flagged' ? 'bg-primary text-on-primary' : 'bg-surface-container-high text-on-surface-variant' ?> rounded-full text-sm font-medium transition-colors">
-                        Flagged
+                    <a href="?url=admin/reviews&tab=approved"
+                       class="px-4 py-2 <?= $tab === 'approved' ? 'bg-primary text-on-primary' : 'bg-surface-container-high text-on-surface-variant' ?> rounded-full text-sm font-medium transition-colors">
+                        Đã duyệt
                     </a>
                 </div>
 
@@ -214,15 +230,18 @@ $averageRating = $ratingCount > 0 ? round($ratingSum / $ratingCount, 1) : 0;
                 <?php if (!empty($reviewList)): ?>
                     <?php foreach ($reviewList as $review): ?>
                         <?php
-                        $customerName = reviewValue($review, ['customer_name', 'customer', 'user_name', 'full_name'], 'Customer');
-                        $productName = reviewValue($review, ['product_name', 'product', 'title'], 'Product');
-                        $content = reviewValue($review, ['content', 'comment', 'review_text', 'message'], '');
-                        $rating = (int) reviewValue($review, ['rating'], 0);
-                        $status = reviewValue($review, ['status'], 'pending');
-                        $createdAt = reviewValue($review, ['created_at', 'time', 'date'], 'Recently');
-                        $tagText = reviewValue($review, ['tag', 'label'], ucfirst($status));
-                        $response = reviewValue($review, ['response', 'admin_response', 'reply'], '');
-                        $avatar = reviewValue($review, ['avatar', 'avatar_url', 'image'], '');
+                        // Cột thật từ DB: HoTen, TenSanPham, NoiDung, SoSao, TrangThai, NgayDanhGia, PhanHoiAdmin, MaDanhGia
+                        $maDanhGia    = reviewValue($review, ['MaDanhGia'], '');
+                        $customerName = reviewValue($review, ['TenNguoiDung', 'HoTen', 'customer_name'], 'Ẩn danh');
+                        $productName  = reviewValue($review, ['TenSanPham', 'product_name'], 'Sản phẩm');
+                        $content      = reviewValue($review, ['NoiDung', 'content'], '');
+                        $rating       = (int) reviewValue($review, ['SoSao', 'rating'], 0);
+                        $trangThai    = (int) reviewValue($review, ['TrangThai'], 0);
+                        $status       = $trangThai === 1 ? 'approved' : 'pending';
+                        $createdAt    = reviewValue($review, ['NgayDanhGia', 'created_at'], '—');
+                        $tagText      = $trangThai === 1 ? 'Đã duyệt' : 'Chờ duyệt';
+                        $response     = reviewValue($review, ['PhanHoiAdmin', 'response'], '');
+                        $avatar       = reviewValue($review, ['avatar', 'avatar_url'], '');
                         ?>
                         <div class="bg-surface-container-lowest p-8 rounded-2xl shadow-sm hover:shadow-md transition-shadow relative overflow-hidden group">
                             <div class="absolute top-0 right-0 w-1.5 h-full <?= strtolower($status) === 'flagged' ? 'bg-error/20 opacity-100' : 'bg-primary-fixed-dim opacity-0 group-hover:opacity-100' ?> transition-opacity"></div>
@@ -274,24 +293,76 @@ $averageRating = $ratingCount > 0 ? round($ratingSum / $ratingCount, 1) : 0;
                             <?php endif; ?>
 
                             <div class="flex items-center justify-between pt-6 <?= $response !== '' ? 'mt-6' : '' ?> border-t border-outline-variant/10">
-                                <div class="flex gap-4 flex-wrap">
-                                    <button type="button" class="flex items-center gap-2 text-primary text-sm font-bold hover:underline underline-offset-4">
-                                        <span class="material-symbols-outlined text-sm">check_circle</span>
-                                        Approve
-                                    </button>
-                                    <button type="button" class="flex items-center gap-2 text-on-surface-variant text-sm font-bold hover:underline underline-offset-4">
+                                <div class="flex gap-3 flex-wrap">
+
+                                    <?php if ($trangThai === 0): ?>
+                                    <!-- Nút Duyệt (chỉ hiện khi đang ẩn/chờ) -->
+                                    <form method="POST" action="/is207/index.php?url=admin/reviews">
+                                        <input type="hidden" name="action" value="approve">
+                                        <input type="hidden" name="ma_danh_gia" value="<?= e($maDanhGia) ?>">
+                                        <button type="submit" class="flex items-center gap-2 text-primary text-sm font-bold hover:underline underline-offset-4">
+                                            <span class="material-symbols-outlined text-sm">check_circle</span>
+                                            Duyệt
+                                        </button>
+                                    </form>
+                                    <?php else: ?>
+                                    <!-- Nút Ẩn (chỉ hiện khi đã duyệt) -->
+                                    <form method="POST" action="/is207/index.php?url=admin/reviews">
+                                        <input type="hidden" name="action" value="hide">
+                                        <input type="hidden" name="ma_danh_gia" value="<?= e($maDanhGia) ?>">
+                                        <button type="submit" class="flex items-center gap-2 text-on-surface-variant text-sm font-bold hover:underline underline-offset-4">
+                                            <span class="material-symbols-outlined text-sm">visibility_off</span>
+                                            Ẩn
+                                        </button>
+                                    </form>
+                                    <?php endif; ?>
+
+                                    <!-- Nút Xóa -->
+                                    <form method="POST" action="/is207/index.php?url=admin/reviews"
+                                          onsubmit="return confirm('Xác nhận xóa đánh giá này?')">
+                                        <input type="hidden" name="action" value="delete">
+                                        <input type="hidden" name="ma_danh_gia" value="<?= e($maDanhGia) ?>">
+                                        <button type="submit" class="flex items-center gap-2 text-error text-sm font-bold hover:underline underline-offset-4">
+                                            <span class="material-symbols-outlined text-sm">delete</span>
+                                            Xóa
+                                        </button>
+                                    </form>
+
+                                    <!-- Nút Phản hồi (toggle form) -->
+                                    <button type="button"
+                                            onclick="toggleReply('reply-<?= e($maDanhGia) ?>')"
+                                            class="flex items-center gap-2 text-on-surface-variant text-sm font-bold hover:underline underline-offset-4">
                                         <span class="material-symbols-outlined text-sm">reply</span>
-                                        Reply
-                                    </button>
-                                    <button type="button" class="flex items-center gap-2 text-error text-sm font-bold hover:underline underline-offset-4">
-                                        <span class="material-symbols-outlined text-sm">delete</span>
-                                        Xóa
+                                        Phản hồi
                                     </button>
                                 </div>
 
                                 <span class="px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider <?= reviewStatusBadge($status) ?>">
                                     <?= e($tagText) ?>
                                 </span>
+                            </div>
+
+                            <!-- Form nhập phản hồi admin (ẩn theo mặc định) -->
+                            <div id="reply-<?= e($maDanhGia) ?>" class="hidden mt-4 pt-4 border-t border-outline-variant/10">
+                                <form method="POST" action="/is207/index.php?url=admin/reviews">
+                                    <input type="hidden" name="action" value="reply">
+                                    <input type="hidden" name="ma_danh_gia" value="<?= e($maDanhGia) ?>">
+                                    <textarea name="reply_content" rows="3"
+                                              placeholder="Nhập phản hồi của bạn..."
+                                              class="w-full bg-surface-container-high border-none rounded-xl px-4 py-3 text-sm focus:ring-1 focus:ring-primary/30 transition-all resize-none"
+                                    ><?= e($response) ?></textarea>
+                                    <div class="flex gap-3 mt-3">
+                                        <button type="submit"
+                                                class="bg-primary text-on-primary px-5 py-2 rounded-lg text-sm font-bold hover:opacity-90 transition-all">
+                                            Lưu phản hồi
+                                        </button>
+                                        <button type="button"
+                                                onclick="toggleReply('reply-<?= e($maDanhGia) ?>')"
+                                                class="text-on-surface-variant text-sm hover:underline">
+                                            Hủy
+                                        </button>
+                                    </div>
+                                </form>
                             </div>
                         </div>
                     <?php endforeach; ?>
@@ -389,7 +460,11 @@ $averageRating = $ratingCount > 0 ? round($ratingSum / $ratingCount, 1) : 0;
     </div>
 </footer>
 
+<script>
+function toggleReply(id) {
+    const el = document.getElementById(id);
+    if (el) el.classList.toggle('hidden');
+}
+</script>
+
 <?php include __DIR__ . '/../layouts/admin_footer.php'; ?>
-
-
-

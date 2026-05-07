@@ -1,27 +1,7 @@
 <?php include __DIR__ . '/../layouts/admin_header.php'; ?>
 
 <?php
-$keyword = $_GET['keyword'] ?? '';
-$status  = $_GET['status'] ?? '';
-
-$inventoryList = [];
-if (isset($inventory) && is_array($inventory)) {
-    $inventoryList = $inventory;
-} elseif (isset($data['inventory']) && is_array($data['inventory'])) {
-    $inventoryList = $data['inventory'];
-} elseif (isset($entries) && is_array($entries)) {
-    $inventoryList = $entries;
-} elseif (isset($data['entries']) && is_array($data['entries'])) {
-    $inventoryList = $data['entries'];
-}
-
-$supplierList = [];
-if (isset($suppliers) && is_array($suppliers)) {
-    $supplierList = $suppliers;
-} elseif (isset($data['suppliers']) && is_array($data['suppliers'])) {
-    $supplierList = $data['suppliers'];
-}
-
+// ── Helper functions phải định nghĩa TRƯỚC khi dùng ──────────────────────────
 if (!function_exists('e')) {
     function e($value) {
         return htmlspecialchars((string)$value, ENT_QUOTES, 'UTF-8');
@@ -65,28 +45,72 @@ if (!function_exists('formatMoneyVND')) {
         return number_format((float)$value, 0, ',', '.') . ' đ';
     }
 }
+// ─────────────────────────────────────────────────────────────────────────────
 
-$totalEntries = count($inventoryList);
-$totalSuppliers = count($supplierList);
-$verifiedCount = 0;
-$pendingCount = 0;
+$keyword = $_GET['keyword'] ?? '';
+$status  = $_GET['status'] ?? '';
+
+// Nhận dữ liệu thật từ AdminController
+$inventoryList = [];
+if (isset($inventory) && is_array($inventory)) {
+    $inventoryList = $inventory;         // bienthesanpham + TenSanPham
+} elseif (isset($data['inventory']) && is_array($data['inventory'])) {
+    $inventoryList = $data['inventory'];
+}
+
+$supplierList = [];
+if (isset($suppliers) && is_array($suppliers)) {
+    $supplierList = $suppliers;
+} elseif (isset($data['suppliers']) && is_array($data['suppliers'])) {
+    $supplierList = $data['suppliers'];
+}
+
+$receiptList = [];
+if (isset($entries) && is_array($entries)) {
+    $receiptList = $entries;             // phieunhap + TenNCC
+} elseif (isset($data['entries']) && is_array($data['entries'])) {
+    $receiptList = $data['entries'];
+}
+
+// Thông báo flash từ controller
+$flashStatus  = $status ?? null;
+$flashMessage = $message ?? '';
+
+// Tính thống kê tồn kho từ bienthesanpham
+$totalVariants    = count($inventoryList);
+$lowStockCount    = 0;
+$outOfStockCount  = 0;
+$totalUnits       = 0;
+
+foreach ($inventoryList as $item) {
+    $qty = (int) inventoryValue($item, ['SoLuongTon', 'so_luong_ton'], 0);
+    $totalUnits += $qty;
+    if ($qty === 0)      $outOfStockCount++;
+    elseif ($qty <= 5)   $lowStockCount++;
+}
+
+// Giữ backward compat cho stats block dưới
+$totalEntries        = count($receiptList);
+$totalSuppliers      = count($supplierList);
+$verifiedCount       = 0;
+$pendingCount        = $lowStockCount;
 $totalInventoryValue = 0;
+foreach ($receiptList as $r) {
+    $v = inventoryValue($r, ['TongTienNhap', 'total_value'], 0);
+    if (is_numeric($v)) $totalInventoryValue += (float)$v;
+}
 
-foreach ($inventoryList as $entry) {
-    $entryStatus = strtolower((string) inventoryValue($entry, ['status'], ''));
-    $entryValue = inventoryValue($entry, ['total_value', 'value', 'amount', 'total'], 0);
-
-    if (in_array($entryStatus, ['verified', 'completed', 'approved'], true)) {
-        $verifiedCount++;
-    }
-    if (in_array($entryStatus, ['pending', 'in_review'], true)) {
-        $pendingCount++;
-    }
-    if (is_numeric($entryValue)) {
-        $totalInventoryValue += (float)$entryValue;
+if (!function_exists('formatMoneyVND')) {
+    function formatMoneyVND($value) {
+        if (!is_numeric($value)) return e($value);
+        return number_format((float)$value, 0, ',', '.') . ' đ';
     }
 }
+
+$totalEntries = count($receiptList);
+$totalSuppliers = count($supplierList);
 ?>
+
 
 <aside class="h-screen w-64 fixed left-0 top-0 bg-[#edefe7] dark:bg-stone-800 border-r border-[#c5c8ba]/20 shadow-[40px_0_40px_-15px_rgba(25,28,24,0.04)] flex flex-col py-8 z-40">
     <div class="px-6 mb-10">
@@ -144,6 +168,17 @@ foreach ($inventoryList as $entry) {
 </aside>
 
 <main class="ml-64 p-8 min-h-screen">
+
+    <?php if (!empty($flashStatus)): ?>
+    <div class="mb-8 px-6 py-4 rounded-2xl font-medium text-sm flex items-center gap-3
+        <?= $flashStatus === 'success' ? 'bg-green-100 text-green-800' : ($flashStatus === 'warning' ? 'bg-yellow-100 text-yellow-800' : 'bg-red-100 text-red-800') ?>">
+        <span class="material-symbols-outlined">
+            <?= $flashStatus === 'success' ? 'check_circle' : ($flashStatus === 'warning' ? 'warning' : 'error') ?>
+        </span>
+        <?= e($flashMessage) ?>
+    </div>
+    <?php endif; ?>
+
     <header class="flex flex-col xl:flex-row justify-between gap-6 xl:items-end mb-12">
         <div>
             <h2 class="text-4xl font-extrabold font-headline tracking-tight text-primary">Quản lý kho</h2>
@@ -189,20 +224,105 @@ foreach ($inventoryList as $entry) {
     <!-- Stats -->
     <section class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-10">
         <div class="bg-surface-container-lowest rounded-2xl p-6 shadow-sm">
-            <p class="text-xs uppercase tracking-widest text-on-surface-variant font-bold mb-2">Tổng phiếu nhập</p>
-            <p class="text-3xl font-black text-primary"><?= number_format($totalEntries) ?></p>
+            <p class="text-xs uppercase tracking-widest text-on-surface-variant font-bold mb-2">Tổng biến thể</p>
+            <p class="text-3xl font-black text-primary"><?= number_format($totalVariants) ?></p>
         </div>
         <div class="bg-surface-container-lowest rounded-2xl p-6 shadow-sm">
-            <p class="text-xs uppercase tracking-widest text-on-surface-variant font-bold mb-2">Đã xác minh</p>
-            <p class="text-3xl font-black text-primary"><?= number_format($verifiedCount) ?></p>
+            <p class="text-xs uppercase tracking-widest text-on-surface-variant font-bold mb-2">Tổng đơn vị tồn</p>
+            <p class="text-3xl font-black text-primary"><?= number_format($totalUnits) ?></p>
         </div>
         <div class="bg-surface-container-lowest rounded-2xl p-6 shadow-sm">
-            <p class="text-xs uppercase tracking-widest text-on-surface-variant font-bold mb-2">Đang chờ</p>
-            <p class="text-3xl font-black text-primary"><?= number_format($pendingCount) ?></p>
+            <p class="text-xs uppercase tracking-widest text-on-surface-variant font-bold mb-2">Sắp hết hàng (≤5)</p>
+            <p class="text-3xl font-black <?= $lowStockCount > 0 ? 'text-yellow-600' : 'text-primary' ?>"><?= number_format($lowStockCount) ?></p>
         </div>
         <div class="bg-surface-container-lowest rounded-2xl p-6 shadow-sm">
-            <p class="text-xs uppercase tracking-widest text-on-surface-variant font-bold mb-2">Tổng giá trị</p>
-            <p class="text-3xl font-black text-primary"><?= formatMoneyVND($totalInventoryValue) ?></p>
+            <p class="text-xs uppercase tracking-widest text-on-surface-variant font-bold mb-2">Hết hàng</p>
+            <p class="text-3xl font-black <?= $outOfStockCount > 0 ? 'text-red-600' : 'text-primary' ?>"><?= number_format($outOfStockCount) ?></p>
+        </div>
+    </section>
+
+    <!-- Bảng tồn kho biến thể thật -->
+    <section class="mb-12">
+        <div class="bg-surface-container-lowest rounded-3xl p-8 shadow-sm">
+            <h3 class="text-xl font-bold font-headline text-primary flex items-center gap-2 mb-6">
+                <span class="material-symbols-outlined">inventory_2</span>
+                Tồn kho theo biến thể sản phẩm
+            </h3>
+            <div class="overflow-x-auto">
+                <table class="w-full text-left border-separate border-spacing-y-2">
+                    <thead>
+                        <tr class="text-on-surface-variant text-xs font-bold uppercase tracking-widest">
+                            <th class="pb-2 px-3">Mã biến thể</th>
+                            <th class="pb-2 px-3">Sản phẩm</th>
+                            <th class="pb-2 px-3">Màu sắc</th>
+                            <th class="pb-2 px-3">Kích thước</th>
+                            <th class="pb-2 px-3">Giá (đ)</th>
+                            <th class="pb-2 px-3">Tồn kho</th>
+                            <th class="pb-2 px-3">Trạng thái</th>
+                            <th class="pb-2 px-3">Thao tác</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                    <?php if (!empty($inventoryList)): ?>
+                        <?php foreach ($inventoryList as $item):
+                            $maBienThe  = inventoryValue($item, ['MaBienThe'], '—');
+                            $tenSP      = inventoryValue($item, ['TenSanPham'], '—');
+                            $mauSac     = inventoryValue($item, ['MauSac'], '—');
+                            $kichThuoc  = inventoryValue($item, ['KichThuoc'], '—');
+                            $giaTien    = inventoryValue($item, ['GiaTien'], 0);
+                            $soLuong    = (int) inventoryValue($item, ['SoLuongTon'], 0);
+                            $stockClass = $soLuong === 0
+                                ? 'bg-red-100 text-red-700'
+                                : ($soLuong <= 5 ? 'bg-yellow-100 text-yellow-700' : 'bg-green-100 text-green-800');
+                            $stockLabel = $soLuong === 0 ? 'Hết hàng' : ($soLuong <= 5 ? 'Sắp hết' : 'Còn hàng');
+                        ?>
+                        <tr class="bg-surface-container-low/40 hover:bg-surface-container-low transition-colors group"
+                            id="row-<?= e($maBienThe) ?>">
+                            <td class="py-3 px-3 rounded-l-xl font-bold text-primary text-sm"><?= e($maBienThe) ?></td>
+                            <td class="py-3 px-3 text-sm font-medium max-w-[200px] truncate"><?= e($tenSP) ?></td>
+                            <td class="py-3 px-3 text-sm"><?= e($mauSac) ?></td>
+                            <td class="py-3 px-3 text-sm"><?= e($kichThuoc) ?></td>
+                            <td class="py-3 px-3 text-sm font-bold"><?= formatMoneyVND($giaTien) ?></td>
+                            <td class="py-3 px-3 text-sm font-black text-primary"><?= $soLuong ?></td>
+                            <td class="py-3 px-3">
+                                <span class="text-[10px] font-bold px-2 py-1 rounded-md uppercase <?= $stockClass ?>">
+                                    <?= $stockLabel ?>
+                                </span>
+                            </td>
+                            <td class="py-3 px-3 rounded-r-xl">
+                                <div class="flex gap-2 items-center">
+                                    <!-- Inline edit tồn kho -->
+                                    <form method="POST" action="/is207/index.php?url=admin/inventory"
+                                          class="flex items-center gap-2">
+                                        <input type="hidden" name="action" value="update_stock">
+                                        <input type="hidden" name="ma_bien_the" value="<?= e($maBienThe) ?>">
+                                        <input type="number" name="so_luong_ton" value="<?= $soLuong ?>" min="0"
+                                               class="w-20 bg-surface-container-high border-none rounded-lg px-2 py-1 text-sm text-center focus:ring-1 focus:ring-primary/30"/>
+                                        <button type="submit"
+                                                class="text-primary text-xs font-bold hover:underline">Lưu</button>
+                                    </form>
+                                    <!-- Xóa biến thể -->
+                                    <form method="POST" action="/is207/index.php?url=admin/inventory"
+                                          onsubmit="return confirm('Xóa biến thể <?= e($maBienThe) ?>?')">
+                                        <input type="hidden" name="action" value="delete_variant">
+                                        <input type="hidden" name="ma_bien_the" value="<?= e($maBienThe) ?>">
+                                        <button type="submit"
+                                                class="text-error text-xs font-bold hover:underline">Xóa</button>
+                                    </form>
+                                </div>
+                            </td>
+                        </tr>
+                        <?php endforeach; ?>
+                    <?php else: ?>
+                        <tr>
+                            <td colspan="8" class="py-10 px-4 text-center text-on-surface-variant">
+                                Chưa có dữ liệu tồn kho.
+                            </td>
+                        </tr>
+                    <?php endif; ?>
+                    </tbody>
+                </table>
+            </div>
         </div>
     </section>
 
@@ -224,47 +344,28 @@ foreach ($inventoryList as $entry) {
                                 <th class="pb-2 px-4">Mã phiếu</th>
                                 <th class="pb-2 px-4">Ngày nhập</th>
                                 <th class="pb-2 px-4">Nhà cung cấp</th>
-                                <th class="pb-2 px-4">Tổng giá trị</th>
-                                <th class="pb-2 px-4">Trạng thái</th>
-                                <th class="pb-2 px-4"></th>
+                                <th class="pb-2 px-4">Tổng tiền nhập</th>
                             </tr>
                         </thead>
                         <tbody>
-                            <?php if (!empty($inventoryList)): ?>
-                                <?php foreach ($inventoryList as $entry): ?>
-                                    <?php
-                                    $entryId = inventoryValue($entry, ['entry_id', 'code', 'id'], '—');
-                                    $arrivalDate = inventoryValue($entry, ['arrival_date', 'date', 'created_at'], '—');
-                                    $supplier = inventoryValue($entry, ['supplier_name', 'supplier', 'vendor'], '—');
-                                    $value = inventoryValue($entry, ['total_value', 'value', 'amount', 'total'], 0);
-                                    $entryStatus = inventoryValue($entry, ['status'], 'pending');
-                                    $id = inventoryValue($entry, ['id'], null);
-                                    ?>
-                                    <tr class="bg-surface-container-low/50 hover:bg-surface-container-low transition-colors group">
-                                        <td class="py-4 px-4 rounded-l-2xl font-bold text-primary">#<?= e($entryId) ?></td>
+                            <?php if (!empty($receiptList)): ?>
+                                <?php foreach ($receiptList as $entry):
+                                    $entryId     = inventoryValue($entry, ['MaPhieuNhap'], '—');
+                                    $arrivalDate = inventoryValue($entry, ['NgayNhap'], '—');
+                                    $supplier    = inventoryValue($entry, ['TenNCC'], '—');
+                                    $value       = inventoryValue($entry, ['TongTienNhap'], 0);
+                                ?>
+                                    <tr class="bg-surface-container-low/50 hover:bg-surface-container-low transition-colors">
+                                        <td class="py-4 px-4 rounded-l-2xl font-bold text-primary"><?= e($entryId) ?></td>
                                         <td class="py-4 px-4 text-sm"><?= e($arrivalDate) ?></td>
                                         <td class="py-4 px-4 font-medium"><?= e($supplier) ?></td>
-                                        <td class="py-4 px-4 font-bold"><?= formatMoneyVND($value) ?></td>
-                                        <td class="py-4 px-4">
-                                            <span class="<?= inventoryStatusBadge($entryStatus) ?>"><?= e($entryStatus) ?></span>
-                                        </td>
-                                        <td class="py-4 px-4 rounded-r-2xl text-right">
-                                            <?php if ($id !== null): ?>
-                                                <a href="/is207/index.php?url=inventory/edit/<?= urlencode((string)$id) ?>" class="text-primary opacity-0 group-hover:opacity-100 transition-opacity">
-                                                    <span class="material-symbols-outlined">more_vert</span>
-                                                </a>
-                                            <?php else: ?>
-                                                <button type="button" class="text-primary opacity-0 group-hover:opacity-100 transition-opacity">
-                                                    <span class="material-symbols-outlined">more_vert</span>
-                                                </button>
-                                            <?php endif; ?>
-                                        </td>
+                                        <td class="py-4 px-4 font-bold rounded-r-2xl"><?= formatMoneyVND($value) ?></td>
                                     </tr>
                                 <?php endforeach; ?>
                             <?php else: ?>
                                 <tr>
-                                    <td colspan="6" class="py-10 px-4 text-center text-on-surface-variant">
-                                        Không tìm thấy dữ liệu kho.
+                                    <td colspan="4" class="py-10 px-4 text-center text-on-surface-variant">
+                                        Chưa có phiếu nhập kho nào.
                                     </td>
                                 </tr>
                             <?php endif; ?>
@@ -279,31 +380,21 @@ foreach ($inventoryList as $entry) {
                     Đăng ký nhà cung cấp mới
                 </h3>
 
-                <form class="grid grid-cols-1 md:grid-cols-2 gap-6" method="POST" action="/is207/index.php?url=supplier/create">
+                <form class="grid grid-cols-1 md:grid-cols-2 gap-6" method="POST" action="/is207/index.php?url=admin/inventory">
                     <input type="hidden" name="action" value="add_supplier">
                     <div class="space-y-2">
-                        <label class="text-xs font-bold text-on-surface-variant uppercase tracking-wider px-1">Tên nhà cung cấp</label>
-                        <input class="w-full bg-surface-container-high border-none rounded-xl px-4 py-3 focus:ring-1 focus:ring-primary/30 focus:bg-surface-container-lowest transition-all" placeholder="e.g. Nordic Timber Ltd." type="text" name="supplier_name"/>
+                        <label class="text-xs font-bold text-on-surface-variant uppercase tracking-wider px-1">Tên nhà cung cấp *</label>
+                        <input class="w-full bg-surface-container-high border-none rounded-xl px-4 py-3 focus:ring-1 focus:ring-primary/30 focus:bg-surface-container-lowest transition-all" placeholder="VD: Công ty TNHH Nordic Timber" type="text" name="supplier_name" required/>
                     </div>
 
                     <div class="space-y-2">
-                        <label class="text-xs font-bold text-on-surface-variant uppercase tracking-wider px-1">VAT/Tax ID</label>
-                        <input class="w-full bg-surface-container-high border-none rounded-xl px-4 py-3 focus:ring-1 focus:ring-primary/30 focus:bg-surface-container-lowest transition-all" placeholder="VAT-99230-22" type="text" name="tax_id"/>
+                        <label class="text-xs font-bold text-on-surface-variant uppercase tracking-wider px-1">Số điện thoại</label>
+                        <input class="w-full bg-surface-container-high border-none rounded-xl px-4 py-3 focus:ring-1 focus:ring-primary/30 focus:bg-surface-container-lowest transition-all" placeholder="0901 234 567" type="text" name="tax_id"/>
                     </div>
 
-                    <div class="space-y-2">
-                        <label class="text-xs font-bold text-on-surface-variant uppercase tracking-wider px-1">Danh mục chính</label>
-                        <select class="w-full bg-surface-container-high border-none rounded-xl px-4 py-3 focus:ring-1 focus:ring-primary/30 focus:bg-surface-container-lowest transition-all" name="category">
-                            <option value="Dệt may bền vững">Dệt may bền vững</option>
-                            <option value="Raw Materials">Raw Materials</option>
-                            <option value="Packaging">Packaging</option>
-                            <option value="Renewable Energy Parts">Renewable Energy Parts</option>
-                        </select>
-                    </div>
-
-                    <div class="space-y-2">
-                        <label class="text-xs font-bold text-on-surface-variant uppercase tracking-wider px-1">Địa điểm</label>
-                        <input class="w-full bg-surface-container-high border-none rounded-xl px-4 py-3 focus:ring-1 focus:ring-primary/30 focus:bg-surface-container-lowest transition-all" placeholder="City, Country" type="text" name="location"/>
+                    <div class="md:col-span-2 space-y-2">
+                        <label class="text-xs font-bold text-on-surface-variant uppercase tracking-wider px-1">Địa chỉ</label>
+                        <input class="w-full bg-surface-container-high border-none rounded-xl px-4 py-3 focus:ring-1 focus:ring-primary/30 focus:bg-surface-container-lowest transition-all" placeholder="Số nhà, đường, tỉnh/thành phố" type="text" name="location"/>
                     </div>
 
                     <div class="md:col-span-2 pt-4">
@@ -322,9 +413,9 @@ foreach ($inventoryList as $entry) {
                     <?php if (!empty($supplierList)): ?>
                         <?php foreach ($supplierList as $supplier): ?>
                             <?php
-                            $supplierName = inventoryValue($supplier, ['name', 'supplier_name'], 'Supplier');
-                            $supplierLocation = inventoryValue($supplier, ['location', 'address', 'city'], '—');
-                            $supplierId = inventoryValue($supplier, ['id'], null);
+                            $supplierName     = inventoryValue($supplier, ['TenNCC', 'name', 'supplier_name'], 'Nhà cung cấp');
+                            $supplierLocation = inventoryValue($supplier, ['DiaChi', 'location', 'address'], '—');
+                            $supplierId       = inventoryValue($supplier, ['MaNCC', 'id'], null);
 
                             $words = preg_split('/\s+/', trim((string)$supplierName));
                             $initials = '';
@@ -407,6 +498,3 @@ foreach ($inventoryList as $entry) {
 </footer>
 
 <?php include __DIR__ . '/../layouts/admin_footer.php'; ?>
-
-
-
