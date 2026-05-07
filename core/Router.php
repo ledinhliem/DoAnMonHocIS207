@@ -1,10 +1,18 @@
 <?php
+
 class Router
 {
     public function dispatch()
     {
         $url = $_GET['url'] ?? '';
 
+        /*
+         * Admin product actions
+         * URL ví dụ:
+         * ?url=product/create
+         * ?url=product/edit/1
+         * ?url=product/delete/1
+         */
         if (preg_match('#^product/(create|edit/.+|delete/.+)$#', $url)) {
             require_once __DIR__ . '/../app/controllers/AdminController.php';
             $controller = new AdminController();
@@ -12,20 +20,50 @@ class Router
             return;
         }
 
-        if (preg_match('#^blog/(create|edit/.+|delete/.+)$#', $url)) {
+        /*
+         * Admin blog actions
+         * URL ví dụ:
+         * ?url=admin/blog
+         * ?url=admin/blog/create
+         * ?url=admin/blog/edit/1
+         * ?url=admin/blog/delete/1
+         */
+        if (preg_match('#^admin/blog(/create|/edit/.+|/delete/.+)?$#', $url)) {
             require_once __DIR__ . '/../app/controllers/AdminController.php';
             $controller = new AdminController();
             $controller->blog();
             return;
         }
 
-        if (preg_match('#^promotion/(create|edit/.+|delete/.+)$#', $url)) {
+        /*
+         * Admin promo actions
+         * URL ví dụ:
+         * ?url=admin/promo
+         * ?url=admin/promo/create
+         * ?url=admin/promo/edit/1
+         * ?url=admin/promo/delete/1
+         */
+        if (preg_match('#^admin/promo(/create|/edit/.+|/delete/.+)?$#', $url)) {
             require_once __DIR__ . '/../app/controllers/AdminController.php';
             $controller = new AdminController();
-            $controller->dashboard();
+            $controller->promo();
             return;
         }
 
+        /*
+         * Giữ lại route promotion cũ nếu trong project có link cũ dùng promotion/...
+         * Nhưng thay vì gọi dashboard thì chuyển sang promo().
+         */
+        if (preg_match('#^promotion/(create|edit/.+|delete/.+)$#', $url)) {
+            require_once __DIR__ . '/../app/controllers/AdminController.php';
+            $controller = new AdminController();
+            $controller->promo();
+            return;
+        }
+
+        /*
+         * Inventory / supplier admin actions
+         */
         if (preg_match('#^(inventory/create|inventory/edit/.+|supplier/create|supplier/detail/.+|admin/suppliers)$#', $url)) {
             require_once __DIR__ . '/../app/controllers/AdminController.php';
             $controller = new AdminController();
@@ -216,15 +254,12 @@ class Router
                 break;
 
             case 'admin':
-                require_once __DIR__ . '/../app/controllers/AdminController.php';
-                $controller = new AdminController();
-                $controller->dashboard();
-                break;
             case 'admin/dashboard':
                 require_once __DIR__ . '/../app/controllers/AdminController.php';
                 $controller = new AdminController();
                 $controller->dashboard();
                 break;
+
             case 'admin/products':
                 require_once __DIR__ . '/../app/controllers/AdminController.php';
                 $controller = new AdminController();
@@ -247,12 +282,6 @@ class Router
                 require_once __DIR__ . '/../app/controllers/AdminController.php';
                 $controller = new AdminController();
                 $controller->reviews();
-                break;
-
-            case 'admin/blog':
-                require_once __DIR__ . '/../app/controllers/AdminController.php';
-                $controller = new AdminController();
-                $controller->blog();
                 break;
 
             case 'admin/settings':

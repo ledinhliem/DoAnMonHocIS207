@@ -25,7 +25,6 @@
             <span class="font-['Be_Vietnam_Pro'] font-medium text-sm">Kho hàng</span>
         </a>
 
-
         <a
             class="<?= ($currentPage ?? '') === 'products'
                 ? 'bg-[#384e21] text-white rounded-lg mx-2 my-1 px-4 py-3 flex items-center gap-3 active:scale-98 transition-transform'
@@ -66,7 +65,15 @@
             <span class="font-['Be_Vietnam_Pro'] font-medium text-sm">Blog</span>
         </a>
 
-       
+        <a
+            class="<?= ($currentPage ?? '') === 'promo'
+                ? 'bg-[#384e21] text-white rounded-lg mx-2 my-1 px-4 py-3 flex items-center gap-3 active:scale-98 transition-transform'
+                : 'text-[#191c18]/60 hover:bg-[#e1e3dc] dark:hover:bg-stone-700 mx-2 my-1 px-4 py-3 rounded-lg flex items-center gap-3 transition-all hover:translate-x-1 duration-200' ?>"
+            href="index.php?url=admin/promo"
+        >
+            <span class="material-symbols-outlined">confirmation_number</span>
+            <span class="font-['Be_Vietnam_Pro'] font-medium text-sm">Mã giảm giá</span>
+        </a>
     </nav>
 
     <div class="mt-auto px-4">
@@ -76,14 +83,13 @@
         </button>
 
         <div class="mt-6 pt-6 border-t border-[#c5c8ba]/20 flex items-center gap-3">
-            <img
-                alt="Admin User Profile"
-                class="w-10 h-10 rounded-full object-cover"
-                src="https://lh3.googleusercontent.com/aida-public/AB6AXuBHj8WjA85h2VKvKdvD0SDS54AdgTjITIopx2DbFYWK104WA1Bl5YVypsu6fAlmPMLPzXcywOmxD382ZlwVQJsLW6O_8L3KAlobzWq5jNxoAqmdODb-xPvvyWmgFIqUYiSkvJNSP1gaohhlagJaGPbV_kavopHdbsjAA8W2HaeUpF-AXnJZFh8pKumU1HPvnMPdLn4GC8lF1WCSP9qhDwFXC2ZkIThnRgeRdp9OXtb9aNjBu3HhhOi6B54fMcD0L6DN1bdyJuguBI4"
-            />
+            <div class="w-10 h-10 rounded-full bg-[#384e21] text-white flex items-center justify-center font-bold">
+                A
+            </div>
+
             <div class="overflow-hidden">
-                <p class="text-xs font-bold text-[#384e21] truncate">Julian Reed</p>
-                <p class="text-[10px] text-[#191c18]/50 truncate">Senior Sửaor</p>
+                <p class="text-xs font-bold text-[#384e21] truncate">Admin</p>
+                <p class="text-[10px] text-[#191c18]/50 truncate">Quản trị viên</p>
             </div>
         </div>
     </div>
