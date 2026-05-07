@@ -230,6 +230,16 @@ class Router
                 $controller = new AdminController();
                 $controller->products();
                 break;
+            case 'admin/products/variants':
+                require_once __DIR__ . '/../app/controllers/AdminController.php';
+                $controller = new AdminController();
+                $controller->variants();
+                break;
+            case 'admin/products/gallery':
+                require_once __DIR__ . '/../app/controllers/AdminController.php';
+                $controller = new AdminController();
+                $controller->gallery();
+                break;
 
             case 'admin/orders':
                 require_once __DIR__ . '/../app/controllers/AdminController.php';
