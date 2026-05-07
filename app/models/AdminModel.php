@@ -259,7 +259,11 @@ class AdminModel
     public function getGallery(string $maSanPham): array
     {
         $stmt = $this->db->prepare(
-            "SELECT * FROM hinhanhsanpham WHERE MaSanPham = ? ORDER BY MaHinhAnh ASC"
+            "SELECT h.*, sp.TenSanPham
+             FROM hinhanhsanpham h
+             LEFT JOIN sanpham sp ON h.MaSanPham = sp.MaSanPham
+             WHERE h.MaSanPham = ?
+             ORDER BY h.MaHinhAnh ASC"
         );
         $stmt->execute([$maSanPham]);
         return $stmt->fetchAll();
@@ -279,7 +283,7 @@ class AdminModel
         if (!move_uploaded_file($file['tmp_name'], $dest)) return false;
 
         $stmt = $this->db->prepare(
-            "INSERT INTO hinhanhsanpham (MaSanPham, DuongDanAnh) VALUES (?, ?)"
+            "INSERT INTO hinhanhsanpham (MaSanPham, DuongDan) VALUES (?, ?)"
         );
         return $stmt->execute([$maSanPham, 'public/uploads/products/' . $filename]);
     }
@@ -290,11 +294,11 @@ class AdminModel
     public function deleteGalleryImage(string $maAnh): bool
     {
         // Lấy đường dẫn để xóa file vật lý
-        $stmt = $this->db->prepare("SELECT DuongDanAnh FROM hinhanhsanpham WHERE MaHinhAnh = ?");
+        $stmt = $this->db->prepare("SELECT DuongDan FROM hinhanhsanpham WHERE MaHinhAnh = ?");
         $stmt->execute([$maAnh]);
         $row = $stmt->fetch();
-        if ($row && file_exists(__DIR__ . '/../../' . $row['DuongDanAnh'])) {
-            unlink(__DIR__ . '/../../' . $row['DuongDanAnh']);
+        if ($row && file_exists(__DIR__ . '/../../' . $row['DuongDan'])) {
+            unlink(__DIR__ . '/../../' . $row['DuongDan']);
         }
 
         $stmt = $this->db->prepare("DELETE FROM hinhanhsanpham WHERE MaHinhAnh = ?");
