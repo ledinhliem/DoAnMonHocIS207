@@ -1,4 +1,5 @@
 <?php
+
 class Router
 {
     public function dispatch()
@@ -216,15 +217,12 @@ class Router
                 break;
 
             case 'admin':
-                require_once __DIR__ . '/../app/controllers/AdminController.php';
-                $controller = new AdminController();
-                $controller->dashboard();
-                break;
             case 'admin/dashboard':
                 require_once __DIR__ . '/../app/controllers/AdminController.php';
                 $controller = new AdminController();
                 $controller->dashboard();
                 break;
+
             case 'admin/products':
                 require_once __DIR__ . '/../app/controllers/AdminController.php';
                 $controller = new AdminController();
@@ -235,6 +233,18 @@ class Router
                 require_once __DIR__ . '/../app/controllers/AdminController.php';
                 $controller = new AdminController();
                 $controller->orders();
+                break;
+
+            case 'admin/orders/detail':
+                require_once __DIR__ . '/../app/controllers/AdminController.php';
+                $controller = new AdminController();
+                $controller->orderDetail();
+                break;
+
+            case 'admin/orders/update-status':
+                require_once __DIR__ . '/../app/controllers/AdminController.php';
+                $controller = new AdminController();
+                $controller->updateOrderStatus();
                 break;
 
             case 'admin/inventory':

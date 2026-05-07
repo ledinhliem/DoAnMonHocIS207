@@ -1,361 +1,312 @@
 <?php include __DIR__ . '/../layouts/admin_header.php'; ?>
+<?php include __DIR__ . '/../layouts/admin_sidebar.php'; ?>
 
 <?php
-$keyword = $_GET['keyword'] ?? '';
-$status  = $_GET['status'] ?? '';
-$tab     = $_GET['tab'] ?? 'active';
-
-$orderList = [];
-if (isset($orders) && is_array($orders)) {
-    $orderList = $orders;
-} elseif (isset($data['orders']) && is_array($data['orders'])) {
-    $orderList = $data['orders'];
-}
-
 if (!function_exists('e')) {
     function e($value) {
         return htmlspecialchars((string)$value, ENT_QUOTES, 'UTF-8');
     }
 }
 
-if (!function_exists('orderValue')) {
-    function orderValue($order, $keys, $default = '') {
-        foreach ((array)$keys as $key) {
-            if (isset($order[$key]) && $order[$key] !== '') {
-                return $order[$key];
-            }
-        }
-        return $default;
+if (!function_exists('formatMoneyVND')) {
+    function formatMoneyVND($value) {
+        return number_format((float)$value, 0, ',', '.') . ' đ';
     }
 }
 
-if (!function_exists('orderStatusBadge')) {
-    function orderStatusBadge($status) {
-        $status = strtolower(trim((string)$status));
-
-        switch ($status) {
-            case 'processing':
-                return 'bg-secondary-container text-on-secondary-container';
-            case 'pending':
-                return 'bg-primary-container text-on-primary-container';
-            case 'shipped':
-                return 'bg-surface-container-highest text-on-surface-variant';
-            case 'completed':
-            case 'delivered':
-                return 'bg-green-100 text-green-700';
-            case 'cancelled':
-            case 'canceled':
-                return 'bg-red-100 text-red-700';
-            default:
-                return 'bg-surface-container-high text-on-surface';
-        }
+if (!function_exists('formatDateVN')) {
+    function formatDateVN($date) {
+        if (empty($date)) return '—';
+        return date('d/m/Y H:i', strtotime($date));
     }
 }
 
-$activeCount = 0;
-$archivedCount = 0;
+if (!function_exists('orderStatusText')) {
+    function orderStatusText($status) {
+        $map = [
+            '0' => 'Chờ xác nhận',
+            '1' => 'Đang chuẩn bị',
+            '2' => 'Đang giao',
+            '3' => 'Hoàn thành',
+            '4' => 'Đã hủy'
+        ];
 
-foreach ($orderList as $order) {
-    $itemStatus = strtolower((string) orderValue($order, ['status'], ''));
-    if (in_array($itemStatus, ['archived', 'completed', 'delivered', 'cancelled', 'canceled'], true)) {
-        $archivedCount++;
-    } else {
-        $activeCount++;
+        return $map[(string)$status] ?? 'Không rõ';
     }
 }
+
+if (!function_exists('orderStatusClass')) {
+    function orderStatusClass($status) {
+        $map = [
+            '0' => 'bg-yellow-100 text-yellow-800',
+            '1' => 'bg-blue-100 text-blue-800',
+            '2' => 'bg-purple-100 text-purple-800',
+            '3' => 'bg-green-100 text-green-800',
+            '4' => 'bg-red-100 text-red-800'
+        ];
+
+        return $map[(string)$status] ?? 'bg-gray-100 text-gray-700';
+    }
+}
+
+if (!function_exists('nextOrderStatus')) {
+    function nextOrderStatus($status) {
+        $status = (string)$status;
+
+        $nextMap = [
+            '0' => '1',
+            '1' => '2',
+            '2' => '3'
+        ];
+
+        return $nextMap[$status] ?? null;
+    }
+}
+
+$orders = $orders ?? [];
+$stats = $stats ?? [];
+$keyword = $keyword ?? '';
+$filterStatus = $filterStatus ?? '';
+$status = $status ?? null;
+$message = $message ?? '';
 ?>
 
-<aside class="h-screen w-64 fixed left-0 top-0 bg-[#edefe7] flex flex-col py-8 border-r border-[#c5c8ba]/20 shadow-[40px_0_40px_-15px_rgba(25,28,24,0.04)] z-50">
-    <div class="px-6 mb-10">
-        <a href="/is207/index.php?url=admin/dashboard" class="block">
-            <h1 class="font-['Epilogue'] font-black text-[#384e21] text-2xl tracking-tighter">Zentro Admin</h1>
-            <p class="text-xs text-[#191c18]/60 mt-1 uppercase tracking-widest font-semibold">Bộ quản trị xanh</p>
-        </a>
-    </div>
-
-    <nav class="flex-grow space-y-1">
-        <a class="text-[#191c18]/60 hover:bg-[#e1e3dc] mx-2 my-1 px-4 py-3 rounded-lg flex items-center gap-3 transition-all hover:translate-x-1"
-           href="/is207/index.php?url=admin/dashboard">
-            <span class="material-symbols-outlined">dashboard</span>
-            <span class="font-medium text-sm">Bảng điều khiển</span>
-        </a>
-        <a class="text-[#191c18]/60 hover:bg-[#e1e3dc] mx-2 my-1 px-4 py-3 rounded-lg flex items-center gap-3 transition-all hover:translate-x-1"
-           href="/is207/index.php?url=admin/inventory">
-            <span class="material-symbols-outlined">inventory_2</span>
-            <span class="font-medium text-sm">Kho hàng</span>
-        </a>
-    
-        <a class="text-[#191c18]/60 hover:bg-[#e1e3dc] mx-2 my-1 px-4 py-3 rounded-lg flex items-center gap-3 transition-all hover:translate-x-1"
-           href="/is207/index.php?url=admin/products">
-            <span class="material-symbols-outlined">eco</span>
-            <span class="font-medium text-sm">Sản phẩm</span>
-        </a>
-        <a class="bg-[#384e21] text-white rounded-lg mx-2 my-1 px-4 py-3 flex items-center gap-3 active:scale-98 transition-transform"
-           href="/is207/index.php?url=admin/orders">
-            <span class="material-symbols-outlined">shopping_basket</span>
-            <span class="font-medium text-sm">Đơn hàng</span>
-        </a>
-        <a class="text-[#191c18]/60 hover:bg-[#e1e3dc] mx-2 my-1 px-4 py-3 rounded-lg flex items-center gap-3 transition-all hover:translate-x-1"
-           href="/is207/index.php?url=admin/reviews">
-            <span class="material-symbols-outlined">rate_review</span>
-            <span class="font-medium text-sm">Đánh giá</span>
-        </a>
-        <a class="text-[#191c18]/60 hover:bg-[#e1e3dc] mx-2 my-1 px-4 py-3 rounded-lg flex items-center gap-3 transition-all hover:translate-x-1"
-           href="/is207/index.php?url=admin/blog">
-            <span class="material-symbols-outlined">article</span>
-            <span class="font-medium text-sm">Blog</span>
-        </a>
-      
-    </nav>
-
-    <div class="px-4 mt-auto">
-        <button class="w-full bg-primary text-on-primary py-3 rounded-lg font-bold text-sm hover:opacity-90 transition-opacity">
-            Xuất báo cáo
-        </button>
-        <div class="mt-6 flex items-center gap-3 px-2">
-            <img alt="Admin User Profile" class="w-10 h-10 rounded-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCjjxf0bpVd1PEy-plVsvJuJYFgGGrAoI7qv2sZ8irZHnaLsAaFQ9n99Pcn6x9xlaF1PeCT8q_xAC-ZpAtXTUkXP-avaZ65A_DoAcu-Jh9F9IayrnQEFxulcpk4uZKs0nMeRzXvKdmaS-c_6olS1abOW3cgVrjlnE-l6IZjt7qKXTKgakIQAfPTAr_-Mte1lwyF6shvgZcaG6znrFLWB1n9VEfvuk2fPzDXKRihq6bG2SpDEZ-YPqkSDzTlfrEtFUd7ZU-LEgm_PZY"/>
-            <div class="overflow-hidden">
-                <p class="text-sm font-bold truncate">Alex Rivier</p>
-                <p class="text-xs text-on-surface-variant/70 truncate">Quản lý vận hành</p>
-            </div>
-        </div>
-    </div>
-</aside>
-
-<main class="ml-64 p-12 min-h-screen">
-    <header class="mb-10">
-        <div class="flex flex-col xl:flex-row justify-between gap-6 xl:items-end">
+<main class="ml-64 min-h-screen bg-surface p-8">
+    <div class="max-w-7xl mx-auto space-y-8">
+        <div class="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
             <div>
-                <h2 class="text-5xl font-black font-headline tracking-tighter text-primary mb-4">Hàng đợi đơn hàng</h2>
-                <p class="text-lg text-on-surface-variant max-w-xl leading-relaxed">
-                    Quản lý đơn hàng, theo dõi xử lý và chuẩn bị thao tác đơn hàng từ trang quản trị.
+                <p class="text-sm font-semibold text-primary uppercase tracking-widest">Admin Orders</p>
+                <h1 class="font-headline text-4xl font-black text-on-surface mt-2">
+                    Quản lý đơn hàng
+                </h1>
+                <p class="text-on-surface-variant mt-2">
+                    Xem danh sách đơn, cập nhật trạng thái và hủy đơn có hoàn kho.
                 </p>
             </div>
 
-            <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 w-full xl:w-auto">
-                <div class="bg-surface-container px-6 py-4 rounded-xl">
-                    <p class="text-[10px] uppercase tracking-widest font-bold text-on-surface-variant/50 mb-1">Displayed Đơn hàng</p>
-                    <p class="text-2xl font-black font-headline text-primary"><?= count($orderList) ?></p>
-                </div>
-                <div class="bg-surface-container px-6 py-4 rounded-xl">
-                    <p class="text-[10px] uppercase tracking-widest font-bold text-on-surface-variant/50 mb-1">Đang xử lý</p>
-                    <p class="text-2xl font-black font-headline text-primary"><?= $activeCount ?></p>
-                </div>
-                <div class="bg-surface-container px-6 py-4 rounded-xl">
-                    <p class="text-[10px] uppercase tracking-widest font-bold text-on-surface-variant/50 mb-1">Archived</p>
-                    <p class="text-2xl font-black font-headline text-primary"><?= $archivedCount ?></p>
-                </div>
-            </div>
-        </div>
-    </header>
-
-    <section class="grid grid-cols-12 gap-8 mb-12">
-        <div class="col-span-12 lg:col-span-8">
-            <section class="bg-surface-container-low rounded-xl p-6 mb-6 shadow-sm">
-                <form method="GET" action="" class="flex flex-col lg:flex-row gap-4 lg:items-center lg:justify-between">
-                    <div class="flex flex-wrap gap-3">
-                        <a href="?tab=active"
-                           class="px-6 py-2 <?= $tab === 'active' ? 'bg-primary text-on-primary' : 'bg-surface-container text-on-surface-variant' ?> rounded-full text-sm font-semibold transition-colors">
-                            Đang xử lý Đơn hàng (<?= $activeCount ?>)
-                        </a>
-
-                        <a href="?tab=archived"
-                           class="px-6 py-2 <?= $tab === 'archived' ? 'bg-primary text-on-primary' : 'bg-surface-container text-on-surface-variant' ?> rounded-full text-sm font-semibold transition-colors">
-                            Archived (<?= $archivedCount ?>)
-                        </a>
-                    </div>
-
-                    <div class="flex flex-col sm:flex-row gap-3 w-full lg:w-auto">
-                        <div class="relative">
-                            <span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-on-surface-variant/40">search</span>
-                            <input
-                                class="pl-10 pr-4 py-2 bg-surface-container border-none rounded-lg text-sm focus:ring-2 focus:ring-primary/20 w-full sm:w-72 transition-all"
-                                placeholder="Tìm kiếm order ID or customer..."
-                                type="text"
-                                name="keyword"
-                                value="<?= e($keyword) ?>"
-                            />
-                        </div>
-
-                        <select name="status" class="px-4 py-2 bg-surface-container border-none rounded-lg text-sm focus:ring-2 focus:ring-primary/20">
-                            <option value="">All Status</option>
-                            <option value="pending" <?= $status === 'pending' ? 'selected' : '' ?>>Pending</option>
-                            <option value="processing" <?= $status === 'processing' ? 'selected' : '' ?>>Processing</option>
-                            <option value="shipped" <?= $status === 'shipped' ? 'selected' : '' ?>>Shipped</option>
-                            <option value="completed" <?= $status === 'completed' ? 'selected' : '' ?>>Completed</option>
-                            <option value="cancelled" <?= $status === 'cancelled' ? 'selected' : '' ?>>Cancelled</option>
-                        </select>
-
-                        <input type="hidden" name="tab" value="<?= e($tab) ?>">
-
-                        <button type="submit" class="px-5 py-2 bg-primary text-on-primary rounded-lg text-sm font-bold hover:opacity-90 transition-opacity">
-                            Áp dụng
-                        </button>
-                    </div>
-                </form>
-            </section>
-
-            <div class="space-y-4">
-                <?php if (!empty($orderList)): ?>
-                    <?php foreach ($orderList as $order): ?>
-                        <?php
-                        $orderId = orderValue($order, ['order_code', 'code', 'order_id', 'id'], '—');
-                        $orderStatus = orderValue($order, ['status'], 'Pending');
-                        $productName = orderValue($order, ['product_name', 'title', 'name'], 'Order item');
-                        $customerName = orderValue($order, ['customer_name', 'customer', 'buyer_name', 'full_name'], 'Customer');
-                        $itemCount = orderValue($order, ['item_count', 'quantity', 'items'], '—');
-                        $amount = orderValue($order, ['total', 'amount', 'price'], 0);
-                        $tracking = orderValue($order, ['tracking_code', 'tracking'], '');
-                        $image = orderValue($order, ['image', 'image_url', 'thumbnail'], '');
-                        ?>
-
-                        <div class="bg-surface-container-lowest p-6 rounded-xl group transition-all hover:bg-white border border-transparent hover:border-outline-variant/20 shadow-sm">
-                            <div class="flex flex-col xl:flex-row xl:items-start xl:justify-between gap-6">
-                                <div class="flex gap-6">
-                                    <div class="w-20 h-20 bg-surface-container rounded-lg overflow-hidden flex-shrink-0">
-                                        <?php if ($image !== ''): ?>
-                                            <img alt="<?= e($productName) ?>" class="w-full h-full object-cover" src="<?= e($image) ?>">
-                                        <?php else: ?>
-                                            <div class="w-full h-full flex items-center justify-center text-on-surface-variant/40">
-                                                <span class="material-symbols-outlined text-3xl">shopping_bag</span>
-                                            </div>
-                                        <?php endif; ?>
-                                    </div>
-                                    <div>
-                                        <div class="flex flex-wrap items-center gap-3 mb-1">
-                                            <span class="text-[10px] font-bold tracking-widest text-on-surface-variant/40 uppercase">
-                                                #<?= e($orderId) ?>
-                                            </span>
-                                            <span class="px-2 py-0.5 rounded text-[10px] font-bold uppercase <?= orderStatusBadge($orderStatus) ?>">
-                                                <?= e($orderStatus) ?>
-                                            </span>
-                                        </div>
-                                        <h3 class="text-xl font-bold font-headline text-on-surface"><?= e($productName) ?></h3>
-                                        <p class="text-sm text-on-surface-variant mt-1">
-                                            Ordered by <span class="font-semibold text-primary"><?= e($customerName) ?></span>
-                                            <?php if ($itemCount !== '—'): ?>
-                                                • <?= e($itemCount) ?> item(s)
-                                            <?php endif; ?>
-                                        </p>
-                                        <?php if ($tracking !== ''): ?>
-                                            <p class="text-xs text-on-surface-variant mt-2">Theo dõiing: <?= e($tracking) ?></p>
-                                        <?php endif; ?>
-                                    </div>
-                                </div>
-
-                                <div class="text-right">
-                                    <p class="text-xl font-bold font-headline mb-2">
-                                        <?= is_numeric($amount) ? number_format((float)$amount, 0, ',', '.') . ' đ' : e($amount) ?>
-                                    </p>
-                                    <div class="flex gap-2 justify-end">
-                                        <button type="button" class="p-2 text-on-surface-variant hover:bg-surface-container rounded-lg transition-colors">
-                                            <span class="material-symbols-outlined">print</span>
-                                        </button>
-                                        <button type="button" class="bg-primary px-4 py-2 text-on-primary rounded-lg text-sm font-bold flex items-center gap-2 hover:opacity-90">
-                                            Update Status <span class="material-symbols-outlined text-sm">arrow_forward_ios</span>
-                                        </button>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    <?php endforeach; ?>
-                <?php else: ?>
-                    <div class="bg-surface-container-lowest p-12 rounded-xl shadow-sm text-center">
-                        <div class="w-16 h-16 mx-auto mb-4 rounded-full bg-surface-container flex items-center justify-center text-on-surface-variant/50">
-                            <span class="material-symbols-outlined text-3xl">shopping_basket</span>
-                        </div>
-                        <h3 class="text-2xl font-bold text-on-surface mb-2">Không tìm thấy đơn hàng</h3>
-                        <p class="text-on-surface-variant">
-                            There is no order data to display yet, or your current search/filter returned no results.
-                        </p>
-                    </div>
-                <?php endif; ?>
-            </div>
+            <a
+                href="index.php?url=admin/dashboard"
+                class="inline-flex items-center justify-center gap-2 px-5 py-3 bg-surface-container text-primary rounded-xl font-bold hover:bg-surface-variant transition-colors"
+            >
+                <span class="material-symbols-outlined">dashboard</span>
+                Về dashboard
+            </a>
         </div>
 
-        <aside class="col-span-12 lg:col-span-4 space-y-8">
-            <div class="bg-surface-container p-8 rounded-2xl">
-                <h4 class="font-headline font-bold text-xl mb-6">Fulfillment Overview</h4>
-                <div class="space-y-6">
-                    <div>
-                        <div class="flex justify-between text-sm mb-2">
-                            <span class="font-medium">Order Visibility</span>
-                            <span class="font-bold"><?= count($orderList) > 0 ? '100%' : '0%' ?></span>
-                        </div>
-                        <div class="h-2 bg-surface-variant rounded-full overflow-hidden">
-                            <div class="h-full bg-primary" style="width: <?= count($orderList) > 0 ? '100%' : '0%' ?>;"></div>
-                        </div>
-                    </div>
-                    <div class="grid grid-cols-2 gap-4">
-                        <div class="bg-surface-container-lowest p-4 rounded-xl">
-                            <p class="text-[10px] uppercase font-bold text-on-surface-variant/50 mb-1 tracking-widest">Pending / Processing</p>
-                            <p class="text-2xl font-black font-headline text-primary">
-                                <?=
-                                count(array_filter($orderList, function ($order) {
-                                    $s = strtolower((string) orderValue($order, ['status'], ''));
-                                    return in_array($s, ['pending', 'processing'], true);
-                                }))
-                                ?>
-                            </p>
-                        </div>
-                        <div class="bg-surface-container-lowest p-4 rounded-xl">
-                            <p class="text-[10px] uppercase font-bold text-on-surface-variant/50 mb-1 tracking-widest">Completed / Archived</p>
-                            <p class="text-2xl font-black font-headline text-primary"><?= $archivedCount ?></p>
-                        </div>
-                    </div>
-                </div>
+        <?php if (!empty($message)): ?>
+            <div class="rounded-xl p-4 <?= $status === 'success' ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800' ?>">
+                <?= e($message) ?>
+            </div>
+        <?php endif; ?>
+
+        <section class="grid grid-cols-1 md:grid-cols-5 gap-4">
+            <div class="bg-white rounded-2xl p-5 shadow-sm border border-outline-variant/20">
+                <p class="text-xs uppercase font-bold text-on-surface-variant">Tổng đơn</p>
+                <p class="font-headline text-3xl font-black text-primary mt-2"><?= (int)($stats['totalOrders'] ?? 0) ?></p>
             </div>
 
-            <div class="bg-primary text-on-primary p-8 rounded-2xl relative overflow-hidden">
-                <div class="relative z-10">
-                    <h4 class="font-headline font-bold text-xl mb-2">Order Note</h4>
-                    <p class="text-sm opacity-80 mb-6 leading-relaxed">
-                        Use this panel later for stock warnings, delivery alerts, or quick fulfillment actions when backend logic is added.
-                    </p>
-                    <button class="w-full bg-surface-container-lowest text-primary py-3 rounded-xl font-bold text-sm hover:scale-105 transition-transform">
-                        Review Đơn hàng
+            <div class="bg-white rounded-2xl p-5 shadow-sm border border-outline-variant/20">
+                <p class="text-xs uppercase font-bold text-on-surface-variant">Chờ xác nhận</p>
+                <p class="font-headline text-3xl font-black text-yellow-700 mt-2"><?= (int)($stats['newOrders'] ?? 0) ?></p>
+            </div>
+
+            <div class="bg-white rounded-2xl p-5 shadow-sm border border-outline-variant/20">
+                <p class="text-xs uppercase font-bold text-on-surface-variant">Đang giao</p>
+                <p class="font-headline text-3xl font-black text-purple-700 mt-2"><?= (int)($stats['shippingOrders'] ?? 0) ?></p>
+            </div>
+
+            <div class="bg-white rounded-2xl p-5 shadow-sm border border-outline-variant/20">
+                <p class="text-xs uppercase font-bold text-on-surface-variant">Hoàn thành</p>
+                <p class="font-headline text-3xl font-black text-green-700 mt-2"><?= (int)($stats['completedOrders'] ?? 0) ?></p>
+            </div>
+
+            <div class="bg-white rounded-2xl p-5 shadow-sm border border-outline-variant/20">
+                <p class="text-xs uppercase font-bold text-on-surface-variant">Đã hủy</p>
+                <p class="font-headline text-3xl font-black text-red-700 mt-2"><?= (int)($stats['cancelledOrders'] ?? 0) ?></p>
+            </div>
+        </section>
+
+        <section class="bg-white rounded-2xl p-6 shadow-sm border border-outline-variant/20">
+            <form method="GET" action="index.php" class="grid grid-cols-1 md:grid-cols-12 gap-4 items-end">
+                <input type="hidden" name="url" value="admin/orders">
+
+                <div class="md:col-span-6">
+                    <label class="block text-sm font-bold text-on-surface mb-2">
+                        Tìm kiếm
+                    </label>
+                    <input
+                        type="text"
+                        name="keyword"
+                        value="<?= e($keyword) ?>"
+                        placeholder="Nhập mã đơn, tên khách, email, SĐT..."
+                        class="w-full rounded-xl border-outline-variant focus:border-primary focus:ring-primary"
+                    >
+                </div>
+
+                <div class="md:col-span-4">
+                    <label class="block text-sm font-bold text-on-surface mb-2">
+                        Trạng thái
+                    </label>
+                    <select
+                        name="status"
+                        class="w-full rounded-xl border-outline-variant focus:border-primary focus:ring-primary"
+                    >
+                        <option value="">Tất cả trạng thái</option>
+                        <option value="0" <?= $filterStatus === '0' ? 'selected' : '' ?>>Chờ xác nhận</option>
+                        <option value="1" <?= $filterStatus === '1' ? 'selected' : '' ?>>Đang chuẩn bị</option>
+                        <option value="2" <?= $filterStatus === '2' ? 'selected' : '' ?>>Đang giao</option>
+                        <option value="3" <?= $filterStatus === '3' ? 'selected' : '' ?>>Hoàn thành</option>
+                        <option value="4" <?= $filterStatus === '4' ? 'selected' : '' ?>>Đã hủy</option>
+                    </select>
+                </div>
+
+                <div class="md:col-span-2 flex gap-2">
+                    <button
+                        type="submit"
+                        class="w-full px-5 py-3 bg-primary text-white rounded-xl font-bold hover:opacity-90 transition-opacity"
+                    >
+                        Lọc
                     </button>
                 </div>
-                <div class="absolute -right-8 -bottom-8 opacity-10">
-                    <span class="material-symbols-outlined text-9xl">receipt_long</span>
-                </div>
+            </form>
+        </section>
+
+        <section class="bg-white rounded-2xl shadow-sm border border-outline-variant/20 overflow-hidden">
+            <div class="p-6 border-b border-outline-variant/20">
+                <h2 class="font-headline text-2xl font-black text-on-surface">Danh sách đơn hàng</h2>
+                <p class="text-sm text-on-surface-variant mt-1">
+                    Có <?= count($orders) ?> đơn đang hiển thị.
+                </p>
             </div>
 
-            <div class="p-6 border border-outline-variant/30 rounded-2xl">
-                <h4 class="font-headline font-bold text-lg mb-4">Bộ lọc hiện tại</h4>
-                <ul class="space-y-4">
-                    <li class="flex justify-between gap-4">
-                        <span class="text-on-surface-variant">Tab</span>
-                        <span class="font-bold text-on-surface"><?= e(ucfirst($tab)) ?></span>
-                    </li>
-                    <li class="flex justify-between gap-4">
-                        <span class="text-on-surface-variant">Keyword</span>
-                        <span class="font-bold text-on-surface"><?= $keyword !== '' ? e($keyword) : '—' ?></span>
-                    </li>
-                    <li class="flex justify-between gap-4">
-                        <span class="text-on-surface-variant">Status</span>
-                        <span class="font-bold text-on-surface"><?= $status !== '' ? e(ucfirst($status)) : 'All' ?></span>
-                    </li>
-                </ul>
-            </div>
-        </aside>
-    </section>
+            <div class="overflow-x-auto">
+                <table class="w-full text-left">
+                    <thead class="bg-surface-container">
+                        <tr>
+                            <th class="px-6 py-4 text-xs font-bold uppercase text-on-surface-variant">Mã đơn</th>
+                            <th class="px-6 py-4 text-xs font-bold uppercase text-on-surface-variant">Khách hàng</th>
+                            <th class="px-6 py-4 text-xs font-bold uppercase text-on-surface-variant">Ngày đặt</th>
+                            <th class="px-6 py-4 text-xs font-bold uppercase text-on-surface-variant">SL SP</th>
+                            <th class="px-6 py-4 text-xs font-bold uppercase text-on-surface-variant">Tổng thanh toán</th>
+                            <th class="px-6 py-4 text-xs font-bold uppercase text-on-surface-variant">Trạng thái</th>
+                            <th class="px-6 py-4 text-xs font-bold uppercase text-on-surface-variant text-right">Thao tác</th>
+                        </tr>
+                    </thead>
 
-    <footer class="mt-20 pt-16 border-t border-[#c5c8ba]/10 flex flex-col md:flex-row justify-between items-center px-4 pb-12">
-        <div class="mb-4 md:mb-0">
-            <span class="font-['Epilogue'] font-bold text-[#384e21] text-xl">Zentro</span>
-            <p class="font-['Be_Vietnam_Pro'] text-sm tracking-wide text-[#191c18]/50 mt-2">
-                © 2026 Zentro Sustainable Living. Admin panel.
-            </p>
-        </div>
-        <div class="flex gap-8">
-            <a class="text-[#191c18]/50 text-sm hover:text-[#384e21] underline underline-offset-4 transition-all" href="#">Chính sách bảo mật</a>
-            <a class="text-[#191c18]/50 text-sm hover:text-[#384e21] underline underline-offset-4 transition-all" href="#">Điều khoản dịch vụ</a>
-            <a class="text-[#191c18]/50 text-sm hover:text-[#384e21] underline underline-offset-4 transition-all" href="#">Phí vận chuyển &amp; Returns</a>
-            <a class="text-[#191c18]/50 text-sm hover:text-[#384e21] underline underline-offset-4 transition-all" href="#">Liên hệ</a>
-        </div>
-    </footer>
+                    <tbody class="divide-y divide-outline-variant/20">
+                        <?php if (!empty($orders)): ?>
+                            <?php foreach ($orders as $order): ?>
+                                <?php
+                                $currentStatus = (string)$order['TrangThai'];
+                                $nextStatus = nextOrderStatus($currentStatus);
+                                ?>
+                                <tr class="hover:bg-surface-container-low transition-colors">
+                                    <td class="px-6 py-4">
+                                        <a
+                                            href="index.php?url=admin/orders/detail&id=<?= urlencode($order['MaDonHang']) ?>"
+                                            class="font-black text-primary hover:underline"
+                                        >
+                                            #<?= e($order['MaDonHang']) ?>
+                                        </a>
+                                    </td>
+
+                                    <td class="px-6 py-4">
+                                        <p class="font-bold text-on-surface">
+                                            <?= e($order['TenNguoiNhan'] ?: $order['HoTen'] ?: '—') ?>
+                                        </p>
+                                        <p class="text-xs text-on-surface-variant">
+                                            <?= e($order['SDTNguoiNhan'] ?: $order['SoDienThoai'] ?: '') ?>
+                                        </p>
+                                        <p class="text-xs text-on-surface-variant">
+                                            <?= e($order['Email'] ?? '') ?>
+                                        </p>
+                                    </td>
+
+                                    <td class="px-6 py-4 text-sm text-on-surface-variant">
+                                        <?= formatDateVN($order['NgayDat']) ?>
+                                    </td>
+
+                                    <td class="px-6 py-4">
+                                        <p class="font-bold"><?= (int)$order['TongSoLuong'] ?></p>
+                                        <p class="text-xs text-on-surface-variant">
+                                            <?= (int)$order['TongLoaiSanPham'] ?> loại
+                                        </p>
+                                    </td>
+
+                                    <td class="px-6 py-4 font-black">
+                                        <?= formatMoneyVND($order['ThanhTienCuoi']) ?>
+                                    </td>
+
+                                    <td class="px-6 py-4">
+                                        <span class="px-3 py-1 rounded-full text-xs font-bold <?= orderStatusClass($currentStatus) ?>">
+                                            <?= orderStatusText($currentStatus) ?>
+                                        </span>
+                                    </td>
+
+                                    <td class="px-6 py-4">
+                                        <div class="flex flex-wrap justify-end gap-2">
+                                            <a
+                                                href="index.php?url=admin/orders/detail&id=<?= urlencode($order['MaDonHang']) ?>"
+                                                class="px-3 py-2 rounded-lg bg-surface-container text-primary font-bold text-xs hover:bg-surface-variant transition-colors"
+                                            >
+                                                Chi tiết
+                                            </a>
+
+                                            <?php if ($nextStatus !== null): ?>
+                                                <form method="POST" action="index.php?url=admin/orders/update-status">
+                                                    <input type="hidden" name="order_id" value="<?= e($order['MaDonHang']) ?>">
+                                                    <input type="hidden" name="new_status" value="<?= e($nextStatus) ?>">
+                                                    <input type="hidden" name="redirect" value="orders">
+                                                    <button
+                                                        type="submit"
+                                                        class="px-3 py-2 rounded-lg bg-primary text-white font-bold text-xs hover:opacity-90 transition-opacity"
+                                                    >
+                                                        Chuyển sang: <?= orderStatusText($nextStatus) ?>
+                                                    </button>
+                                                </form>
+                                            <?php endif; ?>
+
+                                            <?php if ($currentStatus !== '3' && $currentStatus !== '4'): ?>
+                                                <form
+                                                    method="POST"
+                                                    action="index.php?url=admin/orders/update-status"
+                                                    onsubmit="return confirm('Bạn chắc chắn muốn hủy đơn <?= e($order['MaDonHang']) ?>? Hủy đơn sẽ hoàn kho tự động.');"
+                                                >
+                                                    <input type="hidden" name="order_id" value="<?= e($order['MaDonHang']) ?>">
+                                                    <input type="hidden" name="new_status" value="4">
+                                                    <input type="hidden" name="redirect" value="orders">
+                                                    <button
+                                                        type="submit"
+                                                        class="px-3 py-2 rounded-lg bg-red-600 text-white font-bold text-xs hover:bg-red-700 transition-colors"
+                                                    >
+                                                        Hủy đơn
+                                                    </button>
+                                                </form>
+                                            <?php endif; ?>
+                                        </div>
+                                    </td>
+                                </tr>
+                            <?php endforeach; ?>
+                        <?php else: ?>
+                            <tr>
+                                <td colspan="7" class="px-6 py-12 text-center">
+                                    <div class="w-16 h-16 mx-auto mb-4 rounded-full bg-surface-container flex items-center justify-center text-on-surface-variant">
+                                        <span class="material-symbols-outlined text-3xl">search_off</span>
+                                    </div>
+                                    <h3 class="font-headline text-2xl font-black text-on-surface mb-2">
+                                        Không tìm thấy đơn hàng
+                                    </h3>
+                                    <p class="text-on-surface-variant">
+                                        Thử đổi từ khóa tìm kiếm hoặc bộ lọc trạng thái.
+                                    </p>
+                                </td>
+                            </tr>
+                        <?php endif; ?>
+                    </tbody>
+                </table>
+            </div>
+        </section>
+    </div>
 </main>
 
 <?php include __DIR__ . '/../layouts/admin_footer.php'; ?>
-
