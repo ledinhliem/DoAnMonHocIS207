@@ -136,4 +136,32 @@ class UserModel extends Model {
 
         return 'DC' . str_pad($nextNumber, 3, '0', STR_PAD_LEFT);
     }
+
+    // Lấy toàn bộ danh sách người dùng kèm tên nhóm quyền
+   public function getAllUsers($search = '') {
+    // Thêm n.* để lấy tất cả các cột bao gồm TrangThai mới thêm
+    $sql = "SELECT n.*, q.TenQuyen 
+            FROM nguoidung n 
+            JOIN nhomquyen q ON n.MaQuyen = q.MaQuyen";
+    
+    if (!empty($search)) {
+        $sql .= " WHERE n.HoTen LIKE ? OR n.Email LIKE ? OR n.SoDienThoai LIKE ?";
+        $stmt = $this->db->prepare($sql);
+        $searchParam = "%$search%";
+        $stmt->execute([$searchParam, $searchParam, $searchParam]);
+    } else {
+        $stmt = $this->db->query($sql);
+    }
+    return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    }
+    // Cập nhật quyền (Role)
+    public function updateRole($userId, $newRole) {
+        $sql = "UPDATE nguoidung SET MaQuyen = ? WHERE MaNguoiDung = ?";
+        return $this->db->prepare($sql)->execute([$newRole, $userId]);
+    }
+
+    // Lấy danh sách nhóm quyền để đổ vào Select box
+    public function getAllRoles() {
+        return $this->db->query("SELECT * FROM nhomquyen")->fetchAll(PDO::FETCH_ASSOC);
+    }
 }

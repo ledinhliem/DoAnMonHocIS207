@@ -173,4 +173,48 @@ class AdminController extends Controller
         'message' => $message
     ]);
     }
+
+    // Thêm vào trong class AdminController
+    public function users()
+    {
+        $userModel = $this->model('UserModel');
+        $search = $_GET['search'] ?? '';
+        
+        $users = $userModel->getAllUsers($search);
+        $roles = $userModel->getAllRoles();
+
+        $this->view('admin/users/index', [
+            'title' => 'Quản lý người dùng',
+            'users' => $users,
+            'roles' => $roles,
+            'search' => $search
+        ]);
+    }
+
+    public function updateUserRole()
+    {
+        if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+            $userId = $_POST['userId'] ?? '';
+            $roleId = $_POST['roleId'] ?? '';
+            
+            $userModel = $this->model('UserModel');
+            if ($userModel->updateRole($userId, $roleId)) {
+                $_SESSION['success'] = "Cập nhật quyền thành công!";
+            }
+            header('Location: index.php?url=admin/users');
+            exit;
+        }
+    }
+
+    public function userDetail()
+    {
+        $id = $_GET['id'] ?? '';
+        $userModel = $this->model('UserModel');
+        $user = $userModel->getUserInfo($id); 
+
+        $this->view('admin/users/detail', [
+            'title' => 'Chi tiết người dùng',
+            'user' => $user
+        ]);
+    }
 }
