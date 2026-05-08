@@ -4,13 +4,35 @@ class Router
     public function dispatch()
     {
         $url = $_GET['url'] ?? '';
-        $url = explode('&', $url)[0];
-        if (str_starts_with($url, 'admin/products')) {
+
+        if (preg_match('#^product/(create|edit/.+|delete/.+)$#', $url)) {
             require_once __DIR__ . '/../app/controllers/AdminController.php';
             $controller = new AdminController();
             $controller->products();
             return;
         }
+
+        if (preg_match('#^blog/(create|edit/.+|delete/.+)$#', $url)) {
+            require_once __DIR__ . '/../app/controllers/AdminController.php';
+            $controller = new AdminController();
+            $controller->blog();
+            return;
+        }
+
+        if (preg_match('#^promotion/(create|edit/.+|delete/.+)$#', $url)) {
+            require_once __DIR__ . '/../app/controllers/AdminController.php';
+            $controller = new AdminController();
+            $controller->dashboard();
+            return;
+        }
+
+        if (preg_match('#^(inventory/create|inventory/edit/.+|supplier/create|supplier/detail/.+|admin/suppliers)$#', $url)) {
+            require_once __DIR__ . '/../app/controllers/AdminController.php';
+            $controller = new AdminController();
+            $controller->inventory();
+            return;
+        }
+
         switch ($url) {
             case '':
                 require_once __DIR__ . '/../app/controllers/HomeController.php';
@@ -204,21 +226,21 @@ class Router
                 $controller->dashboard();
                 break;
             case 'admin/products':
-            case 'admin/products/create':
-            case 'admin/products/edit':
-            case 'admin/products/delete':
                 require_once __DIR__ . '/../app/controllers/AdminController.php';
                 $controller = new AdminController();
                 $controller->products();
                 break;
-            case 'admin/categories':
-            case 'admin/categories/create':
-            case 'admin/categories/edit':
-            case 'admin/categories/delete':
+            case 'admin/products/variants':
                 require_once __DIR__ . '/../app/controllers/AdminController.php';
                 $controller = new AdminController();
-                $controller->categories();
+                $controller->variants();
                 break;
+            case 'admin/products/gallery':
+                require_once __DIR__ . '/../app/controllers/AdminController.php';
+                $controller = new AdminController();
+                $controller->gallery();
+                break;
+
             case 'admin/orders':
                 require_once __DIR__ . '/../app/controllers/AdminController.php';
                 $controller = new AdminController();

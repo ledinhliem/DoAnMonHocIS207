@@ -16,15 +16,19 @@ class AdminController extends Controller
 
         $role = $_SESSION['role'] ?? $_SESSION['MaQuyen'] ?? null;
 
-        if ((string) $role !== '1') {
+        if ((string)$role !== '1') {
             header('Location: index.php');
             exit;
         }
     }
 
+    // --------------------------------------------------------
+    // DASHBOARD
+    // --------------------------------------------------------
+
     public function dashboard()
     {
-        $status = null;
+        $status  = null;
         $message = '';
 
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
@@ -32,348 +36,375 @@ class AdminController extends Controller
 
             switch ($action) {
                 case 'create_discount':
-                    $code = trim($_POST['code'] ?? '');
-                    $percent = trim($_POST['percent'] ?? '');
-
-                    if ($code !== '' && is_numeric($percent) && $percent > 0) {
-                        $status = 'success';
+                    $code    = $_POST['code'] ?? '';
+                    $percent = $_POST['percent'] ?? '';
+                    if (!empty($code) && $percent > 0) {
+                        $status  = 'success';
                         $message = "Đã kích hoạt mã **$code** giảm **$percent%** toàn hệ thống!";
                     } else {
-                        $status = 'error';
+                        $status  = 'error';
                         $message = "Vui lòng nhập đầy đủ thông tin mã giảm giá!";
                     }
                     break;
 
                 case 'delete':
-                    $id = trim($_POST['promo_id'] ?? '');
-                    $status = 'success';
+                    $id      = $_POST['promo_id'] ?? '';
+                    $status  = 'success';
                     $message = "Đã gỡ bỏ khuyến mãi: **$id**";
                     break;
 
                 case 'export_report':
-                    $status = 'success';
-                    $message = "Báo cáo Eco-Impact đã được gửi về email của bạn (Alex River).";
+                    $status  = 'success';
+                    $message = "Báo cáo Eco-Impact đã được gửi về email của bạn.";
                     break;
             }
         }
 
         $this->view('admin/dashboard', [
-            'title' => 'Admin Bảng điều khiển',
-            'status' => $status,
+            'title'   => 'Admin Bảng điều khiển',
+            'status'  => $status,
             'message' => $message,
-            'currentPage' => 'dashboard'
         ]);
     }
+
+    // --------------------------------------------------------
+    // PRODUCTS
+    // --------------------------------------------------------
 
     public function products()
     {
-        $id = $_GET['id'] ?? '';
-        $adminModel = $this->model('AdminModel');
-        $url = $_GET['url'] ?? 'admin/products';
+        $this->view('admin/products', ['title' => 'Quản lý sản phẩm']);
+    }
 
-        $status = null;
+    // --------------------------------------------------------
+    // ORDERS
+    // --------------------------------------------------------
+
+    public function orders()
+    {
+        $this->view('admin/orders', ['title' => 'Quản lý đơn hàng']);
+    }
+
+    // --------------------------------------------------------
+    // INVENTORY
+    // --------------------------------------------------------
+
+    public function inventory()
+    {
+        require_once __DIR__ . '/../models/AdminModel.php';
+        $model = new AdminModel();
+
+        $status  = null;
         $message = '';
 
-        // DELETE
-        if ($url === 'admin/products/delete' && $id) {
-            $adminModel->deleteProduct($id);
-            header('Location: index.php?url=admin/products');
-            exit;
-        }
-
-        // EDIT
-        if ($url === 'admin/products/edit' && $id) {
-            $product = $adminModel->getProductById($id);
-            $canShow = $adminModel->productCanBeVisible($id);
-
-            $this->view('admin/products_form', [
-                'title' => 'Chỉnh sửa sản phẩm',
-                'currentPage' => 'products',
-                'product' => $product,
-                'categories' => $adminModel->getCategoriesList(),
-                'brands' => $adminModel->getBrands(),
-                'materials' => $adminModel->getMaterials(),
-                'isEdit' => true,
-                'canShow' => $canShow
-            ]);
-            return;
-        }
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $action = $_POST['action'] ?? '';
 
             switch ($action) {
-                case 'create_product':
-                    $productId = $adminModel->generateProductId();
-                    $productData = [
-                        'MaSanPham' => $productId,
-                        'TenSanPham' => trim($_POST['TenSanPham'] ?? ''),
-                        'MaDanhMuc' => trim($_POST['MaDanhMuc'] ?? ''),
-                        'MaThuongHieu' => trim($_POST['MaThuongHieu'] ?? ''),
-                        'MaVatLieu' => trim($_POST['MaVatLieu'] ?? ''),
-                        'MoTa' => trim($_POST['MoTa'] ?? ''),
-                        'DiemXanh' => is_numeric($_POST['DiemXanh'] ?? null) ? (int) $_POST['DiemXanh'] : 10,
-                        'NguonGoc' => trim($_POST['NguonGoc'] ?? ''),
-                        'TacDongMoiTruong' => trim($_POST['TacDongMoiTruong'] ?? ''),
-                        'CoTaiChe' => isset($_POST['CoTaiChe']) ? 1 : 0,
-                        'ThanThienMoiTruong' => isset($_POST['ThanThienMoiTruong']) ? 1 : 0,
-                        'TrangThai' => 0
-                    ];
 
-                    if ($productData['TenSanPham'] === '' || $productData['MaDanhMuc'] === '') {
-                        $status = 'error';
-                        $message = 'Tên sản phẩm và danh mục là bắt buộc.';
+                // Cập nhật SoLuongTon biến thể
+                case 'update_stock':
+                    $maBienThe = trim($_POST['ma_bien_the'] ?? '');
+                    $soLuong   = (int)($_POST['so_luong_ton'] ?? -1);
+
+                    if ($maBienThe === '' || $soLuong < 0) {
+                        $status  = 'error';
+                        $message = "Dữ liệu không hợp lệ. Vui lòng kiểm tra lại.";
+                    } elseif ($model->updateStock($maBienThe, $soLuong)) {
+                        $status  = 'success';
+                        $message = "Đã cập nhật tồn kho biến thể **$maBienThe** thành **$soLuong** sản phẩm.";
                     } else {
-                        $created = $adminModel->createProduct($productData);
-                        if ($created) {
-                            if (!empty($_FILES['product_image']['name'])) {
-                                $uploadResult = $this->handleProductImageUpload($productId, $_FILES['product_image']);
-                                if ($uploadResult !== true) {
-                                    $status = 'error';
-                                    $message = $uploadResult;
-                                    break;
-                                }
-                            }
-
-                            header('Location: index.php?url=admin/products/edit&id=' . urlencode($productId) . '&created=1');
-                            exit;
-                        }
-
-                        $status = 'error';
-                        $message = 'Tạo sản phẩm thất bại, vui lòng thử lại.';
+                        $status  = 'error';
+                        $message = "Cập nhật thất bại. Vui lòng thử lại.";
                     }
                     break;
 
-                case 'update_product':
-                    $productId = trim($_POST['MaSanPham'] ?? '');
-                    $productData = [
-                        'TenSanPham' => trim($_POST['TenSanPham'] ?? ''),
-                        'MaDanhMuc' => trim($_POST['MaDanhMuc'] ?? ''),
-                        'MaThuongHieu' => trim($_POST['MaThuongHieu'] ?? ''),
-                        'MaVatLieu' => trim($_POST['MaVatLieu'] ?? ''),
-                        'MoTa' => trim($_POST['MoTa'] ?? ''),
-                        'DiemXanh' => is_numeric($_POST['DiemXanh'] ?? null) ? (int) $_POST['DiemXanh'] : 10,
-                        'NguonGoc' => trim($_POST['NguonGoc'] ?? ''),
-                        'TacDongMoiTruong' => trim($_POST['TacDongMoiTruong'] ?? ''),
-                        'CoTaiChe' => isset($_POST['CoTaiChe']) ? 1 : 0,
-                        'ThanThienMoiTruong' => isset($_POST['ThanThienMoiTruong']) ? 1 : 0,
-                        'TrangThai' => isset($_POST['TrangThai']) && $_POST['TrangThai'] === '1' ? 1 : 0
-                    ];
-
-                    if ($productId === '' || $productData['TenSanPham'] === '' || $productData['MaDanhMuc'] === '') {
-                        $status = 'error';
-                        $message = 'ID, tên sản phẩm và danh mục là bắt buộc.';
+                // Xóa biến thể — kiểm tra ràng buộc đơn hàng trước
+                case 'delete_variant':
+                    $maBienThe = trim($_POST['ma_bien_the'] ?? '');
+                    if ($maBienThe === '') {
+                        $status  = 'error';
+                        $message = "Thiếu mã biến thể.";
+                    } elseif ($model->variantHasOrders($maBienThe)) {
+                        // Đã từng bán → chỉ đặt SoLuongTon = 0, không xóa cứng
+                        $model->updateStock($maBienThe, 0);
+                        $status  = 'warning';
+                        $message = "Biến thể **$maBienThe** đã có trong đơn hàng. Đã đặt tồn kho = 0 thay vì xóa để bảo toàn lịch sử.";
+                    } elseif ($model->deleteVariant($maBienThe)) {
+                        $status  = 'success';
+                        $message = "Đã xóa biến thể **$maBienThe** thành công.";
                     } else {
+                        $status  = 'error';
+                        $message = "Xóa thất bại. Vui lòng thử lại.";
+                    }
+                    break;
 
-                        if ($productData['TrangThai'] == 1) {
-                            if (!$adminModel->productCanBeVisible($productId)) {
-                                $status = 'error';
-                                $message = 'Sản phẩm chưa đủ điều kiện (cần biến thể + giá + ảnh)';
-                                break;
-                            }
-                        }
+                // Thêm nhà cung cấp mới
+                case 'add_supplier':
+                    $tenNCC      = trim($_POST['supplier_name'] ?? '');
+                    $soDienThoai = trim($_POST['tax_id'] ?? '');   // dùng field tax_id làm SĐT tạm
+                    $diaChi      = trim($_POST['location'] ?? '');
 
-                        $updated = $adminModel->updateProduct($productId, $productData);
-                        if ($updated) {
-                            if (!empty($_FILES['product_image']['name'])) {
-                                $uploadResult = $this->handleProductImageUpload($productId, $_FILES['product_image']);
-                                if ($uploadResult !== true) {
-                                    $status = 'error';
-                                    $message = $uploadResult;
-                                    break;
-                                }
-                            }
-
-                            $status = 'success';
-                            $message = 'Cập nhật sản phẩm thành công.';
-                        } else {
-                            $status = 'error';
-                            $message = 'Cập nhật sản phẩm thất bại, vui lòng thử lại.';
-                        }
+                    if ($tenNCC === '') {
+                        $status  = 'error';
+                        $message = "Vui lòng nhập tên nhà cung cấp.";
+                    } elseif ($model->addSupplier($tenNCC, $soDienThoai, $diaChi)) {
+                        $status  = 'success';
+                        $message = "Đã đăng ký thành công nhà cung cấp: **$tenNCC**";
+                    } else {
+                        $status  = 'error';
+                        $message = "Thêm nhà cung cấp thất bại. Vui lòng thử lại.";
                     }
                     break;
             }
         }
 
+        $keyword   = trim($_GET['keyword'] ?? '');
+        $inventory = $model->getInventory($keyword);
+        $suppliers = $model->getSuppliers();
+        $receipts  = $model->getImportReceipts();
 
-        if ($url === 'admin/products/create') {
-            $this->view('admin/products_form', [
-                'title' => 'Thêm sản phẩm mới',
-                'currentPage' => 'products',
-                'categories' => $adminModel->getCategoriesList(),
-                'brands' => $adminModel->getBrands(),
-                'materials' => $adminModel->getMaterials(),
-                'isEdit' => false,
-                'status' => $status,
-                'message' => $message
-            ]);
-            return;
-        }
-
-
-        $products = $adminModel->getProductsList([
-            'keyword' => trim($_GET['keyword'] ?? ''),
-            'category' => trim($_GET['category'] ?? ''),
-            'brand' => trim($_GET['brand'] ?? '')
-        ]);
-
-        $this->view('admin/products', [
-            'title' => 'Quản lý sản phẩm',
-            'currentPage' => 'products',
-            'products' => $products,
-            'status' => $status,
-            'message' => $message,
-            'keyword' => trim($_GET['keyword'] ?? ''),
-            'category' => trim($_GET['category'] ?? ''),
-            'brand' => trim($_GET['brand'] ?? '')
+        $this->view('admin/inventory', [
+            'title'     => 'Quản lý kho',
+            'status'    => $status,
+            'message'   => $message,
+            'inventory' => $inventory,   // bienthesanpham + TenSanPham
+            'suppliers' => $suppliers,   // nhacungcap
+            'entries'   => $receipts,    // phieunhap + TenNCC
         ]);
     }
 
-    public function categories()
+    // --------------------------------------------------------
+    // REVIEWS 
+    // --------------------------------------------------------
+
+    public function reviews()
     {
-        $url = $_GET['url'] ?? 'admin/categories';
-        $adminModel = $this->model('AdminModel');
-        $status = null;
+        require_once __DIR__ . '/../models/AdminModel.php';
+        $model = new AdminModel();
+
+        $status  = null;
         $message = '';
 
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-            $action = $_POST['action'] ?? '';
+            $action    = $_POST['action'] ?? '';
+            $maDanhGia = trim($_POST['ma_danh_gia'] ?? '');
 
-            switch ($action) {
-                case 'create_category':
-                    $categoryId = $adminModel->generateCategoryId();
-                    $categoryData = [
-                        'MaDanhMuc' => $categoryId,
-                        'TenDanhMuc' => trim($_POST['TenDanhMuc'] ?? ''),
-                        'HinhAnh' => trim($_POST['HinhAnh'] ?? ''),
-                        'TrangThai' => 1
-                    ];
+            if ($maDanhGia === '') {
+                $status  = 'error';
+                $message = "Thiếu mã đánh giá.";
+            } else {
+                switch ($action) {
 
-                    if ($categoryData['TenDanhMuc'] === '') {
-                        $status = 'error';
-                        $message = 'Tên danh mục không được để trống.';
-                    } else {
-                        $created = $adminModel->createCategory($categoryData);
-                        if ($created) {
-                            header('Location: index.php?url=admin/categories&created=1');
-                            exit;
-                        }
-                        $status = 'error';
-                        $message = 'Tạo danh mục thất bại, vui lòng thử lại.';
-                    }
-                    break;
-
-                case 'update_category':
-                    $categoryId = trim($_POST['MaDanhMuc'] ?? '');
-                    $categoryData = [
-                        'TenDanhMuc' => trim($_POST['TenDanhMuc'] ?? ''),
-                        'HinhAnh' => trim($_POST['HinhAnh'] ?? ''),
-                        'TrangThai' => isset($_POST['TrangThai']) && $_POST['TrangThai'] === '1' ? 1 : 0
-                    ];
-
-                    if ($categoryId === '' || $categoryData['TenDanhMuc'] === '') {
-                        $status = 'error';
-                        $message = 'ID và tên danh mục là bắt buộc.';
-                    } else {
-                        $updated = $adminModel->updateCategory($categoryId, $categoryData);
-                        if ($updated) {
-                            $status = 'success';
-                            $message = 'Cập nhật danh mục thành công.';
+                    case 'approve':
+                        if ($model->approveReview($maDanhGia)) {
+                            $status  = 'success';
+                            $message = "Đã duyệt đánh giá **#$maDanhGia**.";
                         } else {
-                            $status = 'error';
-                            $message = 'Cập nhật danh mục thất bại, vui lòng thử lại.';
+                            $status  = 'error';
+                            $message = "Duyệt thất bại. Vui lòng thử lại.";
                         }
-                    }
-                    break;
-            }
-        }
+                        break;
 
-        if ($url === 'admin/categories/delete') {
-            $categoryId = trim($_GET['id'] ?? '');
-            if ($categoryId !== '') {
-                $hasProducts = $adminModel->categoryHasProducts($categoryId);
-                $adminModel->softDeleteCategory($categoryId);
-                $status = 'success';
-                if ($hasProducts) {
-                    $message = 'Danh mục có sản phẩm → đã chuyển sang trạng thái ẩn (không xóa cứng)';
-                } else {
-                    $message = 'Đã ẩn danh mục thành công';
+                    case 'hide':
+                        if ($model->hideReview($maDanhGia)) {
+                            $status  = 'success';
+                            $message = "Đã ẩn đánh giá **#$maDanhGia**.";
+                        } else {
+                            $status  = 'error';
+                            $message = "Ẩn thất bại. Vui lòng thử lại.";
+                        }
+                        break;
+
+                    case 'delete':
+                        if ($model->deleteReview($maDanhGia)) {
+                            $status  = 'success';
+                            $message = "Đã xóa đánh giá **#$maDanhGia**.";
+                        } else {
+                            $status  = 'error';
+                            $message = "Xóa thất bại. Vui lòng thử lại.";
+                        }
+                        break;
+
+                    case 'reply':
+                        $reply = trim($_POST['reply_content'] ?? '');
+                        if ($reply === '') {
+                            $status  = 'error';
+                            $message = "Nội dung phản hồi không được để trống.";
+                        } elseif ($model->saveAdminReply($maDanhGia, $reply)) {
+                            $status  = 'success';
+                            $message = "Đã lưu phản hồi cho đánh giá **#$maDanhGia**.";
+                        } else {
+                            $status  = 'error';
+                            $message = "Lưu phản hồi thất bại. Vui lòng thử lại.";
+                        }
+                        break;
                 }
             }
         }
 
-        if ($url === 'admin/categories/create') {
-            $this->view('admin/categories_form', [
-                'title' => 'Thêm danh mục mới',
-                'currentPage' => 'categories',
-                'isEdit' => false,
-                'status' => $status,
-                'message' => $message
-            ]);
-            return;
-        }
+        $keyword = trim($_GET['keyword'] ?? '');
+        $tab     = $_GET['tab'] ?? 'all';
+        $reviews = $model->getReviews($keyword, $tab);
 
-        if ($url === 'admin/categories/edit') {
-            $categoryId = trim($_GET['id'] ?? '');
-            $category = $adminModel->getCategoryById($categoryId);
-            if (!$category) {
-                header('Location: index.php?url=admin/categories');
-                exit;
-            }
-
-            $this->view('admin/categories_form', [
-                'title' => 'Chỉnh sửa danh mục',
-                'currentPage' => 'categories',
-                'category' => $category,
-                'isEdit' => true,
-                'status' => $status,
-                'message' => $message
-            ]);
-            return;
-        }
-
-        $categories = $adminModel->getCategoriesList();
-
-        $this->view('admin/categories', [
-            'title' => 'Quản lý danh mục',
-            'currentPage' => 'categories',
-            'categories' => $categories,
-            'status' => $status,
-            'message' => $message
+        $this->view('admin/reviews', [
+            'title'   => 'Quản lý đánh giá',
+            'status'  => $status,
+            'message' => $message,
+            'reviews' => $reviews,
         ]);
     }
 
-    private function handleProductImageUpload(string $productId, array $file)
+    // --------------------------------------------------------
+    // VARIANTS
+    // --------------------------------------------------------
+
+    public function variants()
+{
+    require_once __DIR__ . '/../models/AdminModel.php';
+    $model = new AdminModel();
+
+    $maSanPham = trim($_GET['id'] ?? '');
+    $status = null; $message = '';
+
+    if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+        $action = $_POST['action'] ?? '';
+
+        switch ($action) {
+            case 'add_variant':
+                $result = $model->addVariant(
+                    $maSanPham,
+                    trim($_POST['mau_sac'] ?? ''),
+                    trim($_POST['kich_thuoc'] ?? ''),
+                    (float)($_POST['gia_tien'] ?? 0),
+                    (int)($_POST['so_luong_ton'] ?? 0)
+                );
+                $status = $result ? 'success' : 'error';
+                $message = $result ? 'Đã thêm biến thể thành công.' : 'Thêm biến thể thất bại.';
+                break;
+
+            case 'update_variant':
+                $maBienThe = trim($_POST['ma_bien_the'] ?? '');
+                $result = $model->updateVariant(
+                    $maBienThe,
+                    trim($_POST['mau_sac'] ?? ''),
+                    trim($_POST['kich_thuoc'] ?? ''),
+                    (float)($_POST['gia_tien'] ?? 0),
+                    (int)($_POST['so_luong_ton'] ?? 0)
+                );
+                $status = $result ? 'success' : 'error';
+                $message = $result ? "Đã cập nhật biến thể." : "Cập nhật thất bại.";
+                break;
+
+            // delete_variant đã xử lý trong inventory(), dùng chung logic
+            case 'delete_variant':
+                $maBienThe = trim($_POST['ma_bien_the'] ?? '');
+                if ($model->variantHasOrders($maBienThe)) {
+                    $model->updateStock($maBienThe, 0);
+                    $status = 'warning';
+                    $message = "Biến thể đã có trong đơn hàng. Đã đặt tồn kho = 0.";
+                } elseif ($model->deleteVariant($maBienThe)) {
+                    $status = 'success';
+                    $message = "Đã xóa biến thể thành công.";
+                } else {
+                    $status = 'error';
+                    $message = "Xóa thất bại.";
+                }
+                break;
+        }
+    }
+
+    $variants = $maSanPham ? $model->getVariantsByProduct($maSanPham) : [];
+
+    $this->view('admin/variants', [
+        'title'      => 'Quản lý biến thể',
+        'status'     => $status,
+        'message'    => $message,
+        'variants'   => $variants,
+        'ma_san_pham' => $maSanPham,
+    ]);
+    }
+
+    // --------------------------------------------------------
+    // GALLERY
+    // --------------------------------------------------------
+    public function gallery()
+{
+    require_once __DIR__ . '/../models/AdminModel.php';
+    $model = new AdminModel();
+
+    $maSanPham = trim($_GET['id'] ?? '');
+    $status = null; $message = '';
+
+    if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+        $action = $_POST['action'] ?? '';
+
+        if ($action === 'upload_image') {
+            if (!empty($_FILES['image']['tmp_name'])) {
+                $result = $model->uploadGalleryImage($maSanPham, $_FILES['image']);
+                $status = $result ? 'success' : 'error';
+                $message = $result ? 'Đã tải ảnh lên thành công.' : 'Tải ảnh thất bại.';
+            } else {
+                $status = 'error';
+                $message = 'Vui lòng chọn file ảnh.';
+            }
+        } elseif ($action === 'delete_image') {
+            $maAnh = trim($_POST['ma_anh'] ?? '');
+            $result = $model->deleteGalleryImage($maAnh);
+            $status = $result ? 'success' : 'error';
+            $message = $result ? 'Đã xóa ảnh.' : 'Xóa ảnh thất bại.';
+        }
+    }
+
+    $gallery = $maSanPham ? $model->getGallery($maSanPham) : [];
+
+    $this->view('admin/gallery', [
+        'title'      => 'Quản lý ảnh sản phẩm',
+        'status'     => $status,
+        'message'    => $message,
+        'gallery'    => $gallery,
+        'ma_san_pham' => $maSanPham,
+    ]);
+}
+
+    // --------------------------------------------------------
+    // BLOG
+    // --------------------------------------------------------
+
+    public function blog()
     {
-        if (empty($file['name'])) {
-            return true;
+        $status  = null;
+        $message = '';
+
+        if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+            $action = $_POST['action'] ?? '';
+
+            switch ($action) {
+                case 'create_post':
+                    $title      = $_POST['title'] ?? '';
+                    $postStatus = $_POST['status'] ?? 'draft';
+                    $status     = 'success';
+                    $message    = "Thành công! Bài viết **$title** đã được lưu dưới dạng **$postStatus**.";
+                    break;
+
+                case 'delete':
+                    $id      = $_POST['post_id'] ?? '';
+                    $status  = 'success';
+                    $message = "Đã xóa bài viết ID: #$id thành công!";
+                    break;
+
+                case 'edit':
+                    $id      = $_POST['post_id'] ?? '';
+                    $status  = 'success';
+                    $message = "Đang chuyển hướng đến trình chỉnh sửa cho bài viết #$id...";
+                    break;
+            }
         }
 
-        $allowedExt = ['jpg', 'jpeg', 'png', 'webp'];
-        $extension = strtolower(pathinfo($file['name'], PATHINFO_EXTENSION));
-
-        if (!in_array($extension, $allowedExt, true)) {
-            return 'Chỉ chấp nhận ảnh JPG, PNG hoặc WEBP.';
-        }
-
-        if ($file['error'] !== UPLOAD_ERR_OK) {
-            return 'Lỗi khi tải ảnh lên. Vui lòng thử lại.';
-        }
-
-        $destinationDir = ROOT_PATH . '/public/assets/images/products/';
-        if (!is_dir($destinationDir)) {
-            mkdir($destinationDir, 0755, true);
-        }
-
-        $safeName = $productId . '_' . time() . '.' . $extension;
-        $targetPath = $destinationDir . $safeName;
-
-        if (!move_uploaded_file($file['tmp_name'], $targetPath)) {
-            return 'Không thể lưu ảnh sản phẩm.';
-        }
-
-        $adminModel = $this->model('AdminModel');
-        $adminModel->addProductImage($productId, $safeName);
-
-        return true;
+        $this->view('admin/blog', [
+            'title'   => 'Quản lý Blog',
+            'status'  => $status,
+            'message' => $message,
+        ]);
     }
 }

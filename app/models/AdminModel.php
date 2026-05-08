@@ -1,339 +1,307 @@
 <?php
 
-class AdminModel extends Model
+class AdminModel
 {
-    public function getProductsList(array $filters = []): array
+    private $db;
+
+    public function __construct()
     {
-        $where = ['1=1'];
+        $this->db = db();
+    }
+
+    // =========================================================
+    // REVIEWS — danhgia
+    // =========================================================
+
+    /**
+     * Lấy danh sách đánh giá, có thể lọc theo trạng thái và từ khóa.
+     * TrangThai: 1 = Hiện/Duyệt, 0 = Ẩn/Chờ duyệt (theo Admin Flow)
+     */
+    public function getReviews(string $keyword = '', string $tab = 'all'): array
+    {
+        $sql = "SELECT dg.*, nd.HoTen AS TenNguoiDung, sp.TenSanPham
+                FROM danhgia dg
+                LEFT JOIN nguoidung nd ON dg.MaNguoiDung = nd.MaNguoiDung
+                LEFT JOIN sanpham sp ON dg.MaSanPham = sp.MaSanPham
+                WHERE 1=1";
+
         $params = [];
 
-        if (!empty($filters['keyword'])) {
-            $where[] = '(sp.TenSanPham LIKE :keyword OR sp.MoTa LIKE :keyword OR sp.NguonGoc LIKE :keyword)';
-            $params[':keyword'] = '%' . $filters['keyword'] . '%';
+        if ($tab === 'pending') {
+            $sql .= " AND dg.TrangThai = 0";
+        } elseif ($tab === 'approved') {
+            $sql .= " AND dg.TrangThai = 1";
         }
 
-        if (!empty($filters['category'])) {
-            $where[] = 'sp.MaDanhMuc = :category';
-            $params[':category'] = $filters['category'];
+        if ($keyword !== '') {
+            $sql .= " AND (nd.HoTen LIKE :kw OR sp.TenSanPham LIKE :kw2 OR dg.NoiDung LIKE :kw3)";
+            $params[':kw']  = "%$keyword%";
+            $params[':kw2'] = "%$keyword%";
+            $params[':kw3'] = "%$keyword%";
         }
 
-        if (!empty($filters['brand'])) {
-            $where[] = 'sp.MaThuongHieu = :brand';
-            $params[':brand'] = $filters['brand'];
-        }
-
-        $sql = "
-            SELECT
-                sp.MaSanPham AS id,
-                sp.TenSanPham AS name,
-                sp.TrangThai AS status,
-                sp.DiemXanh AS eco_score,
-                sp.MaDanhMuc AS category_id,
-                dm.TenDanhMuc AS category_name,
-                sp.MaThuongHieu AS brand_id,
-                th.TenThuongHieu AS brand_name,
-                sp.MaVatLieu AS material_id,
-                vl.TenVatLieu AS material_name,
-                COALESCE(v.min_price, 0) AS price,
-                COALESCE(v.total_stock, 0) AS stock,
-                COALESCE(img.DuongDan, '') AS image,
-                COALESCE(img.image_count, 0) AS image_count,
-                COALESCE(v.variant_count, 0) AS variant_count
-            FROM sanpham sp
-            LEFT JOIN danhmuc dm ON dm.MaDanhMuc = sp.MaDanhMuc
-            LEFT JOIN thuonghieu th ON th.MaThuongHieu = sp.MaThuongHieu
-            LEFT JOIN vatlieu vl ON vl.MaVatLieu = sp.MaVatLieu
-            LEFT JOIN (
-                SELECT MaSanPham, MIN(GiaTien) AS min_price, SUM(SoLuongTon) AS total_stock, COUNT(*) AS variant_count
-                FROM bienthesanpham
-                GROUP BY MaSanPham
-            ) v ON v.MaSanPham = sp.MaSanPham
-            LEFT JOIN (
-                SELECT MaSanPham, MIN(DuongDan) AS DuongDan, COUNT(*) AS image_count
-                FROM hinhanhsanpham
-                GROUP BY MaSanPham
-            ) img ON img.MaSanPham = sp.MaSanPham
-            WHERE " . implode(' AND ', $where) . "
-            ORDER BY sp.MaSanPham ASC
-        ";
+        $sql .= " ORDER BY dg.NgayDanhGia DESC";
 
         $stmt = $this->db->prepare($sql);
         $stmt->execute($params);
-        $products = $stmt->fetchAll(PDO::FETCH_ASSOC);
-
-        foreach ($products as &$product) {
-            $product['image'] = $this->formatImageUrl($product['image'] ?? '');
-        }
-
-        return $products;
+        return $stmt->fetchAll();
     }
 
-    public function getProductById(string $id): ?array
+    /**
+     * Duyệt đánh giá (TrangThai = 1)
+     */
+    public function approveReview(string $maDanhGia): bool
     {
-        $stmt = $this->db->prepare("SELECT
-                sp.*,
-                dm.TenDanhMuc AS category_name,
-                th.TenThuongHieu AS brand_name,
-                vl.TenVatLieu AS material_name,
-                COALESCE(img.image_count, 0) AS image_count,
-                COALESCE(v.variant_count, 0) AS variant_count,
-                COALESCE(v.min_price, 0) AS min_price,
-                COALESCE(v.total_stock, 0) AS total_stock
-            FROM sanpham sp
-            LEFT JOIN danhmuc dm ON dm.MaDanhMuc = sp.MaDanhMuc
-            LEFT JOIN thuonghieu th ON th.MaThuongHieu = sp.MaThuongHieu
-            LEFT JOIN vatlieu vl ON vl.MaVatLieu = sp.MaVatLieu
-            LEFT JOIN (
-                SELECT MaSanPham, COUNT(*) AS variant_count, MIN(GiaTien) AS min_price, SUM(SoLuongTon) AS total_stock
-                FROM bienthesanpham
-                GROUP BY MaSanPham
-            ) v ON v.MaSanPham = sp.MaSanPham
-            LEFT JOIN (
-                SELECT MaSanPham, COUNT(*) AS image_count
-                FROM hinhanhsanpham
-                GROUP BY MaSanPham
-            ) img ON img.MaSanPham = sp.MaSanPham
-            WHERE sp.MaSanPham = ?");
-
-        $stmt->execute([$id]);
-        $product = $stmt->fetch(PDO::FETCH_ASSOC);
-
-        if ($product) {
-            $product['image'] = $this->formatImageUrl($product['image'] ?? '');
-        }
-
-        return $product ?: null;
+        $stmt = $this->db->prepare(
+            "UPDATE danhgia SET TrangThai = 1 WHERE MaDanhGia = ?"
+        );
+        return $stmt->execute([$maDanhGia]);
     }
 
-    public function getCategoriesList(): array
+    /**
+     * Ẩn đánh giá (TrangThai = 0)
+     */
+    public function hideReview(string $maDanhGia): bool
     {
-        $hasStatus = $this->hasColumn('danhmuc', 'TrangThai');
+        $stmt = $this->db->prepare(
+            "UPDATE danhgia SET TrangThai = 0 WHERE MaDanhGia = ?"
+        );
+        return $stmt->execute([$maDanhGia]);
+    }
 
-        $selectStatus = $hasStatus
-            ? 'COALESCE(dm.TrangThai, 1) AS TrangThai,'
-            : '1 AS TrangThai,';
+    /**
+     * Xóa đánh giá khỏi DB (chỉ dùng nếu admin chắc chắn)
+     */
+    public function deleteReview(string $maDanhGia): bool
+    {
+        $stmt = $this->db->prepare(
+            "DELETE FROM danhgia WHERE MaDanhGia = ?"
+        );
+        return $stmt->execute([$maDanhGia]);
+    }
 
-        $where = $hasStatus ? 'WHERE dm.TrangThai = 1' : '';
+    /**
+     * Lưu phản hồi admin cho một đánh giá
+     */
+    public function saveAdminReply(string $maDanhGia, string $reply): bool
+    {
+        $stmt = $this->db->prepare(
+            "UPDATE danhgia SET PhanHoiAdmin = ? WHERE MaDanhGia = ?"
+        );
+        return $stmt->execute([trim($reply), $maDanhGia]);
+    }
 
-        $sql = "SELECT
-    dm.MaDanhMuc,
-    dm.TenDanhMuc,
-    dm.HinhAnh,
-    1 AS TrangThai,
-    (SELECT COUNT(*) FROM sanpham sp WHERE sp.MaDanhMuc = dm.MaDanhMuc) AS product_count
-FROM danhmuc dm
-ORDER BY dm.MaDanhMuc ASC";
+    // =========================================================
+    // INVENTORY — bienthesanpham + nhacungcap + phieunhap
+    // =========================================================
+
+    /**
+     * Lấy danh sách tồn kho biến thể, join với tên sản phẩm.
+     * Hỗ trợ lọc theo từ khóa tên sản phẩm.
+     */
+    public function getInventory(string $keyword = ''): array
+    {
+        $sql = "SELECT bt.*, sp.TenSanPham
+                FROM bienthesanpham bt
+                LEFT JOIN sanpham sp ON bt.MaSanPham = sp.MaSanPham
+                WHERE 1=1";
+        $params = [];
+
+        if ($keyword !== '') {
+            $sql .= " AND (sp.TenSanPham LIKE :kw OR bt.MauSac LIKE :kw2 OR bt.KichThuoc LIKE :kw3)";
+            $params[':kw']  = "%$keyword%";
+            $params[':kw2'] = "%$keyword%";
+            $params[':kw3'] = "%$keyword%";
+        }
+
+        $sql .= " ORDER BY sp.TenSanPham ASC, bt.MaBienThe ASC";
+
+        $stmt = $this->db->prepare($sql);
+        $stmt->execute($params);
+        return $stmt->fetchAll();
+    }
+
+    /**
+     * Cập nhật SoLuongTon cho một biến thể
+     */
+    public function updateStock(string $maBienThe, int $soLuong): bool
+    {
+        $stmt = $this->db->prepare(
+            "UPDATE bienthesanpham SET SoLuongTon = ? WHERE MaBienThe = ?"
+        );
+        return $stmt->execute([$soLuong, $maBienThe]);
+    }
+
+    /**
+     * Kiểm tra biến thể có tồn tại trong chitietdonhang chưa.
+     * Trả về true nếu đã bán → không cho xóa cứng.
+     */
+    public function variantHasOrders(string $maBienThe): bool
+    {
+        $stmt = $this->db->prepare(
+            "SELECT COUNT(*) FROM chitietdonhang WHERE MaBienThe = ?"
+        );
+        $stmt->execute([$maBienThe]);
+        return (int)$stmt->fetchColumn() > 0;
+    }
+
+    /**
+     * Xóa cứng biến thể — chỉ gọi sau khi đã kiểm tra variantHasOrders() = false
+     */
+    public function deleteVariant(string $maBienThe): bool
+    {
+        $stmt = $this->db->prepare(
+            "DELETE FROM bienthesanpham WHERE MaBienThe = ?"
+        );
+        return $stmt->execute([$maBienThe]);
+    }
+
+    /**
+     * Lấy danh sách nhà cung cấp
+     */
+    public function getSuppliers(): array
+    {
+        $stmt = $this->db->query(
+            "SELECT * FROM nhacungcap ORDER BY TenNCC ASC"
+        );
+        return $stmt->fetchAll();
+    }
+
+    /**
+     * Lấy danh sách phiếu nhập, join với tên nhà cung cấp
+     */
+    public function getImportReceipts(): array
+    {
+        $sql = "SELECT pn.*, ncc.TenNCC
+                FROM phieunhap pn
+                LEFT JOIN nhacungcap ncc ON pn.MaNCC = ncc.MaNCC
+                ORDER BY pn.NgayNhap DESC";
         $stmt = $this->db->query($sql);
-        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+        return $stmt->fetchAll();
     }
-    public function getCategoryById(string $id): ?array
+
+    /**
+     * Thêm nhà cung cấp mới
+     */
+    public function addSupplier(string $tenNCC, string $soDienThoai, string $diaChi): bool
     {
-        if ($this->hasColumn('danhmuc', 'TrangThai')) {
-            $stmt = $this->db->prepare("SELECT dm.*, COALESCE(dm.TrangThai, 1) AS TrangThai FROM danhmuc dm WHERE dm.MaDanhMuc = ? LIMIT 1");
-        } else {
-            $stmt = $this->db->prepare("SELECT dm.*, 1 AS TrangThai FROM danhmuc dm WHERE dm.MaDanhMuc = ? LIMIT 1");
+        // Sinh mã tự động NCC + số thứ tự
+        $stmt = $this->db->query("SELECT COUNT(*) FROM nhacungcap");
+        $count = (int)$stmt->fetchColumn() + 1;
+        $maNCC = 'NCC' . str_pad($count, 3, '0', STR_PAD_LEFT);
+
+        $stmt = $this->db->prepare(
+            "INSERT INTO nhacungcap (MaNCC, TenNCC, SoDienThoai, DiaChi) VALUES (?, ?, ?, ?)"
+        );
+        return $stmt->execute([$maNCC, $tenNCC, $soDienThoai, $diaChi]);
+    }
+
+    // =========================================================
+    // VARIANT - thêm/bớt biến thể sản phẩm, cập nhật tồn kho
+    // =========================================================
+
+    /**
+     * Lấy danh sách biến thể của một sản phẩm, join với tên sản phẩm.
+     */
+    public function getVariantsByProduct(string $maSanPham): array
+    {
+        $stmt = $this->db->prepare(
+            "SELECT bt.*, sp.TenSanPham
+            FROM bienthesanpham bt
+            LEFT JOIN sanpham sp ON bt.MaSanPham = sp.MaSanPham
+            WHERE bt.MaSanPham = ?
+            ORDER BY bt.MaBienThe ASC"
+        );
+        $stmt->execute([$maSanPham]);
+        return $stmt->fetchAll();
+    }
+
+    /**
+     * Thêm biến thể mới
+     */
+    public function addVariant(string $maSanPham, string $mauSac, string $kichThuoc,
+                            float $giaTien, int $soLuong): bool
+    {
+        $stmt = $this->db->query("SELECT COUNT(*) FROM bienthesanpham WHERE MaSanPham = ?");
+        // Sinh MaBienThe tự động
+        $stmt = $this->db->prepare("SELECT COUNT(*) FROM bienthesanpham");
+        $stmt->execute();
+        $count = (int)$stmt->fetchColumn() + 1;
+        $maBienThe = 'BT' . str_pad($count, 4, '0', STR_PAD_LEFT);
+
+        $stmt = $this->db->prepare(
+            "INSERT INTO bienthesanpham (MaBienThe, MaSanPham, MauSac, KichThuoc, GiaTien, SoLuongTon)
+            VALUES (?, ?, ?, ?, ?, ?)"
+        );
+        return $stmt->execute([$maBienThe, $maSanPham, $mauSac, $kichThuoc, $giaTien, $soLuong]);
+    }
+
+    /**
+     * Cập nhật thông tin biến thể (màu sắc, kích thước, giá tiền, tồn kho)
+     */
+    public function updateVariant(string $maBienThe, string $mauSac, string $kichThuoc,
+                               float $giaTien, int $soLuong): bool
+    {
+        $stmt = $this->db->prepare(
+            "UPDATE bienthesanpham SET MauSac=?, KichThuoc=?, GiaTien=?, SoLuongTon=?
+            WHERE MaBienThe = ?"
+        );
+        return $stmt->execute([$mauSac, $kichThuoc, $giaTien, $soLuong, $maBienThe]);
+    }
+
+    // --------------------------------------------------------
+    // GALLERY
+    // --------------------------------------------------------
+
+    /**
+     * Lấy danh sách ảnh của một sản phẩm, sắp xếp theo MaHinhAnh.
+     */
+    public function getGallery(string $maSanPham): array
+    {
+        $stmt = $this->db->prepare(
+            "SELECT h.*, sp.TenSanPham
+             FROM hinhanhsanpham h
+             LEFT JOIN sanpham sp ON h.MaSanPham = sp.MaSanPham
+             WHERE h.MaSanPham = ?
+             ORDER BY h.MaHinhAnh ASC"
+        );
+        $stmt->execute([$maSanPham]);
+        return $stmt->fetchAll();
+    }
+
+    /**
+     * Tải lên ảnh cho một sản phẩm.
+     */
+    public function uploadGalleryImage(string $maSanPham, array $file): bool
+    {
+        $allowed = ['jpg','jpeg','png','webp'];
+        $ext = strtolower(pathinfo($file['name'], PATHINFO_EXTENSION));
+        if (!in_array($ext, $allowed)) return false;
+
+        $filename = uniqid('img_') . '.' . $ext;
+        $dest = __DIR__ . '/../../public/uploads/products/' . $filename;
+        if (!move_uploaded_file($file['tmp_name'], $dest)) return false;
+
+        $stmt = $this->db->prepare(
+            "INSERT INTO hinhanhsanpham (MaSanPham, DuongDan) VALUES (?, ?)"
+        );
+        return $stmt->execute([$maSanPham, 'public/uploads/products/' . $filename]);
+    }
+
+    /**
+     * Xóa ảnh khỏi thư viện của một sản phẩm.
+     */
+    public function deleteGalleryImage(string $maAnh): bool
+    {
+        // Lấy đường dẫn để xóa file vật lý
+        $stmt = $this->db->prepare("SELECT DuongDan FROM hinhanhsanpham WHERE MaHinhAnh = ?");
+        $stmt->execute([$maAnh]);
+        $row = $stmt->fetch();
+        if ($row && file_exists(__DIR__ . '/../../' . $row['DuongDan'])) {
+            unlink(__DIR__ . '/../../' . $row['DuongDan']);
         }
 
-        $stmt->execute([$id]);
-        return $stmt->fetch(PDO::FETCH_ASSOC) ?: null;
-    }
-
-    public function getBrands(): array
-    {
-        $stmt = $this->db->query('SELECT MaThuongHieu, TenThuongHieu FROM thuonghieu ORDER BY MaThuongHieu ASC');
-        return $stmt->fetchAll(PDO::FETCH_ASSOC);
-    }
-
-    public function getMaterials(): array
-    {
-        $stmt = $this->db->query('SELECT MaVatLieu, TenVatLieu FROM vatlieu ORDER BY MaVatLieu ASC');
-        return $stmt->fetchAll(PDO::FETCH_ASSOC);
-    }
-
-    public function createProduct(array $data): bool
-    {
-        $sql = "INSERT INTO sanpham (MaSanPham, TenSanPham, MaDanhMuc, MaThuongHieu, MaVatLieu, MoTa, DiemXanh, NguonGoc, TacDongMoiTruong, CoTaiChe, ThanThienMoiTruong, TrangThai)
-            VALUES (:MaSanPham, :TenSanPham, :MaDanhMuc, :MaThuongHieu, :MaVatLieu, :MoTa, :DiemXanh, :NguonGoc, :TacDongMoiTruong, :CoTaiChe, :ThanThienMoiTruong, :TrangThai)";
-
-        $stmt = $this->db->prepare($sql);
-        return $stmt->execute([
-            ':MaSanPham' => $data['MaSanPham'],
-            ':TenSanPham' => $data['TenSanPham'],
-            ':MaDanhMuc' => $data['MaDanhMuc'],
-            ':MaThuongHieu' => $data['MaThuongHieu'] ?: null,
-            ':MaVatLieu' => $data['MaVatLieu'] ?: null,
-            ':MoTa' => $data['MoTa'],
-            ':DiemXanh' => $data['DiemXanh'],
-            ':NguonGoc' => $data['NguonGoc'],
-            ':TacDongMoiTruong' => $data['TacDongMoiTruong'],
-            ':CoTaiChe' => $data['CoTaiChe'],
-            ':ThanThienMoiTruong' => $data['ThanThienMoiTruong'],
-            ':TrangThai' => $data['TrangThai']
-        ]);
-    }
-
-    public function updateProduct(string $id, array $data): bool
-    {
-        if (isset($data['TrangThai']) && $data['TrangThai'] == 1 && !$this->productCanBeVisible($id)) {
-            $data['TrangThai'] = 0;
-        }
-
-        $sql = "UPDATE sanpham SET
-                TenSanPham = :TenSanPham,
-                MaDanhMuc = :MaDanhMuc,
-                MaThuongHieu = :MaThuongHieu,
-                MaVatLieu = :MaVatLieu,
-                MoTa = :MoTa,
-                DiemXanh = :DiemXanh,
-                NguonGoc = :NguonGoc,
-                TacDongMoiTruong = :TacDongMoiTruong,
-                CoTaiChe = :CoTaiChe,
-                ThanThienMoiTruong = :ThanThienMoiTruong,
-                TrangThai = :TrangThai
-            WHERE MaSanPham = :MaSanPham";
-
-        $stmt = $this->db->prepare($sql);
-        return $stmt->execute([
-            ':TenSanPham' => $data['TenSanPham'],
-            ':MaDanhMuc' => $data['MaDanhMuc'],
-            ':MaThuongHieu' => $data['MaThuongHieu'] ?: null,
-            ':MaVatLieu' => $data['MaVatLieu'] ?: null,
-            ':MoTa' => $data['MoTa'],
-            ':DiemXanh' => $data['DiemXanh'],
-            ':NguonGoc' => $data['NguonGoc'],
-            ':TacDongMoiTruong' => $data['TacDongMoiTruong'],
-            ':CoTaiChe' => $data['CoTaiChe'],
-            ':ThanThienMoiTruong' => $data['ThanThienMoiTruong'],
-            ':TrangThai' => $data['TrangThai'],
-            ':MaSanPham' => $id
-        ]);
-    }
-
-    public function deleteProduct(string $id): bool
-    {
-        $stmt = $this->db->prepare('UPDATE sanpham SET TrangThai = 0 WHERE MaSanPham = ?');
-        return $stmt->execute([$id]);
-    }
-
-    public function createCategory(array $data): bool
-    {
-        $fields = ['MaDanhMuc', 'TenDanhMuc', 'HinhAnh'];
-        $placeholders = [':MaDanhMuc', ':TenDanhMuc', ':HinhAnh'];
-        $values = [
-            ':MaDanhMuc' => $data['MaDanhMuc'],
-            ':TenDanhMuc' => $data['TenDanhMuc'],
-            ':HinhAnh' => $data['HinhAnh'] ?: null
-        ];
-
-        if ($this->hasColumn('danhmuc', 'TrangThai')) {
-            $fields[] = 'TrangThai';
-            $placeholders[] = ':TrangThai';
-            $values[':TrangThai'] = $data['TrangThai'] ?? 1;
-        }
-
-        $sql = sprintf('INSERT INTO danhmuc (%s) VALUES (%s)', implode(', ', $fields), implode(', ', $placeholders));
-        $stmt = $this->db->prepare($sql);
-        return $stmt->execute($values);
-    }
-
-    public function updateCategory(string $id, array $data): bool
-    {
-        $set = ['TenDanhMuc = :TenDanhMuc', 'HinhAnh = :HinhAnh'];
-        $values = [':TenDanhMuc' => $data['TenDanhMuc'], ':HinhAnh' => $data['HinhAnh'] ?: null, ':MaDanhMuc' => $id];
-
-        if ($this->hasColumn('danhmuc', 'TrangThai')) {
-            $set[] = 'TrangThai = :TrangThai';
-            $values[':TrangThai'] = $data['TrangThai'] ?? 1;
-        }
-
-        $sql = sprintf('UPDATE danhmuc SET %s WHERE MaDanhMuc = :MaDanhMuc', implode(', ', $set));
-        $stmt = $this->db->prepare($sql);
-        return $stmt->execute($values);
-    }
-
-    public function softDeleteCategory(string $id): bool
-    {
-        if (!$this->hasColumn('danhmuc', 'TrangThai')) {
-            return true;
-        }
-
-        $stmt = $this->db->prepare('UPDATE danhmuc SET TrangThai = 0 WHERE MaDanhMuc = ?');
-        return $stmt->execute([$id]);
-    }
-
-    public function categoryHasProducts(string $id): bool
-    {
-        $stmt = $this->db->prepare('SELECT COUNT(*) FROM sanpham WHERE MaDanhMuc = ? AND TrangThai = 1');
-        $stmt->execute([$id]);
-        return (int) $stmt->fetchColumn() > 0;
-    }
-
-    public function productCanBeVisible(string $productId): bool
-    {
-        $stmt = $this->db->prepare('SELECT COUNT(*) FROM bienthesanpham WHERE MaSanPham = ? AND GiaTien > 0 AND SoLuongTon > 0');
-        $stmt->execute([$productId]);
-        $variants = (int) $stmt->fetchColumn();
-        if ($variants === 0) {
-            return false;
-        }
-
-        $stmt = $this->db->prepare('SELECT COUNT(*) FROM hinhanhsanpham WHERE MaSanPham = ?');
-        $stmt->execute([$productId]);
-        return (int) $stmt->fetchColumn() > 0;
-    }
-
-    public function addProductImage(string $productId, string $imageFileName): bool
-    {
-        $imageId = $this->generateImageId();
-        $stmt = $this->db->prepare('INSERT INTO hinhanhsanpham (MaHinhAnh, MaSanPham, DuongDan) VALUES (:MaHinhAnh, :MaSanPham, :DuongDan)');
-        return $stmt->execute([
-            ':MaHinhAnh' => $imageId,
-            ':MaSanPham' => $productId,
-            ':DuongDan' => $imageFileName
-        ]);
-    }
-
-    public function generateProductId(): string
-    {
-        return $this->generateNewId('sanpham', 'MaSanPham', 'P');
-    }
-
-    public function generateCategoryId(): string
-    {
-        return $this->generateNewId('danhmuc', 'MaDanhMuc', 'C');
-    }
-
-    private function generateImageId(): string
-    {
-        return $this->generateNewId('hinhanhsanpham', 'MaHinhAnh', 'IMG');
-    }
-
-    private function generateNewId(string $table, string $column, string $prefix): string
-    {
-        $sql = "SELECT MAX(CAST(SUBSTRING($column, LENGTH(:prefix) + 1) AS UNSIGNED)) AS max_id FROM $table WHERE $column LIKE CONCAT(:prefix, '%')";
-        $stmt = $this->db->prepare($sql);
-        $stmt->execute([':prefix' => $prefix]);
-        $last = (int) $stmt->fetchColumn();
-        return $prefix . str_pad($last + 1, 3, '0', STR_PAD_LEFT);
-    }
-
-    private function hasColumn(string $table, string $column): bool
-    {
-        $stmt = $this->db->prepare('SHOW COLUMNS FROM ' . $table . ' LIKE ?');
-        $stmt->execute([$column]);
-        return (bool) $stmt->fetch();
-    }
-
-    private function formatImageUrl(string $path): string
-    {
-        if ($path === '') {
-            return '';
-        }
-
-        if (preg_match('#^https?://#i', $path)) {
-            return $path;
-        }
-
-        return BASE_URL . 'public/images/Products/' . ltrim($path, '/');
+        $stmt = $this->db->prepare("DELETE FROM hinhanhsanpham WHERE MaHinhAnh = ?");
+        return $stmt->execute([$maAnh]);
     }
 }
