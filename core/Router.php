@@ -282,6 +282,18 @@ class Router
                 $controller->orders();
                 break;
 
+            case 'admin/orders/detail':
+                require_once __DIR__ . '/../app/controllers/AdminController.php';
+                $controller = new AdminController();
+                $controller->orderDetail();
+                break;
+
+            case 'admin/orders/update-status':
+                require_once __DIR__ . '/../app/controllers/AdminController.php';
+                $controller = new AdminController();
+                $controller->updateOrderStatus();
+                break;
+
             case 'admin/inventory':
                 require_once __DIR__ . '/../app/controllers/AdminController.php';
                 $controller = new AdminController();
