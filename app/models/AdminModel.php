@@ -107,21 +107,25 @@ class AdminModel extends Model
 
     public function getCategoriesList(): array
     {
-        $selectStatus = $this->hasColumn('danhmuc', 'TrangThai') ? 'COALESCE(dm.TrangThai, 1) AS TrangThai,' : '1 AS TrangThai,';
+        $hasStatus = $this->hasColumn('danhmuc', 'TrangThai');
+
+        $selectStatus = $hasStatus
+            ? 'COALESCE(dm.TrangThai, 1) AS TrangThai,'
+            : '1 AS TrangThai,';
+
+        $where = $hasStatus ? 'WHERE dm.TrangThai = 1' : '';
 
         $sql = "SELECT
-                dm.MaDanhMuc,
-                dm.TenDanhMuc,
-                dm.HinhAnh,
-                $selectStatus
-                (SELECT COUNT(*) FROM sanpham sp WHERE sp.MaDanhMuc = dm.MaDanhMuc AND sp.TrangThai = 1) AS product_count
-            FROM danhmuc dm
-            ORDER BY dm.MaDanhMuc ASC";
-
+    dm.MaDanhMuc,
+    dm.TenDanhMuc,
+    dm.HinhAnh,
+    1 AS TrangThai,
+    (SELECT COUNT(*) FROM sanpham sp WHERE sp.MaDanhMuc = dm.MaDanhMuc) AS product_count
+FROM danhmuc dm
+ORDER BY dm.MaDanhMuc ASC";
         $stmt = $this->db->query($sql);
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
-
     public function getCategoryById(string $id): ?array
     {
         if ($this->hasColumn('danhmuc', 'TrangThai')) {
@@ -261,21 +265,21 @@ class AdminModel extends Model
     {
         $stmt = $this->db->prepare('SELECT COUNT(*) FROM sanpham WHERE MaDanhMuc = ? AND TrangThai = 1');
         $stmt->execute([$id]);
-        return (int)$stmt->fetchColumn() > 0;
+        return (int) $stmt->fetchColumn() > 0;
     }
 
     public function productCanBeVisible(string $productId): bool
     {
         $stmt = $this->db->prepare('SELECT COUNT(*) FROM bienthesanpham WHERE MaSanPham = ? AND GiaTien > 0 AND SoLuongTon > 0');
         $stmt->execute([$productId]);
-        $variants = (int)$stmt->fetchColumn();
+        $variants = (int) $stmt->fetchColumn();
         if ($variants === 0) {
             return false;
         }
 
         $stmt = $this->db->prepare('SELECT COUNT(*) FROM hinhanhsanpham WHERE MaSanPham = ?');
         $stmt->execute([$productId]);
-        return (int)$stmt->fetchColumn() > 0;
+        return (int) $stmt->fetchColumn() > 0;
     }
 
     public function addProductImage(string $productId, string $imageFileName): bool
@@ -309,7 +313,7 @@ class AdminModel extends Model
         $sql = "SELECT MAX(CAST(SUBSTRING($column, LENGTH(:prefix) + 1) AS UNSIGNED)) AS max_id FROM $table WHERE $column LIKE CONCAT(:prefix, '%')";
         $stmt = $this->db->prepare($sql);
         $stmt->execute([':prefix' => $prefix]);
-        $last = (int)$stmt->fetchColumn();
+        $last = (int) $stmt->fetchColumn();
         return $prefix . str_pad($last + 1, 3, '0', STR_PAD_LEFT);
     }
 
@@ -317,7 +321,7 @@ class AdminModel extends Model
     {
         $stmt = $this->db->prepare('SHOW COLUMNS FROM ' . $table . ' LIKE ?');
         $stmt->execute([$column]);
-        return (bool)$stmt->fetch();
+        return (bool) $stmt->fetch();
     }
 
     private function formatImageUrl(string $path): string

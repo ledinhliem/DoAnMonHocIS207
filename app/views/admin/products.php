@@ -54,7 +54,8 @@ if (!function_exists('productValue')) {
 
     <!-- Tìm kiếm & Bộ lọc Controls -->
     <section class="bg-surface-container-low rounded-xl p-6 mb-8 shadow-sm">
-        <form method="GET" action="" class="flex flex-col lg:flex-row gap-6 items-center">
+        <form method="GET" action="<?= BASE_URL ?>index.php" class="flex flex-col lg:flex-row gap-6 items-center">
+            <input type="hidden" name="url" value="admin/products">
             <div class="relative w-full lg:flex-1">
                 <span
                     class="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-outline">search</span>
@@ -71,12 +72,22 @@ if (!function_exists('productValue')) {
                     <select name="category"
                         class="w-full pt-6 pb-2 px-4 bg-surface-container-lowest border-none rounded-lg focus:ring-2 focus:ring-primary/20 appearance-none text-on-surface font-medium cursor-pointer">
                         <option value="">Tất cả danh mục</option>
-                        <option value="Đồ bếp" <?= $category === 'Đồ bếp' ? 'selected' : '' ?>>Đồ bếp</option>
-                        <option value="Personal Care" <?= $category === 'Personal Care' ? 'selected' : '' ?>>Personal Care
+
+                        <option value="C001" <?= $category === 'C001' ? 'selected' : '' ?>>
+                            Zentro Kitchen
                         </option>
-                        <option value="Trang trí nhà cửa" <?= $category === 'Trang trí nhà cửa' ? 'selected' : '' ?>>Trang
-                            trí nhà cửa</option>
-                        <option value="Textiles" <?= $category === 'Textiles' ? 'selected' : '' ?>>Textiles</option>
+
+                        <option value="C002" <?= $category === 'C002' ? 'selected' : '' ?>>
+                            Zentro Decor
+                        </option>
+
+                        <option value="C003" <?= $category === 'C003' ? 'selected' : '' ?>>
+                            Zentro Fashion
+                        </option>
+
+                        <option value="C004" <?= $category === 'C004' ? 'selected' : '' ?>>
+                            Zentro Care
+                        </option>
                     </select>
                     <span
                         class="material-symbols-outlined absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none text-outline">expand_more</span>
@@ -88,11 +99,11 @@ if (!function_exists('productValue')) {
                     <select name="brand"
                         class="w-full pt-6 pb-2 px-4 bg-surface-container-lowest border-none rounded-lg focus:ring-2 focus:ring-primary/20 appearance-none text-on-surface font-medium cursor-pointer">
                         <option value="">Tất cả thương hiệu</option>
-                        <option value="EcoLife" <?= $brand === 'EcoLife' ? 'selected' : '' ?>>EcoLife</option>
-                        <option value="BambooWay" <?= $brand === 'BambooWay' ? 'selected' : '' ?>>BambooWay</option>
-                        <option value="PureEarth" <?= $brand === 'PureEarth' ? 'selected' : '' ?>>PureEarth</option>
-                        <option value="Zentro Basics" <?= $brand === 'Zentro Basics' ? 'selected' : '' ?>>Zentro Basics
-                        </option>
+                        <option value="TH01" <?= $brand === 'TH01' ? 'selected' : '' ?>>EcoLife</option>
+                        <option value="TH02" <?= $brand === 'TH02' ? 'selected' : '' ?>>BambooWay</option>
+                        <option value="TH03" <?= $brand === 'TH03' ? 'selected' : '' ?>>PureEarth</option>
+                        <option value="TH04" <?= $brand === 'TH04' ? 'selected' : '' ?>>Zentro Basics</option>
+
                     </select>
                     <span
                         class="material-symbols-outlined absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none text-outline">expand_more</span>
@@ -210,13 +221,13 @@ if (!function_exists('productValue')) {
                                 <td class="px-6 py-4">
                                     <div class="flex items-center justify-end gap-2">
                                         <?php if ($id !== null): ?>
-                                            <a href="<?= BASE_URL ?>index.php?url=admin/products/edit=<?= urlencode((string) $id) ?>"
+                                            <a href="<?= BASE_URL ?>index.php?url=admin/products/edit&id=<?= urlencode((string) $id) ?>"
                                                 class="inline-flex items-center gap-1 px-3 py-2 rounded-lg bg-surface-container-high hover:bg-surface-variant text-on-surface text-sm font-medium transition-colors">
                                                 <span class="material-symbols-outlined text-[18px]">edit</span>
                                                 Sửa
                                             </a>
 
-                                            <a href="<?= BASE_URL ?>index.php?url=admin/products/delete=<?= urlencode((string) $id) ?>"
+                                            <a href="<?= BASE_URL ?>index.php?url=admin/products/delete&id=<?= urlencode((string) $id) ?>"
                                                 onclick="return confirm('Ẩn sản phẩm này?')"
                                                 class="inline-flex items-center gap-1 px-3 py-2 rounded-lg bg-red-50 hover:bg-red-100 text-red-700 text-sm font-medium transition-colors">
                                                 <span class="material-symbols-outlined text-[18px]">delete</span>

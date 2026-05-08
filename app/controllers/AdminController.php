@@ -67,19 +67,24 @@ class AdminController extends Controller
 
     public function products()
     {
-        $adminModel = $this->model('AdminModel');
-        $action = $_GET['action'] ?? '';
         $id = $_GET['id'] ?? '';
-        // DELETE (URL dạng /delete/123)
-        if ($action === 'delete' && $id) {
+        $adminModel = $this->model('AdminModel');
+        $url = $_GET['url'] ?? 'admin/products';
+
+        $status = null;
+        $message = '';
+
+        // DELETE
+        if ($url === 'admin/products/delete' && $id) {
             $adminModel->deleteProduct($id);
             header('Location: index.php?url=admin/products');
             exit;
         }
 
-        // EDIT (URL dạng /edit/123)
-        if ($action === 'edit' && $id) {
+        // EDIT
+        if ($url === 'admin/products/edit' && $id) {
             $product = $adminModel->getProductById($id);
+            $canShow = $adminModel->productCanBeVisible($id);
 
             $this->view('admin/products_form', [
                 'title' => 'Chỉnh sửa sản phẩm',
@@ -89,15 +94,10 @@ class AdminController extends Controller
                 'brands' => $adminModel->getBrands(),
                 'materials' => $adminModel->getMaterials(),
                 'isEdit' => true,
-                'canShow' => $adminModel->productCanBeVisible($id)
+                'canShow' => $canShow
             ]);
             return;
         }
-        $url = $_GET['url'] ?? 'admin/products';
-        $adminModel = $this->model('AdminModel');
-        $status = null;
-        $message = '';
-
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $action = $_POST['action'] ?? '';
 

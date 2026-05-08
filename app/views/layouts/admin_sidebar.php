@@ -10,31 +10,31 @@
         <a class="<?= ($currentPage ?? '') === 'dashboard'
             ? 'bg-[#384e21] text-white rounded-lg mx-2 my-1 px-4 py-3 flex items-center gap-3 active:scale-98 transition-transform'
             : 'text-[#191c18]/60 hover:bg-[#e1e3dc] dark:hover:bg-stone-700 mx-2 my-1 px-4 py-3 rounded-lg flex items-center gap-3 transition-all hover:translate-x-1 duration-200' ?>"
-            href="<?= BASE_URL ?>index.php?url=admin/dashboard" <span class="material-symbols-outlined">dashboard</span>
+            href="<?= BASE_URL ?>index.php?url=admin/dashboard">
+            <span class="material-symbols-outlined">dashboard</span>
             <span class="font-['Be_Vietnam_Pro'] font-medium text-sm">Bảng điều khiển</span>
-        </a>
-
-
-        <a class="<?= ($currentPage ?? '') === 'products'
-            ? 'bg-[#384e21] text-white rounded-lg mx-2 my-1 px-4 py-3 flex items-center gap-3 active:scale-98 transition-transform'
-            : 'text-[#191c18]/60 hover:bg-[#e1e3dc] dark:hover:bg-stone-700 mx-2 my-1 px-4 py-3 rounded-lg flex items-center gap-3 transition-all hover:translate-x-1 duration-200' ?>"
-            href="<?= BASE_URL ?>index.php?url=admin/dashboard" <span class="material-symbols-outlined">eco</span>
-            <span class="font-['Be_Vietnam_Pro'] font-medium text-sm">Sản phẩm</span>
         </a>
 
         <a class="<?= ($currentPage ?? '') === 'products'
             ? 'bg-[#384e21] text-white rounded-lg mx-2 my-1 px-4 py-3 flex items-center gap-3 active:scale-98 transition-transform'
             : 'text-[#191c18]/60 hover:bg-[#e1e3dc] dark:hover:bg-stone-700 mx-2 my-1 px-4 py-3 rounded-lg flex items-center gap-3 transition-all hover:translate-x-1 duration-200' ?>"
             href="<?= BASE_URL ?>index.php?url=admin/products">
-
             <span class="material-symbols-outlined">eco</span>
             <span class="font-['Be_Vietnam_Pro'] font-medium text-sm">Sản phẩm</span>
+        </a>
+
+        <a class="<?= ($currentPage ?? '') === 'categories'
+            ? 'bg-[#384e21] text-white rounded-lg mx-2 my-1 px-4 py-3 flex items-center gap-3 active:scale-98 transition-transform'
+            : 'text-[#191c18]/60 hover:bg-[#e1e3dc] dark:hover:bg-stone-700 mx-2 my-1 px-4 py-3 rounded-lg flex items-center gap-3 transition-all hover:translate-x-1 duration-200' ?>"
+            href="<?= BASE_URL ?>index.php?url=admin/categories">
+            <span class="material-symbols-outlined">category</span>
+            <span class="font-['Be_Vietnam_Pro'] font-medium text-sm">Danh mục</span>
         </a>
 
         <a class="<?= ($currentPage ?? '') === 'orders'
             ? 'bg-[#384e21] text-white rounded-lg mx-2 my-1 px-4 py-3 flex items-center gap-3 active:scale-98 transition-transform'
             : 'text-[#191c18]/60 hover:bg-[#e1e3dc] dark:hover:bg-stone-700 mx-2 my-1 px-4 py-3 rounded-lg flex items-center gap-3 transition-all hover:translate-x-1 duration-200' ?>"
-            href="index.php?url=admin/orders">
+            href="<?= BASE_URL ?>index.php?url=admin/orders">
             <span class="material-symbols-outlined">shopping_basket</span>
             <span class="font-['Be_Vietnam_Pro'] font-medium text-sm">Đơn hàng</span>
         </a>
@@ -42,7 +42,7 @@
         <a class="<?= ($currentPage ?? '') === 'reviews'
             ? 'bg-[#384e21] text-white rounded-lg mx-2 my-1 px-4 py-3 flex items-center gap-3 active:scale-98 transition-transform'
             : 'text-[#191c18]/60 hover:bg-[#e1e3dc] dark:hover:bg-stone-700 mx-2 my-1 px-4 py-3 rounded-lg flex items-center gap-3 transition-all hover:translate-x-1 duration-200' ?>"
-            href="index.php?url=admin/reviews">
+            href="<?= BASE_URL ?>index.php?url=admin/reviews">
             <span class="material-symbols-outlined">rate_review</span>
             <span class="font-['Be_Vietnam_Pro'] font-medium text-sm">Đánh giá</span>
         </a>
@@ -50,12 +50,10 @@
         <a class="<?= ($currentPage ?? '') === 'blog'
             ? 'bg-[#384e21] text-white rounded-lg mx-2 my-1 px-4 py-3 flex items-center gap-3 active:scale-98 transition-transform'
             : 'text-[#191c18]/60 hover:bg-[#e1e3dc] dark:hover:bg-stone-700 mx-2 my-1 px-4 py-3 rounded-lg flex items-center gap-3 transition-all hover:translate-x-1 duration-200' ?>"
-            href="index.php?url=admin/blog">
+            href="<?= BASE_URL ?>index.php?url=admin/blog">
             <span class="material-symbols-outlined">article</span>
             <span class="font-['Be_Vietnam_Pro'] font-medium text-sm">Blog</span>
         </a>
-
-
     </nav>
 
     <div class="mt-auto px-4">

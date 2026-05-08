@@ -4,41 +4,10 @@ class Router
     public function dispatch()
     {
         $url = $_GET['url'] ?? '';
-
-        if (preg_match('#^product/(create|edit/.+|delete/.+)$#', $url)) {
+        $url = explode('&', $url)[0];
+        if (str_starts_with($url, 'admin/products')) {
             require_once __DIR__ . '/../app/controllers/AdminController.php';
             $controller = new AdminController();
-            $controller->products();
-            return;
-        }
-
-        if (preg_match('#^blog/(create|edit/.+|delete/.+)$#', $url)) {
-            require_once __DIR__ . '/../app/controllers/AdminController.php';
-            $controller = new AdminController();
-            $controller->blog();
-            return;
-        }
-
-        if (preg_match('#^promotion/(create|edit/.+|delete/.+)$#', $url)) {
-            require_once __DIR__ . '/../app/controllers/AdminController.php';
-            $controller = new AdminController();
-            $controller->dashboard();
-            return;
-        }
-
-        if (preg_match('#^(inventory/create|inventory/edit/.+|supplier/create|supplier/detail/.+|admin/suppliers)$#', $url)) {
-            require_once __DIR__ . '/../app/controllers/AdminController.php';
-            $controller = new AdminController();
-            $controller->inventory();
-            return;
-        }
-        if (preg_match('#^admin/products/(edit|delete)/(.+)$#', $url, $matches)) {
-            require_once __DIR__ . '/../app/controllers/AdminController.php';
-            $controller = new AdminController();
-
-            $_GET['action'] = $matches[1]; // edit | delete
-            $_GET['id'] = $matches[2];     // 123
-
             $controller->products();
             return;
         }
@@ -236,9 +205,19 @@ class Router
                 break;
             case 'admin/products':
             case 'admin/products/create':
+            case 'admin/products/edit':
+            case 'admin/products/delete':
                 require_once __DIR__ . '/../app/controllers/AdminController.php';
                 $controller = new AdminController();
                 $controller->products();
+                break;
+            case 'admin/categories':
+            case 'admin/categories/create':
+            case 'admin/categories/edit':
+            case 'admin/categories/delete':
+                require_once __DIR__ . '/../app/controllers/AdminController.php';
+                $controller = new AdminController();
+                $controller->categories();
                 break;
             case 'admin/orders':
                 require_once __DIR__ . '/../app/controllers/AdminController.php';

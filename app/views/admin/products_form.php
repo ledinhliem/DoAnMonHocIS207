@@ -134,7 +134,7 @@ $actionUrl = $isEdit ? 'index.php?url=admin/products/edit&id=' . urlencode($prod
                             <span><?= $canShow ? 'Có thể hiển thị' : 'Không thể bật hiển thị vì thiếu biến thể, giá hoặc ảnh' ?></span>
                         </label>
                         <?php if (!$canShow): ?>
-                            <p class="text-sm text-red-700">Sản phẩm cần <p class="text-sm text-red-700">Sản phẩm cần có ít nhất 1 biến thể hợp lệ (có giá, tồn kho) và ảnh sản phẩm để bật hiển thị.</p> ít nhất 1 biến thể hợp lệ và ảnh sản phẩm để bật hiển thị.</p>
+                            <p class="text-sm text-red-700">Sản phẩm cần có ít nhất 1 biến thể hợp lệ (có giá, tồn kho) và ảnh sản phẩm để bật hiển thị.</p>
                         <?php endif; ?>
                     </div>
                 <?php endif; ?>
