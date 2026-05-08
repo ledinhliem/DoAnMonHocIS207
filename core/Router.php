@@ -283,6 +283,26 @@ class Router
                 $controller->appleLogin();
                 break;
 
+            // Sửa các case admin/users thành như vầy cho chắc ăn:
+            case 'admin/users':
+                require_once __DIR__ . '/../app/controllers/AdminController.php';
+                $controller = new AdminController();
+                $controller->users();
+                break;
+
+            case 'admin/users/detail':
+                require_once __DIR__ . '/../app/controllers/AdminController.php';
+                $controller = new AdminController();
+                // Link detail thường có &id=..., Switch case vẫn nhận ra 'admin/users/detail'
+                $controller->userDetail(); 
+                break;
+
+            case 'admin/users/update-role':
+                require_once __DIR__ . '/../app/controllers/AdminController.php';
+                $controller = new AdminController();
+                $controller->updateUserRole();
+                break;
+
             default:
                 echo '404 - Không tìm thấy trang';
                 break;
