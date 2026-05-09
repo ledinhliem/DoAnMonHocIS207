@@ -2,9 +2,12 @@
 <?php include __DIR__ . '/../layouts/admin_sidebar.php'; ?>
 
 <?php
-$keyword = $_GET['keyword'] ?? '';
-$category = $_GET['category'] ?? '';
-$brand = $_GET['brand'] ?? '';
+$keyword = $keyword ?? ($_GET['keyword'] ?? '');
+$category = $category ?? ($_GET['category'] ?? '');
+$brand = $brand ?? ($_GET['brand'] ?? '');
+
+$categories = $categories ?? [];
+$brands = $brands ?? [];
 
 $productList = [];
 if (isset($products) && is_array($products)) {
@@ -71,23 +74,15 @@ if (!function_exists('productValue')) {
                         class="block text-[10px] font-bold text-outline uppercase tracking-widest absolute top-2 left-4 z-10">CATEGORY</label>
                     <select name="category"
                         class="w-full pt-6 pb-2 px-4 bg-surface-container-lowest border-none rounded-lg focus:ring-2 focus:ring-primary/20 appearance-none text-on-surface font-medium cursor-pointer">
-                        <option value="">Tất cả danh mục</option>
-
-                        <option value="C001" <?= $category === 'C001' ? 'selected' : '' ?>>
-                            Zentro Kitchen
-                        </option>
-
-                        <option value="C002" <?= $category === 'C002' ? 'selected' : '' ?>>
-                            Zentro Decor
-                        </option>
-
-                        <option value="C003" <?= $category === 'C003' ? 'selected' : '' ?>>
-                            Zentro Fashion
-                        </option>
-
-                        <option value="C004" <?= $category === 'C004' ? 'selected' : '' ?>>
-                            Zentro Care
-                        </option>
+                            <option value="">Tất cả danh mục</option>
+                                <?php foreach ($categories as $categoryItem): ?>
+                                    <option 
+                                        value="<?= e($categoryItem['MaDanhMuc'] ?? '') ?>" 
+                                        <?= $category === ($categoryItem['MaDanhMuc'] ?? '') ? 'selected' : '' ?>
+                                    >
+                                        <?= e($categoryItem['TenDanhMuc'] ?? '') ?>
+                                    </option>
+                                <?php endforeach; ?>
                     </select>
                     <span
                         class="material-symbols-outlined absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none text-outline">expand_more</span>
@@ -99,11 +94,14 @@ if (!function_exists('productValue')) {
                     <select name="brand"
                         class="w-full pt-6 pb-2 px-4 bg-surface-container-lowest border-none rounded-lg focus:ring-2 focus:ring-primary/20 appearance-none text-on-surface font-medium cursor-pointer">
                         <option value="">Tất cả thương hiệu</option>
-                        <option value="TH01" <?= $brand === 'TH01' ? 'selected' : '' ?>>EcoLife</option>
-                        <option value="TH02" <?= $brand === 'TH02' ? 'selected' : '' ?>>BambooWay</option>
-                        <option value="TH03" <?= $brand === 'TH03' ? 'selected' : '' ?>>PureEarth</option>
-                        <option value="TH04" <?= $brand === 'TH04' ? 'selected' : '' ?>>Zentro Basics</option>
-
+                            <?php foreach ($brands as $brandItem): ?>
+                                <option 
+                                    value="<?= e($brandItem['MaThuongHieu'] ?? '') ?>" 
+                                    <?= $brand === ($brandItem['MaThuongHieu'] ?? '') ? 'selected' : '' ?>
+                                >
+                                    <?= e($brandItem['TenThuongHieu'] ?? '') ?>
+                                </option>
+                            <?php endforeach; ?>
                     </select>
                     <span
                         class="material-symbols-outlined absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none text-outline">expand_more</span>
@@ -219,8 +217,20 @@ if (!function_exists('productValue')) {
                                 <td class="px-6 py-4 text-on-surface"><?= e($sku) ?></td>
 
                                 <td class="px-6 py-4">
-                                    <div class="flex items-center justify-end gap-2">
+                                    <div class="flex items-center justify-end gap-2 flex-wrap">
                                         <?php if ($id !== null): ?>
+                                            <a href="<?= BASE_URL ?>index.php?url=admin/products/variants&id=<?= urlencode((string) $id) ?>"
+                                                class="inline-flex items-center gap-1 px-3 py-2 rounded-lg bg-blue-50 hover:bg-blue-100 text-blue-700 text-sm font-medium transition-colors">
+                                                <span class="material-symbols-outlined text-[18px]">tune</span>
+                                                Biến thể
+                                            </a>
+
+                                            <a href="<?= BASE_URL ?>index.php?url=admin/products/gallery&id=<?= urlencode((string) $id) ?>"
+                                                class="inline-flex items-center gap-1 px-3 py-2 rounded-lg bg-purple-50 hover:bg-purple-100 text-purple-700 text-sm font-medium transition-colors">
+                                                <span class="material-symbols-outlined text-[18px]">photo_library</span>
+                                                Ảnh
+                                            </a>
+
                                             <a href="<?= BASE_URL ?>index.php?url=admin/products/edit&id=<?= urlencode((string) $id) ?>"
                                                 class="inline-flex items-center gap-1 px-3 py-2 rounded-lg bg-surface-container-high hover:bg-surface-variant text-on-surface text-sm font-medium transition-colors">
                                                 <span class="material-symbols-outlined text-[18px]">edit</span>
@@ -298,21 +308,4 @@ if (!function_exists('productValue')) {
 </main>
 
 <!-- Footer -->
-<footer
-    class="ml-64 flex flex-col md:flex-row justify-between items-center px-12 py-12 mt-20 border-t border-[#c5c8ba]/10 bg-surface-container-low text-primary">
-    <div class="mb-6 md:mb-0">
-        <h4 class="font-['Epilogue'] font-bold text-[#384e21] text-xl">Zentro</h4>
-        <p class="font-['Be_Vietnam_Pro'] text-sm tracking-wide text-[#191c18]/50 mt-1">© 2026 Zentro Sustainable
-            Living. Admin panel.</p>
-    </div>
-    <div class="flex gap-8">
-        <a class="font-['Be_Vietnam_Pro'] text-sm tracking-wide text-[#191c18]/50 hover:text-[#384e21] underline underline-offset-4 transition-opacity opacity-80 hover:opacity-100"
-            href="#">Chính sách bảo mật</a>
-        <a class="font-['Be_Vietnam_Pro'] text-sm tracking-wide text-[#191c18]/50 hover:text-[#384e21] underline underline-offset-4 transition-opacity opacity-80 hover:opacity-100"
-            href="#">Điều khoản dịch vụ</a>
-        <a class="font-['Be_Vietnam_Pro'] text-sm tracking-wide text-[#191c18]/50 hover:text-[#384e21] underline underline-offset-4 transition-opacity opacity-80 hover:opacity-100"
-            href="#">Liên hệ</a>
-    </div>
-</footer>
-
 <?php include __DIR__ . '/../layouts/admin_footer.php'; ?>

@@ -89,8 +89,7 @@ if (!empty($data['categories'])) {
         <div class="grid grid-cols-1 md:grid-cols-12 gap-8 h-auto md:h-[800px]">
             <div
                 class="md:col-span-8 relative group overflow-hidden rounded-xl bg-surface-container-low shadow-sm transition-transform duration-500 hover:-translate-y-2">
-                <img class="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:s
-          c             ale-105"
+                <img class="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
                     data-alt="Artisanal ceramic tableware and organic linen napkins on a reclaimed oak dining table with soft natural side lighting"
                     src="https://lh3.googleusercontent.com/aida-public/AB6AXuCNF-OikKQVeogdcyuOCyQHn16wMDiYJywnwaWRyxYI8NfCO8YZ-MyOcOil7rCpS6_zb9iXVNzMi7MWUXNrOGC-Bi_29AlNXBcWbk5HDb8LHcUXHfDWuii-p2ZWyVRMWjEVWR6cAkYjzL6heFodziA1wr2MuDXpMqNPMY9xWiJZOlrs4QGmiMN2fbVMJuIjgOcMb7emAkq8sOONxhRV2Mm1uchVWEYRRxkF42FFXJJCFcEMg8cINl2EofgHA8xZg3FAOCCSJjzXOCY" />
                 <div class="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent"></div>
@@ -98,7 +97,7 @@ if (!empty($data['categories'])) {
 
                     <p class="text-white/80 mb-6 max-w-sm">Nâng tầm không gian sống bằng những món đồ bền đẹp theo thời
                         gian.</p>
-                    <a href="<?= BASE_URL ?>?url=product&category=<?= $categoryMap['Zentro Decor'] ?>" class="inline-block
+                    <a href="<?= BASE_URL ?>?url=product&category=<?= $categoryMap['Zentro Decor'] ?? '' ?>" class="inline-block
                         px-6 py-3 bg-surface text-primary rounded-lg font-bold hover:bg-primary-fixed
                         transition-colors">
                         Cửa hàng Decor
@@ -113,7 +112,7 @@ if (!empty($data['categories'])) {
                 <div class="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent"></div>
                 <div class="absolute bottom-0 left-0 p-8">
 
-                    <a href="<?= BASE_URL ?>?url=product&category=<?= $categoryMap['Zentro Care'] ?>"
+                    <a href="<?= BASE_URL ?>?url=product&category=<?= $categoryMap['Zentro Care'] ?? '' ?>"
                         class="inline-flex items-center gap-2 text-white font-bold">
                         Khám phá chăm sóc cá nhân
                         <span class="material-symbols-outlined text-sm">north_east</span>
@@ -128,7 +127,7 @@ if (!empty($data['categories'])) {
                 <div class="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent"></div>
                 <div class="absolute bottom-0 left-0 p-8">
 
-                    <a href="<?= BASE_URL ?>?url=product&category=<?= $categoryMap['Zentro Fashion'] ?>"
+                    <a href="<?= BASE_URL ?>?url=product&category=<?= $categoryMap['Zentro Fashion'] ?? '' ?>"
                         class="inline-flex items-center gap-2 text-white font-bold">
                         Thời trang <span class="material-symbols-outlined text-sm">north_east</span>
                     </a>
@@ -219,8 +218,7 @@ if (!empty($data['categories'])) {
     <section class="py-24 px-8">
         <div
             class="max-w-5xl mx-auto bg-primary text-on-primary rounded-2xl p-12 md:p-20 text-center relative overflow-hidden">
-            <div class="absolute top-0 right-0 w-64 h-64 bg-primary-container rounded-full -translate-y-1/2 translate-x-
-               1/2 opacity-20">
+            <div class="absolute top-0 right-0 w-64 h-64 bg-primary-container rounded-full -translate-y-1/2 translate-x-1/2 opacity-20">
             </div>
             <div
                 class="absolute bottom-0 left-0 w-48 h-48 bg-primary-container rounded-full translate-y-1/2 -translate-x-1/2 opacity-20">

@@ -47,6 +47,20 @@ $error = $error ?? '';
                 </div>
 
                 <div>
+                    <label class="block text-sm font-semibold mb-2">Email</label>
+                    <input type="email"
+                           name="email"
+                           value="<?= htmlspecialchars($checkoutData['email'] ?? '') ?>"
+                           class="w-full rounded-xl border border-outline-variant bg-white px-4 py-3">
+
+                    <?php if (!empty($errors['email'])): ?>
+                        <p class="text-red-600 text-sm mt-1">
+                            <?= htmlspecialchars($errors['email']) ?>
+                        </p>
+                    <?php endif; ?>
+                </div>
+
+                <div>
                     <label class="block text-sm font-semibold mb-2">Số điện thoại</label>
                     <input type="text"
                            name="phone"

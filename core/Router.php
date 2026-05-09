@@ -5,14 +5,97 @@ class Router
     public function dispatch()
     {
         $url = $_GET['url'] ?? '';
+        $url = trim($url, '/');
+
+        if (preg_match('#^admin/blog/(create|edit/.+|delete/.+)$#', $url)) {
+            require_once __DIR__ . '/../app/controllers/AdminController.php';
+            $controller = new AdminController();
+            $controller->blog();
+            return;
+        }
+
+        if (preg_match('#^admin/promo/(create|edit/.+|delete/.+)$#', $url)) {
+            require_once __DIR__ . '/../app/controllers/AdminController.php';
+            $controller = new AdminController();
+            $controller->promo();
+            return;
+        }
 
         /*
-         * Admin product actions
-         * URL ví dụ:
-         * ?url=product/create
-         * ?url=product/edit/1
-         * ?url=product/delete/1
-         */
+        |--------------------------------------------------------------------------
+        | ADMIN ROUTE ALIASES
+        |--------------------------------------------------------------------------
+        | Các route admin con vẫn đi qua AdminController.
+        | Ví dụ:
+        | admin/products/create  -> AdminController::products()
+        | admin/categories/edit  -> AdminController::categories()
+        | admin/orders/detail    -> AdminController::orderDetail()
+        */
+
+        $adminRoutes = [
+            'admin' => 'dashboard',
+            'admin/dashboard' => 'dashboard',
+
+            'admin/products' => 'products',
+            'admin/products/create' => 'products',
+            'admin/products/edit' => 'products',
+            'admin/products/delete' => 'products',
+
+            'admin/categories' => 'categories',
+            'admin/categories/create' => 'categories',
+            'admin/categories/edit' => 'categories',
+            'admin/categories/delete' => 'categories',
+
+            'admin/products/variants' => 'variants',
+            'admin/products/gallery' => 'gallery',
+
+            'admin/inventory' => 'inventory',
+            'admin/reviews' => 'reviews',
+
+            'admin/users' => 'users',
+            'admin/users/detail' => 'userDetail',
+            'admin/users/edit' => 'userDetail',
+            'admin/users/update-role' => 'updateUserRole',
+
+            'admin/orders' => 'orders',
+            'admin/orders/detail' => 'orderDetail',
+            'admin/orders/update-status' => 'updateOrderStatus',
+
+            'admin/blog' => 'blog',
+            'admin/blog/create' => 'blog',
+            'admin/blog/edit' => 'blog',
+            'admin/blog/delete' => 'blog',
+
+            'admin/promo' => 'promo',
+            'admin/promo/create' => 'promo',
+            'admin/promo/edit' => 'promo',
+            'admin/promo/delete' => 'promo',
+
+            'admin/settings' => 'dashboard',
+        ];
+
+        if (isset($adminRoutes[$url])) {
+            require_once __DIR__ . '/../app/controllers/AdminController.php';
+
+            $controller = new AdminController();
+            $method = $adminRoutes[$url];
+
+            if (method_exists($controller, $method)) {
+                $controller->$method();
+                return;
+            }
+
+            echo '404 - Không tìm thấy method admin';
+            return;
+        }
+
+        /*
+        |--------------------------------------------------------------------------
+        | LEGACY ADMIN-LIKE ROUTES
+        |--------------------------------------------------------------------------
+        | Giữ lại một số route cũ nếu project từng dùng.
+        */
+
         if (preg_match('#^product/(create|edit/.+|delete/.+)$#', $url)) {
             require_once __DIR__ . '/../app/controllers/AdminController.php';
             $controller = new AdminController();
@@ -20,56 +103,32 @@ class Router
             return;
         }
 
-        /*
-         * Admin blog actions
-         * URL ví dụ:
-         * ?url=admin/blog
-         * ?url=admin/blog/create
-         * ?url=admin/blog/edit/1
-         * ?url=admin/blog/delete/1
-         */
-        if (preg_match('#^admin/blog(/create|/edit/.+|/delete/.+)?$#', $url)) {
+        if (preg_match('#^blog/(create|edit/.+|delete/.+)$#', $url)) {
             require_once __DIR__ . '/../app/controllers/AdminController.php';
             $controller = new AdminController();
             $controller->blog();
             return;
         }
 
-        /*
-         * Admin promo actions
-         * URL ví dụ:
-         * ?url=admin/promo
-         * ?url=admin/promo/create
-         * ?url=admin/promo/edit/1
-         * ?url=admin/promo/delete/1
-         */
-        if (preg_match('#^admin/promo(/create|/edit/.+|/delete/.+)?$#', $url)) {
-            require_once __DIR__ . '/../app/controllers/AdminController.php';
-            $controller = new AdminController();
-            $controller->promo();
-            return;
-        }
-
-        /*
-         * Giữ lại route promotion cũ nếu trong project có link cũ dùng promotion/...
-         * Nhưng thay vì gọi dashboard thì chuyển sang promo().
-         */
         if (preg_match('#^promotion/(create|edit/.+|delete/.+)$#', $url)) {
             require_once __DIR__ . '/../app/controllers/AdminController.php';
             $controller = new AdminController();
-            $controller->promo();
+            $controller->dashboard();
             return;
         }
 
-        /*
-         * Inventory / supplier admin actions
-         */
         if (preg_match('#^(inventory/create|inventory/edit/.+|supplier/create|supplier/detail/.+|admin/suppliers)$#', $url)) {
             require_once __DIR__ . '/../app/controllers/AdminController.php';
             $controller = new AdminController();
             $controller->inventory();
             return;
         }
+
+        /*
+        |--------------------------------------------------------------------------
+        | USER ROUTES
+        |--------------------------------------------------------------------------
+        */
 
         switch ($url) {
             case '':
@@ -142,6 +201,18 @@ class Router
                 require_once __DIR__ . '/../app/controllers/AuthController.php';
                 $controller = new AuthController();
                 $controller->reset();
+                break;
+
+            case 'auth/google':
+                require_once __DIR__ . '/../app/controllers/AuthController.php';
+                $controller = new AuthController();
+                $controller->googleLogin();
+                break;
+
+            case 'auth/apple':
+                require_once __DIR__ . '/../app/controllers/AuthController.php';
+                $controller = new AuthController();
+                $controller->appleLogin();
                 break;
 
             case 'cart':
@@ -251,97 +322,6 @@ class Router
                 require_once __DIR__ . '/../app/controllers/ProfileController.php';
                 $controller = new ProfileController();
                 $controller->update();
-                break;
-
-            case 'admin':
-            case 'admin/dashboard':
-                require_once __DIR__ . '/../app/controllers/AdminController.php';
-                $controller = new AdminController();
-                $controller->dashboard();
-                break;
-
-            case 'admin/products':
-                require_once __DIR__ . '/../app/controllers/AdminController.php';
-                $controller = new AdminController();
-                $controller->products();
-                break;
-            case 'admin/products/variants':
-                require_once __DIR__ . '/../app/controllers/AdminController.php';
-                $controller = new AdminController();
-                $controller->variants();
-                break;
-            case 'admin/products/gallery':
-                require_once __DIR__ . '/../app/controllers/AdminController.php';
-                $controller = new AdminController();
-                $controller->gallery();
-                break;
-
-            case 'admin/orders':
-                require_once __DIR__ . '/../app/controllers/AdminController.php';
-                $controller = new AdminController();
-                $controller->orders();
-                break;
-
-            case 'admin/orders/detail':
-                require_once __DIR__ . '/../app/controllers/AdminController.php';
-                $controller = new AdminController();
-                $controller->orderDetail();
-                break;
-
-            case 'admin/orders/update-status':
-                require_once __DIR__ . '/../app/controllers/AdminController.php';
-                $controller = new AdminController();
-                $controller->updateOrderStatus();
-                break;
-
-            case 'admin/inventory':
-                require_once __DIR__ . '/../app/controllers/AdminController.php';
-                $controller = new AdminController();
-                $controller->inventory();
-                break;
-
-            case 'admin/reviews':
-                require_once __DIR__ . '/../app/controllers/AdminController.php';
-                $controller = new AdminController();
-                $controller->reviews();
-                break;
-
-            case 'admin/settings':
-                require_once __DIR__ . '/../app/controllers/AdminController.php';
-                $controller = new AdminController();
-                $controller->dashboard();
-                break;
-
-            case 'auth/google':
-                require_once __DIR__ . '/../app/controllers/AuthController.php';
-                $controller = new AuthController();
-                $controller->googleLogin();
-                break;
-
-            case 'auth/apple':
-                require_once __DIR__ . '/../app/controllers/AuthController.php';
-                $controller = new AuthController();
-                $controller->appleLogin();
-                break;
-
-            // Sửa các case admin/users thành như vầy cho chắc ăn:
-            case 'admin/users':
-                require_once __DIR__ . '/../app/controllers/AdminController.php';
-                $controller = new AdminController();
-                $controller->users();
-                break;
-
-            case 'admin/users/detail':
-                require_once __DIR__ . '/../app/controllers/AdminController.php';
-                $controller = new AdminController();
-                // Link detail thường có &id=..., Switch case vẫn nhận ra 'admin/users/detail'
-                $controller->userDetail(); 
-                break;
-
-            case 'admin/users/update-role':
-                require_once __DIR__ . '/../app/controllers/AdminController.php';
-                $controller = new AdminController();
-                $controller->updateUserRole();
                 break;
 
             default:

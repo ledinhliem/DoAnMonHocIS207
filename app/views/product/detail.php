@@ -11,19 +11,6 @@ $images = $images ?? [];
 $variants = $variants ?? [];
 $reviews = $reviews ?? [];
 
-// ── Image URL helper ────────────────────────────────────────────────────────
-if (!function_exists('productImageUrl')) {
-    function productImageUrl(string $path): string {
-        if (preg_match('/^https?:\/\//', $path)) return $path;
-
-        $fileName = basename($path);
-        if ($fileName === 'P005_V005_Giayshoex_den.png') {
-            $fileName = 'P005_V006_Giayshoex_den.png';
-        }
-
-        return BASE_URL . 'public/images/Products/' . $fileName;
-    }
-}
 
 // ── Compute display price range from real variants ──────────────────────────
 $minPrice = PHP_INT_MAX;
@@ -72,7 +59,7 @@ if (!empty($reviews)) {
         <?php if (!empty($images)): ?>
           <img id="main-image"
                class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
-               src="<?= htmlspecialchars(productImageUrl($images[0]['DuongDan'])) ?>"
+               src="<?= htmlspecialchars(product_image_url($images[0]['DuongDan'])) ?>"
                alt="<?= htmlspecialchars($product['TenSanPham']) ?>" />
         <?php else: ?>
           <div class="w-full h-full flex items-center justify-center text-outline">
@@ -94,9 +81,9 @@ if (!empty($reviews)) {
           <button type="button"
             class="thumb-btn flex-shrink-0 w-20 h-20 rounded-lg overflow-hidden border-2 transition-all
                    <?= $idx === 0 ? 'border-primary ring-2 ring-primary/30' : 'border-transparent hover:border-outline-variant' ?>"
-            data-src="<?= htmlspecialchars(productImageUrl($img['DuongDan'])) ?>">
+            data-src="<?= htmlspecialchars(product_image_url($img['DuongDan'])) ?>">
             <img class="w-full h-full object-cover"
-                 src="<?= htmlspecialchars(productImageUrl($img['DuongDan'])) ?>"
+                 src="<?= htmlspecialchars(product_image_url($img['DuongDan'])) ?>"
                  alt="Ảnh <?= $idx + 1 ?>">
           </button>
         <?php endforeach; ?>

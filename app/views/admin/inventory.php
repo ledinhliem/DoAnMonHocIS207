@@ -112,60 +112,7 @@ $totalSuppliers = count($supplierList);
 ?>
 
 
-<aside class="h-screen w-64 fixed left-0 top-0 bg-[#edefe7] dark:bg-stone-800 border-r border-[#c5c8ba]/20 shadow-[40px_0_40px_-15px_rgba(25,28,24,0.04)] flex flex-col py-8 z-40">
-    <div class="px-6 mb-10">
-        <a href="/is207/index.php?url=admin/dashboard" class="block">
-            <h1 class="font-['Epilogue'] font-black text-[#384e21] text-2xl tracking-tighter">Zentro Admin</h1>
-            <p class="text-xs text-on-surface-variant font-medium mt-1">Bộ quản trị xanh</p>
-        </a>
-    </div>
-
-    <nav class="flex-grow space-y-1">
-        <a class="text-[#191c18]/60 hover:bg-[#e1e3dc] dark:hover:bg-stone-700 mx-2 my-1 px-4 py-3 rounded-lg flex items-center gap-3 transition-all hover:translate-x-1 duration-200"
-           href="/is207/index.php?url=admin/dashboard">
-            <span class="material-symbols-outlined">dashboard</span>
-            <span class="font-['Be_Vietnam_Pro'] font-medium text-sm">Bảng điều khiển</span>
-        </a>
-        <a class="bg-[#384e21] text-white rounded-lg mx-2 my-1 px-4 py-3 flex items-center gap-3 shadow-md"
-           href="/is207/index.php?url=admin/inventory">
-            <span class="material-symbols-outlined">inventory_2</span>
-            <span class="font-['Be_Vietnam_Pro'] font-medium text-sm">Kho hàng</span>
-        </a>
-        <a class="text-[#191c18]/60 hover:bg-[#e1e3dc] dark:hover:bg-stone-700 mx-2 my-1 px-4 py-3 rounded-lg flex items-center gap-3 transition-all hover:translate-x-1 duration-200"
-           href="/is207/index.php?url=admin/products">
-            <span class="material-symbols-outlined">eco</span>
-            <span class="font-['Be_Vietnam_Pro'] font-medium text-sm">Sản phẩm</span>
-        </a>
-        <a class="text-[#191c18]/60 hover:bg-[#e1e3dc] dark:hover:bg-stone-700 mx-2 my-1 px-4 py-3 rounded-lg flex items-center gap-3 transition-all hover:translate-x-1 duration-200"
-           href="/is207/index.php?url=admin/orders">
-            <span class="material-symbols-outlined">shopping_basket</span>
-            <span class="font-['Be_Vietnam_Pro'] font-medium text-sm">Đơn hàng</span>
-        </a>
-        <a class="text-[#191c18]/60 hover:bg-[#e1e3dc] dark:hover:bg-stone-700 mx-2 my-1 px-4 py-3 rounded-lg flex items-center gap-3 transition-all hover:translate-x-1 duration-200"
-           href="/is207/index.php?url=admin/reviews">
-            <span class="material-symbols-outlined">rate_review</span>
-            <span class="font-['Be_Vietnam_Pro'] font-medium text-sm">Đánh giá</span>
-        </a>
-        <a class="text-[#191c18]/60 hover:bg-[#e1e3dc] dark:hover:bg-stone-700 mx-2 my-1 px-4 py-3 rounded-lg flex items-center gap-3 transition-all hover:translate-x-1 duration-200"
-           href="/is207/index.php?url=admin/blog">
-            <span class="material-symbols-outlined">article</span>
-            <span class="font-['Be_Vietnam_Pro'] font-medium text-sm">Blog</span>
-        </a>
-    </nav>
-
-    <div class="px-6 pt-6 mt-6 border-t border-[#c5c8ba]/20">
-        <button class="w-full bg-primary text-on-primary py-3 rounded-xl font-semibold text-sm hover:opacity-90 transition-all active:scale-95">
-            Xuất báo cáo
-        </button>
-        <div class="flex items-center gap-3 mt-8 px-2">
-            <img class="w-10 h-10 rounded-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAdy62X4L7pZJTyiB1DnC-YJcaaqPlaBrxSCjxJ4ZBOi3JdwPNsaEXEvkkNpCxYOeQYdlMEJ9S6lsy2zFsOtRPDHB9G-XPA1lUilucWwrAdRKuowtDOnUL_zdgBgFCkRyvLAFeppQIb72ikw8o-Y_sfi0vWz-m7CGjhUVIkFTCQoB-_ZKWMG2Bg3UShZ7Ir8Ufs0W-Q8lrZKrHgm-7F-X895CcudzKpSTKDbfQffIL-6BrioTEtMHidVQy6LpC0JNy8klba1s4G3wg"/>
-            <div>
-                <p class="text-xs font-bold text-[#384e21]">Admin User</p>
-                <p class="text-[10px] text-on-surface-variant">Supply Chain Lead</p>
-            </div>
-        </div>
-    </div>
-</aside>
+<?php include __DIR__ . '/../layouts/admin_sidebar.php'; ?>
 
 <main class="ml-64 p-8 min-h-screen">
 
@@ -213,7 +160,7 @@ $totalSuppliers = count($supplierList);
                 </button>
             </form>
 
-            <a href="/is207/index.php?url=inventory/create"
+            <a href="<?= BASE_URL ?>index.php?url=inventory/create"
                class="bg-secondary-container text-on-secondary-container px-6 py-3 rounded-xl font-bold flex items-center gap-2 hover:opacity-90 transition-all active:scale-95 shadow-sm">
                 <span class="material-symbols-outlined text-xl">add</span>
                 Thêm phiếu nhập
@@ -292,7 +239,7 @@ $totalSuppliers = count($supplierList);
                             <td class="py-3 px-3 rounded-r-xl">
                                 <div class="flex gap-2 items-center">
                                     <!-- Inline edit tồn kho -->
-                                    <form method="POST" action="/is207/index.php?url=admin/inventory"
+                                    <form method="POST" action="<?= BASE_URL ?>index.php?url=admin/inventory"
                                           class="flex items-center gap-2">
                                         <input type="hidden" name="action" value="update_stock">
                                         <input type="hidden" name="ma_bien_the" value="<?= e($maBienThe) ?>">
@@ -302,7 +249,7 @@ $totalSuppliers = count($supplierList);
                                                 class="text-primary text-xs font-bold hover:underline">Lưu</button>
                                     </form>
                                     <!-- Xóa biến thể -->
-                                    <form method="POST" action="/is207/index.php?url=admin/inventory"
+                                    <form method="POST" action="<?= BASE_URL ?>index.php?url=admin/inventory"
                                           onsubmit="return confirm('Xóa biến thể <?= e($maBienThe) ?>?')">
                                         <input type="hidden" name="action" value="delete_variant">
                                         <input type="hidden" name="ma_bien_the" value="<?= e($maBienThe) ?>">
@@ -380,7 +327,7 @@ $totalSuppliers = count($supplierList);
                     Đăng ký nhà cung cấp mới
                 </h3>
 
-                <form class="grid grid-cols-1 md:grid-cols-2 gap-6" method="POST" action="/is207/index.php?url=admin/inventory">
+                <form class="grid grid-cols-1 md:grid-cols-2 gap-6" method="POST" action="<?= BASE_URL ?>index.php?url=admin/inventory">
                     <input type="hidden" name="action" value="add_supplier">
                     <div class="space-y-2">
                         <label class="text-xs font-bold text-on-surface-variant uppercase tracking-wider px-1">Tên nhà cung cấp *</label>
@@ -433,7 +380,7 @@ $totalSuppliers = count($supplierList);
                                     </div>
                                 </div>
                                 <?php if ($supplierId !== null): ?>
-                                    <a href="/is207/index.php?url=supplier/detail/<?= urlencode((string)$supplierId) ?>" class="material-symbols-outlined text-outline-variant group-hover:text-primary transition-colors cursor-pointer">chevron_right</a>
+                                    <a href="<?= BASE_URL ?>index.php?url=supplier/detail/<?= urlencode((string)$supplierId) ?>" class="material-symbols-outlined text-outline-variant group-hover:text-primary transition-colors cursor-pointer">chevron_right</a>
                                 <?php else: ?>
                                     <span class="material-symbols-outlined text-outline-variant group-hover:text-primary transition-colors cursor-pointer">chevron_right</span>
                                 <?php endif; ?>
@@ -444,7 +391,7 @@ $totalSuppliers = count($supplierList);
                     <?php endif; ?>
                 </div>
 
-                <a href="/is207/index.php?url=admin/suppliers" class="block w-full mt-8 py-3 rounded-xl border border-outline-variant/30 text-sm font-bold text-on-surface-variant hover:bg-surface-container-low transition-colors text-center">
+                <a href="<?= BASE_URL ?>index.php?url=admin/suppliers" class="block w-full mt-8 py-3 rounded-xl border border-outline-variant/30 text-sm font-bold text-on-surface-variant hover:bg-surface-container-low transition-colors text-center">
                     View All Nhà cung cấp
                 </a>
             </div>
@@ -483,18 +430,5 @@ $totalSuppliers = count($supplierList);
         </div>
     </section>
 </main>
-
-<footer class="ml-64 bg-[#f3f4ed] dark:bg-stone-900 border-t border-[#c5c8ba]/10 flex flex-col md:flex-row justify-between items-center px-12 py-16 mt-20">
-    <div class="mb-8 md:mb-0">
-        <h5 class="font-['Epilogue'] font-bold text-[#384e21] text-xl mb-2">Zentro</h5>
-        <p class="font-['Be_Vietnam_Pro'] text-sm tracking-wide text-[#191c18]/50">© 2026 Zentro Sustainable Living. Admin panel.</p>
-    </div>
-    <div class="flex flex-wrap gap-8 justify-center">
-        <a class="font-['Be_Vietnam_Pro'] text-sm tracking-wide text-[#191c18]/50 hover:text-[#384e21] underline underline-offset-4 transition-all opacity-80 hover:opacity-100" href="#">Chính sách bảo mật</a>
-        <a class="font-['Be_Vietnam_Pro'] text-sm tracking-wide text-[#191c18]/50 hover:text-[#384e21] underline underline-offset-4 transition-all opacity-80 hover:opacity-100" href="#">Điều khoản dịch vụ</a>
-        <a class="font-['Be_Vietnam_Pro'] text-sm tracking-wide text-[#191c18]/50 hover:text-[#384e21] underline underline-offset-4 transition-all opacity-80 hover:opacity-100" href="#">Phí vận chuyển &amp; Returns</a>
-        <a class="font-['Be_Vietnam_Pro'] text-sm tracking-wide text-[#191c18]/50 hover:text-[#384e21] underline underline-offset-4 transition-all opacity-80 hover:opacity-100" href="#">Liên hệ</a>
-    </div>
-</footer>
 
 <?php include __DIR__ . '/../layouts/admin_footer.php'; ?>

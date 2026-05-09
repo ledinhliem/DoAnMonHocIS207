@@ -80,20 +80,6 @@ class BlogModel
 
     private function formatImagePath($image)
     {
-        if (empty($image)) {
-            return 'https://images.unsplash.com/photo-1513694203232-719a280e022f?auto=format&fit=crop&w=1200&q=80';
-        }
-
-        if (str_starts_with($image, 'http')) {
-            return $image;
-        }
-
-        $imageMap = [
-            'BL001_ZeroWaste.jpg' => 'https://images.unsplash.com/photo-1542601906990-b4d3fb778b09?auto=format&fit=crop&w=1200&q=80',
-            'BL002_VaiSoiCafe.webp' => 'https://images.unsplash.com/photo-1441986300917-64674bd600d8?auto=format&fit=crop&w=1200&q=80',
-            'BL003_HatViNhua.jpg' => 'https://images.unsplash.com/photo-1611284446314-60a58ac0deb9?auto=format&fit=crop&w=1200&q=80',
-        ];
-
-        return $imageMap[$image] ?? 'https://images.unsplash.com/photo-1513694203232-719a280e022f?auto=format&fit=crop&w=1200&q=80';
+        return blog_image_url($image);
     }
 }

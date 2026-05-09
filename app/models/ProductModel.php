@@ -238,19 +238,6 @@ class ProductModel extends Model
 
     private function formatImageUrl(string $path): string
     {
-        if ($path === '') {
-            return '';
-        }
-
-        if (preg_match('/^https?:\/\//', $path)) {
-            return $path;
-        }
-
-        $fileName = basename($path);
-        if ($fileName === 'P005_V005_Giayshoex_den.png') {
-            $fileName = 'P005_V006_Giayshoex_den.png';
-        }
-
-        return BASE_URL . 'public/images/Products/' . $fileName;
+        return product_image_url($path);
     }
 }

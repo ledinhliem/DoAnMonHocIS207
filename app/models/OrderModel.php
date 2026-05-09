@@ -12,7 +12,13 @@ class OrderModel extends Model
         $stmt = $this->db->prepare("SELECT * FROM donhang WHERE MaNguoiDung = ? ORDER BY NgayDat DESC");
         $stmt->execute([$userId]);
 
-        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+        $orders = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+        foreach ($orders as &$order) {
+            $order['items'] = $this->getOrderItems($order['MaDonHang']);
+        }
+
+        return $orders;
     }
 
     public function getOrderById($orderId, $userId)
@@ -20,7 +26,43 @@ class OrderModel extends Model
         $stmt = $this->db->prepare("SELECT * FROM donhang WHERE MaDonHang = ? AND MaNguoiDung = ?");
         $stmt->execute([$orderId, $userId]);
 
-        return $stmt->fetch(PDO::FETCH_ASSOC);
+        $order = $stmt->fetch(PDO::FETCH_ASSOC);
+
+        if ($order) {
+            $order['items'] = $this->getOrderItems($orderId);
+        }
+
+        return $order ?: null;
+    }
+
+    public function getOrderItems($orderId)
+    {
+        $stmt = $this->db->prepare("
+            SELECT
+                ct.MaDonHang,
+                ct.MaBienThe,
+                ct.SoLuong,
+                ct.DonGia,
+                bt.MaSanPham,
+                bt.KichThuoc,
+                bt.MauSac,
+                sp.TenSanPham,
+                (
+                    SELECT ha.DuongDan
+                    FROM hinhanhsanpham ha
+                    WHERE ha.MaSanPham = sp.MaSanPham
+                    ORDER BY ha.MaHinhAnh ASC
+                    LIMIT 1
+                ) AS HinhAnh
+            FROM chitietdonhang ct
+            LEFT JOIN bienthesanpham bt ON ct.MaBienThe = bt.MaBienThe
+            LEFT JOIN sanpham sp ON bt.MaSanPham = sp.MaSanPham
+            WHERE ct.MaDonHang = ?
+            ORDER BY ct.MaBienThe ASC
+        ");
+        $stmt->execute([$orderId]);
+
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
 
     public function calculateDiscount($subtotal, $promoCode)
@@ -90,6 +132,10 @@ class OrderModel extends Model
 
         if (trim($data['full_name'] ?? '') === '') {
             $errors['full_name'] = 'Vui long nhap ho ten.';
+        }
+
+        if (trim($data['email'] ?? '') === '' || !filter_var($data['email'], FILTER_VALIDATE_EMAIL)) {
+            $errors['email'] = 'Email khong hop le.';
         }
 
         if (trim($data['phone'] ?? '') === '' || !preg_match('/^[0-9]{9,11}$/', $data['phone'])) {

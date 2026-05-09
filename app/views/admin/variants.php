@@ -58,7 +58,7 @@ $avgPrice     = count($variants)
     <header class="flex flex-col xl:flex-row justify-between items-start xl:items-end gap-6 mb-12">
         <div>
             <div class="flex items-center gap-2 mb-4">
-                <a href="/is207/index.php?url=admin/products"
+                <a href="<?= BASE_URL ?>index.php?url=admin/products"
                    class="text-[#384e21] hover:opacity-70 flex items-center transition-opacity">
                     <span class="material-symbols-outlined text-sm">arrow_back</span>
                     <span class="text-sm font-bold ml-1 uppercase tracking-tighter">Quay lại sản phẩm</span>
@@ -144,7 +144,7 @@ $avgPrice     = count($variants)
 
                             <!-- Nút xóa (form inline) -->
                             <form method="POST"
-                                  action="/is207/index.php?url=admin/products/variants&id=<?= urlencode($maSanPham) ?>"
+                                  action="<?= BASE_URL ?>index.php?url=admin/products/variants&id=<?= urlencode($maSanPham) ?>"
                                   onsubmit="return confirm('Xóa biến thể <?= e($v['MaBienThe']) ?>?')">
                                 <input type="hidden" name="action"      value="delete_variant">
                                 <input type="hidden" name="ma_bien_the" value="<?= e($v['MaBienThe']) ?>">
@@ -213,7 +213,7 @@ $avgPrice     = count($variants)
         </div>
 
         <form method="POST"
-              action="/is207/index.php?url=admin/products/variants&id=<?= urlencode($maSanPham) ?>">
+              action="<?= BASE_URL ?>index.php?url=admin/products/variants&id=<?= urlencode($maSanPham) ?>">
             <input type="hidden" name="action" value="add_variant">
 
             <div class="space-y-4">
@@ -278,7 +278,7 @@ $avgPrice     = count($variants)
         </div>
 
         <form method="POST"
-              action="/is207/index.php?url=admin/products/variants&id=<?= urlencode($maSanPham) ?>"
+              action="<?= BASE_URL ?>index.php?url=admin/products/variants&id=<?= urlencode($maSanPham) ?>"
               id="form-edit">
             <input type="hidden" name="action"      value="update_variant">
             <input type="hidden" name="ma_bien_the" id="edit-ma">
@@ -337,6 +337,5 @@ $avgPrice     = count($variants)
 </div>
 
 <!-- JS riêng cho trang variants -->
-<script src="/is207/public/js/products-variant.js"></script>
-
+<script src="<?= BASE_URL ?>public/assets/js/admin-products-variants.js?v=<?= time() ?>"></script>
 <?php include __DIR__ . '/../layouts/admin_footer.php'; ?>

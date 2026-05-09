@@ -94,19 +94,4 @@ $actionUrl = $isEdit ? 'index.php?url=admin/categories/edit&id=' . urlencode($ca
     </section>
 </main>
 
-<footer
-    class="ml-64 flex flex-col md:flex-row justify-between items-center px-12 py-12 mt-20 border-t border-[#c5c8ba]/10 bg-surface-container-low text-primary">
-    <div class="mb-6 md:mb-0">
-        <h4 class="font-['Epilogue'] font-bold text-[#384e21] text-xl">Zentro</h4>
-        <p class="font-['Be_Vietnam_Pro'] text-sm tracking-wide text-[#191c18]/50 mt-1">© 2026 Zentro Sustainable
-            Living. Admin panel.</p>
-    </div>
-    <div class="flex gap-8">
-        <a class="font-['Be_Vietnam_Pro'] text-sm tracking-wide text-[#191c18]/50 hover:text-[#384e21] underline underline-offset-4 transition-opacity opacity-80 hover:opacity-100"
-            href="#">Chính sách bảo mật</a>
-        <a class="font-['Be_Vietnam_Pro'] text-sm tracking-wide text-[#191c18]/50 hover:text-[#384e21] underline underline-offset-4 transition-opacity opacity-80 hover:opacity-100"
-            href="#">Điều khoản dịch vụ</a>
-    </div>
-</footer>
-
 <?php include __DIR__ . '/../layouts/admin_footer.php'; ?>

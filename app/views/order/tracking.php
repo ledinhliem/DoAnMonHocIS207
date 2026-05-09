@@ -157,9 +157,13 @@
                                 $quantity = (int)($item['SoLuong'] ?? 0);
                                 $price = (float)($item['DonGia'] ?? 0);
                                 $image = $item['HinhAnh'] ?? '';
-                                $imageUrl = !empty($image)
-                                    ? BASE_URL . 'public/images/products/' . basename($image)
-                                    : '';
+                                if (!empty($image)) {
+                                    $imageUrl = str_starts_with($image, 'public/')
+                                        ? BASE_URL . ltrim($image, '/')
+                                        : BASE_URL . 'public/images/Products/' . basename($image);
+                                } else {
+                                    $imageUrl = '';
+                                }
                             ?>
 
                             <div class="flex items-center gap-4 border-b border-[#E5E7D8] pb-5 last:border-b-0">

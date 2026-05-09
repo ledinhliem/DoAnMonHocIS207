@@ -19,9 +19,12 @@ class AuthController extends Controller {
 
                     // QUAN TRỌNG: Kiểm tra cả 2 trường hợp (mật khẩu mới mã hóa VÀ mật khẩu cũ chưa mã hóa)
                     if (password_verify($password, $dbPass) || $password === $dbPass) {
-                        $_SESSION['user_id'] = $user['MaNguoiDung'];
-                        $_SESSION['user_name'] = $user['HoTen'];
-                        $_SESSION['role'] = $user['MaQuyen']; 
+                        if (isset($user['TrangThai']) && (int)$user['TrangThai'] === 0) {
+                            $data['error'] = 'Tài khoản của bạn đang bị khóa.';
+                        } else {
+                            $_SESSION['user_id'] = $user['MaNguoiDung'];
+                            $_SESSION['user_name'] = $user['HoTen'];
+                            $_SESSION['role'] = $user['MaQuyen']; 
 
                         // Chuyển hướng theo phân quyền
                         if ($user['MaQuyen'] == '1') {
@@ -29,7 +32,8 @@ class AuthController extends Controller {
                         } else {
                             header('Location: index.php?url=profile'); // Khách hàng
                         }
-                        exit();
+                            exit();
+                        }
                     } else {
                         $data['error'] = 'Mật khẩu không chính xác.';
                     }

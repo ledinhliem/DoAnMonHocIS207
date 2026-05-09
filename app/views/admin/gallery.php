@@ -49,7 +49,7 @@ $totalImages = count($gallery);
     <header class="flex flex-col xl:flex-row justify-between items-start xl:items-end gap-6 mb-10">
         <div>
             <div class="flex items-center gap-2 mb-2">
-                <a href="/is207/index.php?url=admin/products"
+                <a href="<?= BASE_URL ?>index.php?url=admin/products"
                    class="text-[#384e21] hover:opacity-70 flex items-center transition-opacity">
                     <span class="material-symbols-outlined text-sm">arrow_back</span>
                     <span class="text-sm font-bold ml-1 uppercase tracking-tighter">Quay lại danh sách</span>
@@ -73,7 +73,7 @@ $totalImages = count($gallery);
     <!-- ── Upload form ───────────────────────────────────── -->
     <section class="mb-12">
         <form method="POST"
-              action="/is207/index.php?url=admin/products/gallery&id=<?= urlencode($maSanPham) ?>"
+             action="<?= BASE_URL ?>index.php?url=admin/products/gallery&id=<?= urlencode($maSanPham) ?>"
               enctype="multipart/form-data"
               id="upload-form">
             <input type="hidden" name="action" value="upload_image">
@@ -122,21 +122,30 @@ $totalImages = count($gallery);
         <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-6">
             <?php foreach ($gallery as $index => $img): ?>
             <?php
-                // Controller join field "DuongDan" từ hinhanhsanpham
-                $src    = e($img['DuongDan'] ?? '');
+                $rawSrc = trim($img['DuongDan'] ?? '');
                 $maAnh  = e($img['MaHinhAnh'] ?? '');
                 $isFirst = ($index === 0);
+
+                if ($rawSrc === '') {
+                    $src = BASE_URL . 'public/images/placeholder.png';
+                } elseif (preg_match('#^https?://#i', $rawSrc)) {
+                    $src = $rawSrc;
+                } elseif (str_starts_with($rawSrc, 'public/')) {
+                    $src = BASE_URL . ltrim($rawSrc, '/');
+                } else {
+                    $src = BASE_URL . 'public/assets/images/products/' . ltrim($rawSrc, '/');
+                }
+
+                $src = e($src);
             ?>
             <div class="relative group aspect-square rounded-2xl overflow-hidden bg-white shadow-sm
                         hover:shadow-md transition-all border
                         <?= $isFirst ? 'ring-4 ring-[#384e21] border-transparent' : 'border-[#c5c8ba]/30' ?>">
 
-                <img src="/is207/<?= $src ?>"
-                     alt="Ảnh sản phẩm <?= $maAnh ?>"
-                     class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
-                     onerror="this.src='/is207/public/images/placeholder.png'">
-
-                <!-- Badge thumbnail cho ảnh đầu tiên -->
+                <img src="<?= $src ?>"
+                    alt="Ảnh sản phẩm <?= $maAnh ?>"
+                    class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
+                    onerror="this.src='<?= BASE_URL ?>public/images/placeholder.png'">
                 <?php if ($isFirst): ?>
                 <div class="absolute top-3 left-3 bg-[#384e21] text-white text-[10px]
                             uppercase tracking-widest font-black px-2 py-1 rounded-lg">
@@ -146,7 +155,7 @@ $totalImages = count($gallery);
 
                 <!-- Nút xóa -->
                 <form method="POST"
-                      action="/is207/index.php?url=admin/products/gallery&id=<?= urlencode($maSanPham) ?>"
+                     action="<?= BASE_URL ?>index.php?url=admin/products/gallery&id=<?= urlencode($maSanPham) ?>"
                       onsubmit="return confirm('Xóa ảnh này?')"
                       class="absolute top-3 right-3 opacity-0 group-hover:opacity-100 transition-opacity">
                     <input type="hidden" name="action"  value="delete_image">
@@ -200,6 +209,6 @@ $totalImages = count($gallery);
 </main>
 
 <!-- JS riêng cho trang gallery -->
-<script src="/is207/public/js/products-gallery.js"></script>
+<script src="<?= BASE_URL ?>public/assets/js/admin-products-gallery.js?v=<?= time() ?>"></script>
 
 <?php include __DIR__ . '/../layouts/admin_footer.php'; ?>

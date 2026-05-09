@@ -1,27 +1,5 @@
 <?php include __DIR__ . '/../layouts/header.php'; ?>
 
-<?php
-if (!function_exists('productImageUrl')) {
-    function productImageUrl(string $path): string
-    {
-        if ($path === '') {
-            return '';
-        }
-
-        if (preg_match('/^https?:\/\//', $path)) {
-            return $path;
-        }
-
-        $fileName = basename($path);
-        if ($fileName === 'P005_V005_Giayshoex_den.png') {
-            $fileName = 'P005_V006_Giayshoex_den.png';
-        }
-
-        return BASE_URL . 'public/images/Products/' . $fileName;
-    }
-}
-?>
-
 <main class="min-h-screen bg-[#FAFAF2] px-8 py-14">
     <section class="max-w-7xl mx-auto">
         <div class="grid grid-cols-1 lg:grid-cols-4 gap-10">
@@ -191,7 +169,7 @@ if (!function_exists('productImageUrl')) {
                                 <div class="relative rounded-2xl overflow-hidden bg-[#EEF1E7] border border-[#E5E7D8] h-[300px]">
                                     <a href="?url=product/detail&id=<?= urlencode($maSanPham) ?>">
                                         <?php if (!empty($image)): ?>
-                                            <img src="<?= htmlspecialchars(productImageUrl($image)) ?>"
+                                            <img src="<?= htmlspecialchars(product_image_url($image)) ?>"
                                                  alt="<?= htmlspecialchars($name) ?>"
                                                  class="w-full h-full object-cover group-hover:scale-105 transition duration-300">
                                         <?php else: ?>

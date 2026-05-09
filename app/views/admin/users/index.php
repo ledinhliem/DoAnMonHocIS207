@@ -1,56 +1,95 @@
-<?php include 'app/views/layouts/admin_header.php'; ?>
+<?php include __DIR__ . '/../../layouts/admin_header.php'; ?>
+<?php include __DIR__ . '/../../layouts/admin_sidebar.php'; ?>
 
-<div class="container mx-auto p-6">
-    <h1 class="text-2xl font-bold mb-4">Quản lý người dùng</h1>
+<main class="ml-64 min-h-screen px-8 py-8">
+    <div class="mb-8 flex flex-col gap-4 md:flex-row md:items-end md:justify-between">
+        <div>
+            <p class="text-sm font-semibold text-primary uppercase tracking-widest">Admin / Users</p>
+            <h1 class="font-['Epilogue'] text-4xl font-black text-[#384e21] mt-2">Quản lý người dùng</h1>
+            <p class="mt-2 text-on-surface-variant">Tìm kiếm, xem chi tiết và cập nhật quyền tài khoản.</p>
+        </div>
 
-    <form action="index.php" method="GET" class="mb-6 flex gap-2">
-        <input type="hidden" name="url" value="admin/users">
-        <input type="text" name="search" value="<?= $search ?? '' ?>" 
-               placeholder="Tìm tên, email, sđt..." class="border p-2 rounded w-64">
-        <button type="submit" class="bg-green-600 text-white px-4 py-2 rounded">Tìm kiếm</button>
-    </form>
+        <form action="<?= BASE_URL ?>index.php" method="GET" class="flex w-full max-w-md gap-2">
+            <input type="hidden" name="url" value="admin/users">
+            <input
+                type="text"
+                name="search"
+                value="<?= htmlspecialchars($search ?? '', ENT_QUOTES, 'UTF-8') ?>"
+                placeholder="Tìm tên, email, số điện thoại..."
+                class="min-w-0 flex-1 rounded-xl border border-outline-variant bg-white px-4 py-3 text-sm focus:border-primary focus:ring-primary/20">
+            <button type="submit" class="rounded-xl bg-[#384e21] px-5 py-3 text-sm font-bold text-white transition-opacity hover:opacity-90">
+                Tìm kiếm
+            </button>
+        </form>
+    </div>
 
-    <table class="min-w-full bg-white border">
-        <thead>
-            <tr class="bg-gray-100">
-                <th class="border p-2">Mã ND</th>
-                <th class="border p-2">Họ tên</th>
-                <th class="border p-2">Email</th>
-                <th class="border p-2">Quyền hiện tại</th>
-                <th class="border p-2 text-center">Trạng thái</th> <th class="border p-2">Hành động</th>
-            </tr>
-        </thead>
-        <tbody>
-            <?php foreach ($users as $user): ?>
-            <tr>
-                <td class="border p-2"><?= $user['MaNguoiDung'] ?></td>
-                <td class="border p-2"><?= $user['HoTen'] ?></td>
-                <td class="border p-2"><?= $user['Email'] ?></td>
-                <td class="border p-2 text-center">
-                    <form action="index.php?url=admin/users/update-role" method="POST">
-                        <input type="hidden" name="userId" value="<?= $user['MaNguoiDung'] ?>">
-                            <select name="roleId" onchange="this.form.submit()" class="border rounded-md px-3 py-1.5 text-sm bg-white cursor-pointer w-32 focus:outline-none focus:ring-2 focus:ring-green-500 appearance-none bg-[url('data:image/svg+xml;charset=US-ASCII,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22292.4%22%20height%3D%22292.4%22%3E%3Cpath%20fill%3D%22%23666%22%20d%3D%22M287%2069.4a17.6%2017.6%200%200%200-13-5.4H18.4c-5%200-9.3%201.8-12.9%205.4A17.6%2017.6%200%200%200%200%2082.2c0%205%201.8%209.3%205.4%2012.9l128%20127.9c3.6%203.6%207.8%205.4%2012.8%205.4s9.2-1.8%2012.8-5.4L287%2095c3.5-3.5%205.4-7.8%205.4-12.8%200-5-1.9-9.2-5.5-12.8z%22%2F%3E%3C%2Fsvg%3E')] bg-[length:12px_12px] bg-[right_0.5rem_center] bg-no-repeat pr-8">                            <?php foreach ($roles as $role): ?>
-                                <option value="<?= $role['MaQuyen'] ?>" <?= $user['MaQuyen'] == $role['MaQuyen'] ? 'selected' : '' ?>>
-                                    <?= $role['TenQuyen'] ?>
-                                </option>
-                            <?php endforeach; ?>
-                        </select>
-                    </form>
-                </td>
-                <td class="border p-2 text-center">
-                    <?php if (isset($user['TrangThai']) && $user['TrangThai'] == 1): ?>
-                        <span class="text-green-600 font-bold">Hoạt động</span>
-                    <?php else: ?>
-                        <span class="text-red-500 font-bold">Bị khóa</span>
-                    <?php endif; ?>
-                </td>
-                <td class="border p-2 text-center">
-                    <a href="index.php?url=admin/users/detail&id=<?= $user['MaNguoiDung'] ?>" class="text-blue-600">Chi tiết</a>
-                </td>
-            </tr>
-            <?php endforeach; ?>
-        </tbody>
-    </table>
-</div>
+    <?php if (!empty($_SESSION['success'])): ?>
+        <div class="mb-5 rounded-xl bg-green-50 px-4 py-3 text-sm font-semibold text-green-700">
+            <?= htmlspecialchars($_SESSION['success'], ENT_QUOTES, 'UTF-8'); unset($_SESSION['success']); ?>
+        </div>
+    <?php endif; ?>
 
-<?php include 'app/views/layouts/admin_footer.php'; ?>
+    <?php if (!empty($_SESSION['error'])): ?>
+        <div class="mb-5 rounded-xl bg-red-50 px-4 py-3 text-sm font-semibold text-red-700">
+            <?= htmlspecialchars($_SESSION['error'], ENT_QUOTES, 'UTF-8'); unset($_SESSION['error']); ?>
+        </div>
+    <?php endif; ?>
+
+    <section class="overflow-hidden rounded-xl border border-outline-variant/40 bg-white shadow-sm">
+        <table class="min-w-full text-sm">
+            <thead class="bg-surface-container">
+                <tr class="text-left text-xs uppercase tracking-widest text-on-surface-variant">
+                    <th class="px-5 py-4">Mã ND</th>
+                    <th class="px-5 py-4">Họ tên</th>
+                    <th class="px-5 py-4">Email</th>
+                    <th class="px-5 py-4">Quyền hiện tại</th>
+                    <th class="px-5 py-4 text-center">Trạng thái</th>
+                    <th class="px-5 py-4 text-right">Hành động</th>
+                </tr>
+            </thead>
+            <tbody class="divide-y divide-outline-variant/30">
+                <?php if (!empty($users)): ?>
+                    <?php foreach ($users as $user): ?>
+                        <tr class="hover:bg-surface-container-low">
+                            <td class="px-5 py-4 font-semibold text-primary"><?= htmlspecialchars($user['MaNguoiDung'] ?? '', ENT_QUOTES, 'UTF-8') ?></td>
+                            <td class="px-5 py-4"><?= htmlspecialchars($user['HoTen'] ?? '', ENT_QUOTES, 'UTF-8') ?></td>
+                            <td class="px-5 py-4"><?= htmlspecialchars($user['Email'] ?? '', ENT_QUOTES, 'UTF-8') ?></td>
+                            <td class="px-5 py-4">
+                                <form action="<?= BASE_URL ?>index.php?url=admin/users/update-role" method="POST">
+                                    <input type="hidden" name="userId" value="<?= htmlspecialchars($user['MaNguoiDung'] ?? '', ENT_QUOTES, 'UTF-8') ?>">
+                                    <select name="roleId" onchange="this.form.submit()" class="w-36 rounded-lg border border-outline-variant bg-white px-3 py-2 text-sm focus:border-primary focus:ring-primary/20">
+                                        <?php foreach ($roles as $role): ?>
+                                            <option value="<?= htmlspecialchars($role['MaQuyen'], ENT_QUOTES, 'UTF-8') ?>" <?= ($user['MaQuyen'] ?? '') == $role['MaQuyen'] ? 'selected' : '' ?>>
+                                                <?= htmlspecialchars($role['TenQuyen'], ENT_QUOTES, 'UTF-8') ?>
+                                            </option>
+                                        <?php endforeach; ?>
+                                    </select>
+                                </form>
+                            </td>
+                            <td class="px-5 py-4 text-center">
+                                <?php if (!isset($user['TrangThai']) || (int)$user['TrangThai'] === 1): ?>
+                                    <span class="rounded-full bg-green-50 px-3 py-1 text-xs font-bold text-green-700">Hoạt động</span>
+                                <?php else: ?>
+                                    <span class="rounded-full bg-red-50 px-3 py-1 text-xs font-bold text-red-700">Bị khóa</span>
+                                <?php endif; ?>
+                            </td>
+                            <td class="px-5 py-4 text-right">
+                                <a href="<?= BASE_URL ?>index.php?url=admin/users/detail&id=<?= urlencode($user['MaNguoiDung'] ?? '') ?>" class="font-bold text-primary hover:underline">
+                                    Chi tiết
+                                </a>
+                            </td>
+                        </tr>
+                    <?php endforeach; ?>
+                <?php else: ?>
+                    <tr>
+                        <td colspan="6" class="px-5 py-14 text-center text-on-surface-variant">
+                            Không tìm thấy người dùng phù hợp.
+                        </td>
+                    </tr>
+                <?php endif; ?>
+            </tbody>
+        </table>
+    </section>
+</main>
+
+<?php include __DIR__ . '/../../layouts/admin_footer.php'; ?>

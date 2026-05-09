@@ -13,6 +13,15 @@ class OrderController extends Controller
         $this->orderModel = new OrderModel();
     }
 
+    private function requireLogin()
+    {
+        if (!isset($_SESSION['user_id'])) {
+            $_SESSION['error'] = 'Vui lòng đăng nhập trước khi thanh toán.';
+            header('Location: ?url=login');
+            exit;
+        }
+    }
+
     // Lấy tóm tắt đơn hàng (tối ưu tính phí ship chuẩn MVC)
     private function getCheckoutSummary()
     {
@@ -71,6 +80,8 @@ class OrderController extends Controller
 
     public function checkout()
     {
+        $this->requireLogin();
+
         $items = $this->cartModel->getItems();
 
         if (empty($items)) {
@@ -81,6 +92,7 @@ class OrderController extends Controller
 
         $checkoutData = $_SESSION['checkout_data'] ?? [
             'full_name' => '',
+            'email' => '',
             'phone' => '',
             'address' => '',
             'delivery_method' => 'standard',
@@ -102,6 +114,8 @@ class OrderController extends Controller
 
     public function applyPromo()
     {
+        $this->requireLogin();
+
         if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
             header('Location: ?url=checkout');
             exit;
@@ -128,9 +142,18 @@ class OrderController extends Controller
 
     public function payment()
     {
+        $this->requireLogin();
+
+        if (empty($this->cartModel->getItems())) {
+            $_SESSION['error'] = 'Giỏ hàng đang trống.';
+            header('Location: ?url=cart');
+            exit;
+        }
+
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $checkoutData = [
                 'full_name' => trim($_POST['full_name'] ?? ''),
+                'email' => trim($_POST['email'] ?? ''),
                 'phone' => trim($_POST['phone'] ?? ''),
                 'address' => trim($_POST['address'] ?? ''),
                 'delivery_method' => trim($_POST['delivery_method'] ?? 'standard'),
@@ -168,6 +191,8 @@ class OrderController extends Controller
 
     public function processPayment()
     {
+        $this->requireLogin();
+
         if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
             header('Location: ?url=order/payment');
             exit;
@@ -201,6 +226,14 @@ class OrderController extends Controller
 
     public function transfer()
     {
+        $this->requireLogin();
+
+        if (empty($this->cartModel->getItems())) {
+            $_SESSION['error'] = 'Giỏ hàng đang trống.';
+            header('Location: ?url=cart');
+            exit;
+        }
+
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $this->completeOrder('Transfer');
         }
