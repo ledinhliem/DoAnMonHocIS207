@@ -323,6 +323,16 @@ class Router
                 $controller = new ProfileController();
                 $controller->update();
                 break;
+///////////////////////////////////////////////////////////
+            case 'ourstory':
+            case 'sustainability':
+            case 'terms':
+            case 'privacy':
+            case 'cookies':
+                require_once __DIR__ . '/../app/controllers/FooterController.php';
+                $controller = new FooterController();
+                $controller->handle($url);
+                break;
 
             default:
                 echo '404 - Không tìm thấy trang';
