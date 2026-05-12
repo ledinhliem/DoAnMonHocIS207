@@ -272,7 +272,7 @@ class AdminModel extends Model
        PRODUCTS + CATEGORIES — Ái Linh
        ========================================================= */
 
-    public function getProductsList(array $filters = []): array
+    public function countProductsList(array $filters = []): int
     {
         $where = ['1=1'];
         $params = [];
@@ -293,39 +293,75 @@ class AdminModel extends Model
         }
 
         $sql = "
-            SELECT
-                sp.MaSanPham AS id,
-                sp.TenSanPham AS name,
-                sp.TrangThai AS status,
-                sp.DiemXanh AS eco_score,
-                sp.MaDanhMuc AS category_id,
-                dm.TenDanhMuc AS category_name,
-                sp.MaThuongHieu AS brand_id,
-                th.TenThuongHieu AS brand_name,
-                sp.MaVatLieu AS material_id,
-                vl.TenVatLieu AS material_name,
-                COALESCE(v.min_price, 0) AS price,
-                COALESCE(v.total_stock, 0) AS stock,
-                COALESCE(img.DuongDan, '') AS image,
-                COALESCE(img.image_count, 0) AS image_count,
-                COALESCE(v.variant_count, 0) AS variant_count
-            FROM sanpham sp
-            LEFT JOIN danhmuc dm ON dm.MaDanhMuc = sp.MaDanhMuc
-            LEFT JOIN thuonghieu th ON th.MaThuongHieu = sp.MaThuongHieu
-            LEFT JOIN vatlieu vl ON vl.MaVatLieu = sp.MaVatLieu
-            LEFT JOIN (
-                SELECT MaSanPham, MIN(GiaTien) AS min_price, SUM(SoLuongTon) AS total_stock, COUNT(*) AS variant_count
-                FROM bienthesanpham
-                GROUP BY MaSanPham
-            ) v ON v.MaSanPham = sp.MaSanPham
-            LEFT JOIN (
-                SELECT MaSanPham, MIN(DuongDan) AS DuongDan, COUNT(*) AS image_count
-                FROM hinhanhsanpham
-                GROUP BY MaSanPham
-            ) img ON img.MaSanPham = sp.MaSanPham
-            WHERE " . implode(' AND ', $where) . "
-            ORDER BY sp.MaSanPham ASC
-        ";
+        SELECT COUNT(*)
+        FROM sanpham sp
+        WHERE " . implode(' AND ', $where) . "
+    ";
+
+        $stmt = $this->db->prepare($sql);
+        $stmt->execute($params);
+
+        return (int)$stmt->fetchColumn();
+    }
+
+    public function getProductsList(array $filters = [], int $limit = 10, int $offset = 0): array
+    {
+        $where = ['1=1'];
+        $params = [];
+
+        if (!empty($filters['keyword'])) {
+            $where[] = '(sp.TenSanPham LIKE :keyword OR sp.MoTa LIKE :keyword OR sp.NguonGoc LIKE :keyword)';
+            $params[':keyword'] = '%' . $filters['keyword'] . '%';
+        }
+
+        if (!empty($filters['category'])) {
+            $where[] = 'sp.MaDanhMuc = :category';
+            $params[':category'] = $filters['category'];
+        }
+
+        if (!empty($filters['brand'])) {
+            $where[] = 'sp.MaThuongHieu = :brand';
+            $params[':brand'] = $filters['brand'];
+        }
+
+        $limit = max(1, (int)$limit);
+        $offset = max(0, (int)$offset);
+
+        $sql = "
+        SELECT
+            sp.MaSanPham AS id,
+            sp.TenSanPham AS name,
+            sp.TrangThai AS status,
+            sp.DiemXanh AS eco_score,
+            sp.MaDanhMuc AS category_id,
+            dm.TenDanhMuc AS category_name,
+            sp.MaThuongHieu AS brand_id,
+            th.TenThuongHieu AS brand_name,
+            sp.MaVatLieu AS material_id,
+            vl.TenVatLieu AS material_name,
+            COALESCE(v.min_price, 0) AS price,
+            COALESCE(v.total_stock, 0) AS stock,
+            COALESCE(img.DuongDan, '') AS image,
+            COALESCE(img.image_count, 0) AS image_count,
+            COALESCE(v.variant_count, 0) AS variant_count
+        FROM sanpham sp
+        LEFT JOIN danhmuc dm ON dm.MaDanhMuc = sp.MaDanhMuc
+        LEFT JOIN thuonghieu th ON th.MaThuongHieu = sp.MaThuongHieu
+        LEFT JOIN vatlieu vl ON vl.MaVatLieu = sp.MaVatLieu
+        LEFT JOIN (
+            SELECT MaSanPham, MIN(GiaTien) AS min_price, SUM(SoLuongTon) AS total_stock, COUNT(*) AS variant_count
+            FROM bienthesanpham
+            GROUP BY MaSanPham
+        ) v ON v.MaSanPham = sp.MaSanPham
+        LEFT JOIN (
+            SELECT MaSanPham, MIN(DuongDan) AS DuongDan, COUNT(*) AS image_count
+            FROM hinhanhsanpham
+            GROUP BY MaSanPham
+        ) img ON img.MaSanPham = sp.MaSanPham
+        WHERE " . implode(' AND ', $where) . "
+        ORDER BY sp.MaSanPham ASC
+        LIMIT {$limit} OFFSET {$offset}
+    ";
 
         $stmt = $this->db->prepare($sql);
         $stmt->execute($params);
