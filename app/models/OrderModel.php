@@ -189,7 +189,9 @@ class OrderModel extends Model
     {
         $errors = [];
 
-        if (empty($data['rating'])) {
+        $rating = (int)($data['rating'] ?? 0);
+
+        if ($rating < 1 || $rating > 5) {
             $errors['rating'] = 'Vui long chon so sao.';
         }
 
@@ -200,6 +202,65 @@ class OrderModel extends Model
         }
 
         return $errors;
+    }
+
+    public function getReviewableProduct($orderId, $productId, $userId)
+    {
+        $stmt = $this->db->prepare("
+            SELECT
+                dh.MaDonHang,
+                dh.TrangThai,
+                bt.MaSanPham,
+                sp.TenSanPham,
+                (
+                    SELECT ha.DuongDan
+                    FROM hinhanhsanpham ha
+                    WHERE ha.MaSanPham = sp.MaSanPham
+                    ORDER BY ha.MaHinhAnh ASC
+                    LIMIT 1
+                ) AS HinhAnh
+            FROM donhang dh
+            JOIN chitietdonhang ct ON ct.MaDonHang = dh.MaDonHang
+            JOIN bienthesanpham bt ON bt.MaBienThe = ct.MaBienThe
+            JOIN sanpham sp ON sp.MaSanPham = bt.MaSanPham
+            WHERE dh.MaDonHang = ?
+              AND dh.MaNguoiDung = ?
+              AND bt.MaSanPham = ?
+              AND dh.TrangThai = '3'
+            LIMIT 1
+        ");
+        $stmt->execute([$orderId, $userId, $productId]);
+
+        $product = $stmt->fetch(PDO::FETCH_ASSOC);
+        return $product ?: null;
+    }
+
+    public function hasUserReviewedProduct($userId, $productId)
+    {
+        $stmt = $this->db->prepare("
+            SELECT COUNT(*)
+            FROM danhgia
+            WHERE MaNguoiDung = ? AND MaSanPham = ?
+        ");
+        $stmt->execute([$userId, $productId]);
+
+        return (int)$stmt->fetchColumn() > 0;
+    }
+
+    public function saveProductReview($userId, $productId, $rating, $message)
+    {
+        $stmt = $this->db->prepare("
+            INSERT INTO danhgia (MaDanhGia, MaNguoiDung, MaSanPham, SoSao, NoiDung, TrangThai)
+            VALUES (?, ?, ?, ?, ?, 0)
+        ");
+
+        return $stmt->execute([
+            $this->generateReviewId(),
+            $userId,
+            $productId,
+            max(1, min(5, (int)$rating)),
+            trim($message),
+        ]);
     }
 
     public function getShippingFee($deliveryMethod)
@@ -330,6 +391,22 @@ class OrderModel extends Model
         $nextNumber = $lastId ? ((int)substr($lastId, 1) + 1) : 1;
 
         return 'O' . str_pad((string)$nextNumber, 3, '0', STR_PAD_LEFT);
+    }
+
+    private function generateReviewId()
+    {
+        $stmt = $this->db->query("
+            SELECT MaDanhGia
+            FROM danhgia
+            WHERE MaDanhGia LIKE 'RV%'
+            ORDER BY CAST(SUBSTRING(MaDanhGia, 3) AS UNSIGNED) DESC
+            LIMIT 1
+        ");
+
+        $lastId = $stmt->fetchColumn();
+        $nextNumber = $lastId ? ((int)substr($lastId, 2) + 1) : 1;
+
+        return 'RV' . str_pad((string)$nextNumber, 3, '0', STR_PAD_LEFT);
     }
 
     private function assertStockAvailable($items)

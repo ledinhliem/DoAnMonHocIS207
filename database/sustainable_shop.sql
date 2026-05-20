@@ -46,7 +46,9 @@ INSERT INTO `baiviet` (`MaBaiViet`, `TieuDe`, `NoiDung`, `HinhAnhBia`, `NgayDang
 ('BL003', 'Tẩy da chết thuần chay: Tại sao chúng ta nên nói không với hạt vi nhựa?', 'Hạt vi nhựa (Microbeads) - Kẻ thù thầm lặng. Hàng tỷ hạt nhựa nhỏ trong các loại kem tẩy tế bào chết công nghiệp đang trôi ra đại dương, xâm nhập vào chuỗi thức ăn và gây hại cho sức khỏe con người.\r\n\r\nGiải pháp từ nông sản Việt: Tại Zentro, chúng tôi tin dùng dòng tẩy da chết cà phê Đắk Lắk của Cocoon. Những hạt cà phê xay nhuyễn với kích thước chuẩn xác giúp loại bỏ lớp sừng già cỗi mà không gây xước da. Kết hợp cùng bơ ca cao Tiền Giang, sản phẩm không chỉ làm sạch mà còn dưỡng ẩm sâu. Quan trọng nhất, sau khi rửa trôi, hạt cà phê sẽ phân hủy hoàn toàn, trả lại sự trong lành cho nguồn nước.', 'BL003_TayDaChet.jpeg', '2026-04-24 16:45:00', 'U003'),
 ('BL004', 'Limloop và giấc mơ tái sinh rác thải nhựa thành nghệ thuật thủ công', 'Mỗi chiếc túi là một câu chuyện. Phải mất 500 năm để một chiếc túi nilon phân hủy, nhưng tại Limloop, chúng chỉ mất vài ngày để trở thành một phụ kiện thời trang. Quy trình \"Upcycling\" (Tái chế nâng cấp) bắt đầu bằng việc thu gom túi nilon cũ, khử trùng và cắt thành sợi.\r\n\r\nCác nghệ nhân là người khuyết tật sẽ tỉ mỉ dệt những sợi nilon này trên khung cửi truyền thống để tạo ra những tấm vải có vân màu độc bản. Mỗi chiếc túi Laptop hay túi Tote bạn mua tại Zentro không chỉ giúp \"giải cứu\" môi trường khỏi rác thải nhựa mà còn tạo ra sinh kế bền vững và sự tự tin cho những mảnh đời kém may mắn.', 'BL004_Limloop.webp', '2026-04-24 16:45:00', 'U004'),
 ('BL005','Nghệ thuật mang thiên nhiên vào nhà với nội thất mây tre đan','Xu hướng "mang thiên nhiên vào không gian sống" đang ngày càng được ưa chuộng. Không cần những vật liệu đắt tiền hay kim loại lạnh lẽo, nội thất mây tre đan mang lại sự ấm cúng, mộc mạc và bình yên. Điểm nhấn không gian: Các sản phẩm như thảm cói, đèn hoa sen hay tủ mây từ Mây Tre Đan Trà không chỉ có độ bền cao mà còn mang đậm dấu ấn thủ công truyền thống. Sợi mây, cói tự nhiên giúp điều hòa không khí, tạo cảm giác thư giãn tuyệt đối. Lựa chọn nội thất mây tre cũng là cách bạn ủng hộ các làng nghề Việt và giảm thiểu rác thải công nghiệp chế tác.','BL005.jpg','2026-05-05 09:00:00','U002'),
-('BL006','Căn bếp "Xanh": Bắt đầu từ những thay đổi nhỏ nhất','Nhà bếp thường là nơi thải ra lượng rác thải nhựa dùng một lần lớn nhất trong gia đình. Tuy nhiên, việc chuyển đổi sang một căn bếp "Eco-friendly" lại dễ dàng hơn bạn nghĩ. Thay thế đồ dùng thông thường: Hãy bắt đầu bằng việc từ chối màng bọc thực phẩm nilon và chuyển sang dùng màng vải sáp ong tự nhiên. Với rác thải sinh hoạt, các loại túi rác và găng tay sinh học phân hủy hoàn toàn từ AnEco là giải pháp hoàn hảo. Chỉ mất 6-12 tháng để chúng phân hủy thành mùn hữu cơ. Một căn bếp xanh không chỉ bảo vệ sức khỏe gia đình mà còn góp phần chữa lành Trái Đất.','BL006.jpeg','2026-05-08 10:30:00','U004');
+('BL006','Căn bếp "Xanh": Bắt đầu từ những thay đổi nhỏ nhất','Nhà bếp thường là nơi thải ra lượng rác thải nhựa dùng một lần lớn nhất trong gia đình. Tuy nhiên, việc chuyển đổi sang một căn bếp "Eco-friendly" lại dễ dàng hơn bạn nghĩ. Thay thế đồ dùng thông thường: Hãy bắt đầu bằng việc từ chối màng bọc thực phẩm nilon và chuyển sang dùng màng vải sáp ong tự nhiên. Với rác thải sinh hoạt, các loại túi rác và găng tay sinh học phân hủy hoàn toàn từ AnEco là giải pháp hoàn hảo. Chỉ mất 6-12 tháng để chúng phân hủy thành mùn hữu cơ. Một căn bếp xanh không chỉ bảo vệ sức khỏe gia đình mà còn góp phần chữa lành Trái Đất.','BL006.jpeg','2026-05-08 10:30:00','U004'),
+('BL007', 'Microplastics và sức khỏe: Vì sao nên giảm nhựa trong chăm sóc cá nhân', '1. Microplastics là gì và vì sao đáng lo? Microplastics là những mảnh nhựa siêu nhỏ được tạo ra khi các sản phẩm nhựa lớn phân rã theo thời gian. Chúng không chỉ xuất hiện trong môi trường mà còn được phát hiện trong cơ thể con người như máu, mô, sữa mẹ và các dịch sinh học khác. Điều này đặt ra nhiều lo ngại về ảnh hưởng lâu dài của nhựa đối với sức khỏe. \r\n\r\n2. Tác động tiềm ẩn đến sức khỏe. Một số nghiên cứu cho thấy microplastics có thể liên quan đến stress oxy hóa, viêm, rối loạn miễn dịch và ảnh hưởng đến hệ thần kinh hoặc sức khỏe sinh sản. Ngoài bản thân hạt nhựa, các hóa chất độc hại trong nhựa cũng có thể xâm nhập vào cơ thể và làm tăng nguy cơ gây hại cho tế bào. \r\n\r\n3. Giảm tiếp xúc với nhựa từ thói quen hằng ngày. Để hạn chế microplastics, chúng ta có thể tránh hâm nóng thức ăn trong hộp nhựa, ưu tiên thực phẩm ít bao bì, dùng bình nước thủy tinh hoặc inox, thay dụng cụ bếp nhựa bằng kim loại hoặc tre. Trong chăm sóc cá nhân, nên chọn xà phòng dạng thanh, dầu gội dạng thanh hoặc sản phẩm đóng gói bằng thủy tinh, nhôm và có thể refill. Kết luận: Giảm nhựa không chỉ giúp bảo vệ môi trường mà còn là cách chăm sóc sức khỏe chủ động hơn. Từ những lựa chọn nhỏ như đổi bao bì nhựa sang chai nhôm tái sử dụng, mỗi người đều có thể góp phần xây dựng lối sống an toàn và bền vững hơn.', 'BL007.webp', '2026-04-15 09:00:00', 'U001'),
+('BL008', 'Không chỉ là chai đựng: Giữ nhựa ra khỏi sản phẩm chăm sóc cá nhân', '1. Nhựa không chỉ nằm ở bao bì. Khi nói đến giảm nhựa, nhiều người thường nghĩ đến việc thay thế chai nhựa bằng chai tái sử dụng. Tuy nhiên, trong ngành chăm sóc cá nhân, nhựa còn có thể xuất hiện bên trong chính thành phần sản phẩm. Một số chất phụ gia trong nhựa có thể thôi nhiễm vào sản phẩm và đi vào cơ thể qua thực phẩm, nước uống hoặc mỹ phẩm sử dụng hằng ngày. \r\n\r\n2. Những thành phần cần chú ý. Một số thành phần như phthalates, nhựa lỏng và polyethylene có thể gây lo ngại cho sức khỏe và môi trường. Phthalates thường ẩn dưới tên gọi “fragrance”, nhựa lỏng có thể xuất hiện trong các chất kết thúc bằng “-cone” hoặc “-siloxane”, còn polyethylene thường được dùng trong hạt vi nhựa tẩy tế bào chết. Các chất này có thể góp phần gây ô nhiễm nhựa và ảnh hưởng đến hệ sinh thái khi trôi xuống nguồn nước. \r\n\r\n3. Lựa chọn sản phẩm minh bạch và ít nhựa hơn. Người tiêu dùng có thể bắt đầu bằng cách đọc bảng thành phần, ưu tiên sản phẩm có bao bì thủy tinh, nhôm hoặc có thể refill, đồng thời chọn thương hiệu công khai rõ ràng thành phần sử dụng. Những lựa chọn như dầu gội refill, nước rửa tay refill hay sữa dưỡng thể trong chai nhôm giúp giảm nhựa dùng một lần và hỗ trợ lối sống bền vững hơn. Kết luận: Giảm nhựa không chỉ là thay đổi bao bì bên ngoài, mà còn là quan tâm đến những gì có bên trong sản phẩm. Một sản phẩm chăm sóc cá nhân xanh cần an toàn hơn cho người dùng, minh bạch về thành phần và giảm tác động tiêu cực đến môi trường.', 'BL008.webp', '2026-04-18 09:00:00', 'U001');
 -- --------------------------------------------------------
 
 --
@@ -79,25 +81,44 @@ INSERT INTO `bienthesanpham` (`MaBienThe`, `MaSanPham`, `KichThuoc`, `MauSac`, `
 ('V010', 'P008', 'Bộ 3 (S - M - L)', NULL, 99000.00, 45),
 ('V011', 'P009', '230g', 'LemonGrass&Ginger', 520000.00, 5),
 ('V012', 'P009', '230g', 'Lemon&Lavender', 500000.00, 4),
-('V013','P010','96 x 60,4 cm',NULL,200000.00,10),
-('V014','P010','45 x 43 x 13.5 cm',NULL,200000.00,8),
-('V015','P011','Size M (cho nữ)',NULL,99000.00,40),
-('V016','P011','Size L (cho nam)',NULL,99000.00,60),
-('V017','P012','10 cái',NULL,35000.00,100),
-('V018','P013','120 x 120 cm',NULL,700000.00,5),
-('V019','P013','150 x 150 cm',NULL,780000.00,4),
-('V020','P014','25 cm',NULL,200000.00,10),
-('V021','P014','40 cm',NULL,250000.00,3),
-('V022','P014','50 cm',NULL,350000.00,2),
-('V023','P015','1m x 1m2',NULL,8500000.00,2),
-('V024','P016','Họa tiết tam giác',NULL,450000.00,15),
-('V025','P016','Họa tiết hình vuông',NULL,480000.00,13),
-('V026','P017','Họa tiết hoa sen',NULL,100000.00,56),
-('V027','P017','Họa tiết hoa Lan',NULL,100000.00,35),
-('V028','P017','Họa tiết cây tre',NULL,100000.00,40),
-('V029','P018',NULL,NULL,85000.00,1),
-('V030','P019',NULL,'Hồng Xám',150000.00,13),
-('V031','P019',NULL,'Đỏ Đen',180000.00,11);
+('V013', 'P010', '96 x 60,4 cm', NULL, 200000.00, 10),
+('V014', 'P010', '45 x 43 x 13.5 cm', NULL, 200000.00, 8),
+('V015', 'P011', 'Size M (cho nữ)', NULL, 99000.00, 40),
+('V016', 'P011', 'Size L (cho nam)', NULL, 99000.00, 60),
+('V017', 'P012', '10 cái', NULL, 35000.00, 100),
+('V018', 'P013', '120 x 120 cm', NULL, 700000.00, 5),
+('V019', 'P013', '150 x 150 cm', NULL, 780000.00, 4),
+('V020', 'P014', '25 cm', NULL, 200000.00, 10),
+('V021', 'P014', '40 cm', NULL, 250000.00, 3),
+('V022', 'P014', '50 cm', NULL, 350000.00, 2),
+('V023', 'P015', '1m x 1m2', NULL, 8500000.00, 2),
+('V024', 'P016', 'Họa tiết tam giác', NULL, 450000.00, 15),
+('V025', 'P016', 'Họa tiết hình vuông', NULL, 480000.00, 13),
+('V026', 'P017', 'Họa tiết hoa sen', NULL, 100000.00, 56),
+('V027', 'P017', 'Họa tiết hoa Lan', NULL, 100000.00, 35),
+('V028', 'P017', 'Họa tiết cây tre', NULL, 100000.00, 40),
+('V029', 'P018', NULL, NULL, 85000.00, 1),
+('V030', 'P019', NULL, 'Hồng Xám', 150000.00, 13),
+('V031', 'P019', NULL, 'Đỏ Đen', 180000.00, 11),
+('V032', 'P020', 'Size S', 'Xám Oyster', 1590000.00, 10),
+('V033', 'P020', 'Size M', 'Đen', 1590000.00, 12),
+('V034', 'P021', 'Size M', 'Xanh Navy', 390000.00, 20),
+('V035', 'P021', 'Size L', 'Đen', 390000.00, 18),
+('V036', 'P022', 'Size M', 'Oyster', 1490000.00, 10),
+('V037', 'P022', 'Size L', 'Đen', 1490000.00, 8),
+('V038', 'P023', 'Size S', 'Đen', 990000.00, 9),
+('V039', 'P023', 'Size M', 'Dusty Pink', 990000.00, 11),
+('V042', 'P025', '475ml', NULL, 720000.00, 15),
+('V043', 'P026', '475ml', NULL, 680000.00, 14),
+('V044', 'P027', '475ml', NULL, 520000.00, 20),
+('V045', 'P028', '120ml', NULL, 590000.00, 13),
+('V046', 'P029', 'Travel set', NULL, 890000.00, 12),
+('V047', 'P024', 'Size S', 'Blush Marl', 290000.00, 10),
+('V048', 'P024', 'Size M', 'Blush Marl', 290000.00, 12),
+('V049', 'P024', 'Size L', 'Blush Marl', 290000.00, 8),
+('V050', 'P024', 'Size S', 'Dove Marl', 290000.00, 10),
+('V051', 'P024', 'Size M', 'Dove Marl', 290000.00, 12),
+('V052', 'P024', 'Size L', 'Dove Marl', 290000.00, 8);
 -- --------------------------------------------------------
 
 --
@@ -404,7 +425,73 @@ INSERT INTO `hinhanhsanpham` (`MaHinhAnh`, `MaSanPham`, `DuongDan`) VALUES
 
 ('IMG046','P019','P019_V031_DenDo1.jpg'),
 ('IMG047','P019','P019_V031_DenDo2.jpg'),
-('IMG048','P019','P019_V031_DenDo3.jpg');
+('IMG048','P019','P019_V031_DenDo3.jpg'),
+('IMG049', 'P020', 'P020_V032_BoodyQuarterZip_Oyster_Texture.webp'),
+('IMG050', 'P020', 'P020_V032_BoodyQuarterZip_Oyster_Model.webp'),
+('IMG051', 'P020', 'P020_V032_BoodyQuarterZip_Oyster_Back.webp'),
+('IMG052', 'P020', 'P020_V032_BoodyQuarterZip_Oyster_Front.jpg'),
+
+('IMG053', 'P020', 'P020_V033_BoodyQuarterZip_Black_Front.webp'),
+('IMG054', 'P020', 'P020_V033_BoodyQuarterZip_Black_Texture.webp'),
+
+('IMG055', 'P021', 'P021_V034_BoodySeamfreeBoxer_Navy_Front.webp'),
+('IMG056', 'P021', 'P021_V034_BoodySeamfreeBoxer_Navy_Texture.jpg'),
+('IMG057', 'P021', 'P021_V034_BoodySeamfreeBoxer_Navy_Model.webp'),
+('IMG058', 'P021', 'P021_V034_BoodySeamfreeBoxer_Navy_Detail.webp'),
+
+('IMG059', 'P021', 'P021_V035_BoodySeamfreeBoxer_Black_Front.webp'),
+('IMG060', 'P021', 'P021_V035_BoodySeamfreeBoxer_Black_Texture.jpg'),
+('IMG061', 'P021', 'P021_V035_BoodySeamfreeBoxer_Black_Model.webp'),
+('IMG062', 'P021', 'P021_V035_BoodySeamfreeBoxer_Black_Detail.webp'),
+
+('IMG063', 'P022', 'P022_V036_BoodyCrewNeckSweater_Oyster_Front.webp'),
+('IMG064', 'P022', 'P022_V036_BoodyCrewNeckSweater_Oyster_Texture.jpg'),
+('IMG065', 'P022', 'P022_V036_BoodyCrewNeckSweater_Oyster_Model.webp'),
+('IMG066', 'P022', 'P022_V036_BoodyCrewNeckSweater_Oyster_Detail.jpg'),
+
+('IMG067', 'P022', 'P022_V037_BoodyCrewNeckSweater_Black_Front.webp'),
+('IMG068', 'P022', 'P022_V037_BoodyCrewNeckSweater_Black_Texture.jpg'),
+('IMG069', 'P022', 'P022_V037_BoodyCrewNeckSweater_Black_Model.webp'),
+('IMG070', 'P022', 'P022_V037_BoodyCrewNeckSweater_Black_Detail.jpg'),
+
+('IMG071', 'P023', 'P023_V038_BoodyGoodnightSlip_Black_Front.webp'),
+('IMG072', 'P023', 'P023_V038_BoodyGoodnightSlip_Black_Texture.jpg'),
+('IMG073', 'P023', 'P023_V038_BoodyGoodnightSlip_Black_Model.webp'),
+
+('IMG074', 'P023', 'P023_V039_BoodyGoodnightSlip_DustyPink_Front.webp'),
+('IMG075', 'P023', 'P023_V039_BoodyGoodnightSlip_DustyPink_Back.webp'),
+('IMG076', 'P023', 'P023_V039_BoodyGoodnightSlip_DustyPink_Texture.jpg'),
+('IMG077', 'P023', 'P023_V039_BoodyGoodnightSlip_DustyPink_Model.webp'),
+
+('IMG078', 'P024', 'P024_V040_BoodyChunkyBedSocks_BlushMarl_Front.webp'),
+('IMG079', 'P024', 'P024_V040_BoodyChunkyBedSocks_BlushMarl_SizeGuide.webp'),
+
+('IMG080', 'P024', 'P024_V041_BoodyChunkyBedSocks_DoveMarl_Front.webp'),
+
+('IMG081', 'P025', 'P025_V042_PlaineShampoo_1.webp'),
+('IMG082', 'P025', 'P025_V042_PlaineShampoo_2.webp'),
+('IMG083', 'P025', 'P025_V042_PlaineShampoo_3.webp'),
+('IMG084', 'P025', 'P025_V042_PlaineShampoo_4.webp'),
+
+('IMG085', 'P026', 'P026_V043_PlaineBodyLotion_1.webp'),
+('IMG086', 'P026', 'P026_V043_PlaineBodyLotion_2.webp'),
+('IMG087', 'P026', 'P026_V043_PlaineBodyLotion_3.webp'),
+('IMG088', 'P026', 'P026_V043_PlaineBodyLotion_4.webp'),
+
+('IMG089', 'P027', 'P027_V044_PlaineHandWash_1.webp'),
+('IMG090', 'P027', 'P027_V044_PlaineHandWash_2.webp'),
+('IMG091', 'P027', 'P027_V044_PlaineHandWash_3.webp'),
+('IMG092', 'P027', 'P027_V044_PlaineHandWash_4.webp'),
+
+('IMG093', 'P028', 'P028_V045_PlaineFaceToner_1.webp'),
+('IMG094', 'P028', 'P028_V045_PlaineFaceToner_2.webp'),
+('IMG095', 'P028', 'P028_V045_PlaineFaceToner_3.webp'),
+('IMG096', 'P028', 'P028_V045_PlaineFaceToner_4.webp'),
+
+('IMG097', 'P029', 'P029_V046_PlaineTravelSet_1.webp'),
+('IMG098', 'P029', 'P029_V046_PlaineTravelSet_2.webp'),
+('IMG099', 'P029', 'P029_V046_PlaineTravelSet_3.webp'),
+('IMG100', 'P029', 'P029_V046_PlaineTravelSet_4.webp');
 -- --------------------------------------------------------
 
 --
@@ -456,7 +543,26 @@ INSERT INTO `nguoidung` (`MaNguoiDung`, `HoTen`, `Email`, `MatKhau`, `SoDienThoa
 ('U002', 'Nguyễn Thị B', 'khachhang01@gmail.com.vn', '123456', '0911111111', '2', '2026-04-27 09:03:37'),
 ('U003', 'Nguyễn Thị C', 'khachhang02@gmail.com.vn', '123456', '0922222222', '2', '2026-04-27 09:03:37'),
 ('U004', 'Nguyễn Thị D', 'khachhang03@gmail.com.vn', '123456', '0933333333', '2', '2026-04-27 09:03:37'),
-('U005', 'Nguyễn Thị E', 'khachhang04@gmail.com.vn', '123456', '0944444444', '2', '2026-04-27 09:03:37');
+('U005', 'Nguyễn Thị E', 'khachhang04@gmail.com.vn', '123456', '0944444444', '2', '2026-04-27 09:03:37'),
+('U006', 'Admin Test 01', 'admin01@zentro.test', '123456', '0901000001', '1', '2026-05-20 13:45:00'),
+('U007', 'Admin Test 02', 'admin02@zentro.test', '123456', '0901000002', '1', '2026-05-20 13:45:00'),
+('U008', 'Admin Test 03', 'admin03@zentro.test', '123456', '0901000003', '1', '2026-05-20 13:45:00'),
+('U009', 'User Test 01', 'user01@zentro.test', '123456', '0911000001', '2', '2026-05-20 13:45:00'),
+('U010', 'User Test 02', 'user02@zentro.test', '123456', '0911000002', '2', '2026-05-20 13:45:00'),
+('U011', 'User Test 03', 'user03@zentro.test', '123456', '0911000003', '2', '2026-05-20 13:45:00');
+
+-- --------------------------------------------------------
+
+--
+-- Cấu trúc bảng cho bảng `newsletter_subscribers`
+--
+
+CREATE TABLE IF NOT EXISTS `newsletter_subscribers` (
+  `MaDangKy` INT AUTO_INCREMENT PRIMARY KEY,
+  `Email` VARCHAR(150) NOT NULL UNIQUE,
+  `NgayDangKy` DATETIME DEFAULT CURRENT_TIMESTAMP,
+  `TrangThai` TINYINT(1) DEFAULT 1
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- --------------------------------------------------------
 
@@ -630,7 +736,17 @@ INSERT INTO `sanpham` (`MaSanPham`, `TenSanPham`, `MaDanhMuc`, `MaThuongHieu`, `
 ('P016', 'Chăn bông', 'C002', 'B008', 'M011', 'Chiếc chăn được làm từ 100% vải cotton vuông cùng tông màu, được ghép lại với nhau. Được làm thủ công bởi các nghệ nhân nữ.', 85, 1, 'Mekongquilts', 'Vật liệu tự nhiên', 0, 1),
 ('P017', 'Quạt cầm tay', 'C002', 'B008', 'M012', 'Quạt cầm tay truyền thống làm từ lá cọ, thêu hoa sen bằng chỉ cotton.', 90, 1, 'Mekongquilts', 'Vật liệu tự nhiên', 0, 1),
 ('P018', 'Loa bằng tre', 'C002', 'B008', 'M010', 'Loa được làm từ tre cao cấp nhất, mang đến chất lượng âm thanh vượt trội cùng vẻ ngoài thanh lịch.', 84, 1, 'Mekongquilts', 'Vật liệu tự nhiên', 0, 1),
-('P019', 'Găng tay lò nướng', 'C001', 'B008', 'M011', 'Chất liệu 100% cotton, kích thước 16×26 cm và có móc treo để dễ dàng cất giữ. Được làm thủ công bởi các nghệ nhân nữ.', 90, 1, 'Mekongquilts', 'Vật liệu tự nhiên', 0, 1);
+('P019', 'Găng tay lò nướng', 'C001', 'B008', 'M011', 'Chất liệu 100% cotton, kích thước 16×26 cm và có móc treo để dễ dàng cất giữ. Được làm thủ công bởi các nghệ nhân nữ.', 90, 1, 'Mekongquilts', 'Vật liệu tự nhiên', 0, 1),
+('P020', 'Áo sweater nam Bamboo Quarter Zip', 'C003', 'B011', 'M013', 'Áo sweater nam cổ khóa 1/4, form thoải mái, chất vải mềm và dày vừa phải, phù hợp mặc hằng ngày hoặc phối nhiều lớp.', 92, 1, 'Boody', 'Sợi tre hữu cơ, giảm phụ thuộc vào sợi tổng hợp thông thường.', 0, 1),
+('P021', 'Quần boxer nam Seamfree Bamboo', 'C003', 'B011', 'M014', 'Quần boxer nam thiết kế seamfree, ôm vừa cơ thể, chất liệu mềm nhẹ và co giãn tốt, phù hợp mặc hằng ngày.', 90, 1, 'Boody', 'Sợi tre và cotton mềm nhẹ, thân thiện hơn với da và môi trường.', 0, 1),
+('P022', 'Áo sweater nam cổ tròn Bamboo', 'C003', 'B011', 'M013', 'Áo sweater nam cổ tròn, thiết kế basic dễ phối đồ, chất liệu mềm mại, thoải mái và phù hợp với phong cách thời trang tối giản.', 92, 1, 'Boody', 'Sợi tre hữu cơ, hỗ trợ lựa chọn thời trang bền vững hơn.', 0, 1),
+('P023', 'Đầm ngủ nữ Bamboo Goodnight Slip', 'C003', 'B011', 'M014', 'Đầm ngủ nữ dáng slip nhẹ nhàng, chất liệu mềm, thoáng và co giãn nhẹ, phù hợp cho mặc nhà hoặc nghỉ ngơi.', 89, 1, 'Boody', 'Chất liệu sợi tre phối cotton, mềm mại và dễ phân hủy hơn vật liệu tổng hợp.', 0, 1),
+('P024', 'Vớ ngủ Bamboo Chunky Bed Socks', 'C003', 'B011', 'M013', 'Vớ ngủ dáng crew, chất liệu mềm và ấm nhẹ, phù hợp sử dụng trong nhà, khi ngủ hoặc trong thời tiết mát.', 91, 1, 'Boody', 'Sợi tre hữu cơ, giảm sử dụng vật liệu khó phân hủy.', 0, 1),
+('P025', 'Dầu gội refill Plaine Products', 'C004', 'B012', 'M015', 'Dầu gội chăm sóc tóc trong chai nhôm có thể refill và tái sử dụng, giúp làm sạch tóc mà vẫn giảm bao bì nhựa dùng một lần.', 96, 1, 'Plaine Products', 'Chai nhôm refill giúp giảm chai nhựa dùng một lần.', 1, 1),
+('P026', 'Sữa dưỡng thể refill Plaine Products', 'C004', 'B012', 'M015', 'Sữa dưỡng thể giúp cấp ẩm cho da, sử dụng bao bì chai nhôm có thể refill và tái sử dụng nhiều lần.', 95, 1, 'Plaine Products', 'Bao bì nhôm tái sử dụng giúp giảm rác thải nhựa.', 1, 1),
+('P027', 'Nước rửa tay refill Plaine Products', 'C004', 'B012', 'M016', 'Nước rửa tay dùng hằng ngày, thiết kế trong chai nhôm refill, phù hợp với thói quen chăm sóc cá nhân bền vững.', 95, 1, 'Plaine Products', 'Mô hình refill giúp giảm bao bì nhựa sau mỗi lần mua.', 1, 1),
+('P028', 'Toner da mặt refill Plaine Products', 'C004', 'B012', 'M016', 'Toner chăm sóc da mặt dạng chai nhôm nhỏ gọn, có thể refill và tái sử dụng, phù hợp cho quy trình skincare hằng ngày.', 94, 1, 'Plaine Products', 'Giảm bao bì nhựa trong quy trình skincare.', 1, 1),
+('P029', 'Bộ travel set refill Plaine Products', 'C004', 'B012', 'M017', 'Bộ sản phẩm chăm sóc cá nhân mini gồm dầu gội, dầu xả, sữa tắm và sữa dưỡng thể, phù hợp khi đi du lịch hoặc mang theo hằng ngày.', 97, 1, 'Plaine Products', 'Bao bì refill mini, có thể tái sử dụng và giảm rác thải nhựa.', 1, 1);
 -- --------------------------------------------------------
 
 --
@@ -665,10 +781,12 @@ INSERT INTO `thuonghieu` (`MaThuongHieu`, `TenThuongHieu`, `XuatXu`) VALUES
 ('B004', 'Coolmate', 'Việt Nam'),
 ('B005', 'Limloop', 'Việt Nam'),
 ('B006', 'Lại Đây Refill', 'Việt Nam'),
-('B007', 'Himalaya', 'Việt Nam');
+('B007', 'Himalaya', 'Việt Nam'),
 ('B008', 'Mekongquilts', 'Việt Nam'),
 ('B009', 'AnEco', 'Việt Nam'),
-('B010', 'Mây Tre Đan Trà', 'Việt Nam');
+('B010', 'Mây Tre Đan Trà', 'Việt Nam'),
+('B011', 'Boody', 'Úc'),
+('B012', 'Plaine Products', 'Hoa Kỳ');
 
 -- --------------------------------------------------------
 
@@ -698,7 +816,12 @@ INSERT INTO `vatlieu` (`MaVatLieu`, `TenVatLieu`, `MoTa`) VALUES
 ('M009', 'Nhựa sinh học (PLA & PBAT)', 'Nguyên liệu sinh học có nguồn gốc từ tự nhiên (như tinh bột ngô), có khả năng phân hủy hoàn toàn thành mùn, nước và CO2 trong thời gian ngắn.'),
 ('M010', 'Sợi cói, mây & tre tự nhiên', 'Các loại vật liệu từ thực vật phát triển nhanh, được thu hoạch và xử lý thủ công không qua hóa chất, thân thiện tuyệt đối với môi trường.'),
 ('M011', '100% Cotton tự nhiên', 'Sợi bông tinh khiết, thoáng khí, không sử dụng hóa chất nhuộm công nghiệp độc hại, an toàn cho da và có thể phân hủy sinh học.'),
-('M012', 'Lá cọ tự nhiên', 'Tận dụng lá cọ phơi khô tự nhiên, được các nghệ nhân đan lát thủ công, mang đậm tính truyền thống và không tạo ra rác thải khó phân hủy.');
+('M012', 'Lá cọ tự nhiên', 'Tận dụng lá cọ phơi khô tự nhiên, được các nghệ nhân đan lát thủ công, mang đậm tính truyền thống và không tạo ra rác thải khó phân hủy.'),
+('M013', 'Sợi tre hữu cơ', 'Sợi tre mềm, thoáng khí, có nguồn gốc từ tre trồng bền vững, phù hợp cho sản phẩm thời trang mặc hằng ngày.'),
+('M014', 'Sợi tre & cotton', 'Chất liệu kết hợp giữa sợi tre và cotton, tạo cảm giác mềm mại, co giãn và thân thiện hơn với môi trường.'),
+('M015', 'Chai nhôm tái sử dụng', 'Bao bì nhôm có thể tái sử dụng và refill nhiều lần, giúp giảm chai nhựa dùng một lần trong chăm sóc cá nhân.'),
+('M016', 'Công thức refill không sulfate', 'Công thức chăm sóc cá nhân dạng refill, hạn chế hóa chất mạnh và giảm rác thải bao bì nhựa.'),
+('M017', 'Bao bì refill thân thiện môi trường', 'Bao bì thiết kế cho mô hình refill, hỗ trợ tái sử dụng và giảm lượng bao bì thải ra sau mỗi lần mua.');
 -- --------------------------------------------------------
 
 --

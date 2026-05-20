@@ -298,9 +298,10 @@ class OrderController extends Controller
             'title' => 'Theo dõi đơn hàng',
             'order' => $order,
             'helpMessage' => $_SESSION['help_message'] ?? '',
+            'reviewMessage' => $_SESSION['review_message'] ?? '',
         ]);
 
-        unset($_SESSION['help_message']);
+        unset($_SESSION['help_message'], $_SESSION['review_message']);
     }
 
     public function help()
@@ -313,35 +314,86 @@ class OrderController extends Controller
 
     public function feedback()
     {
+        $this->requireLogin();
+
+        $orderId = trim($_GET['id'] ?? '');
+        $productId = trim($_GET['product'] ?? '');
+        $userId = $_SESSION['user_id'];
+        $reviewProduct = null;
+        $pageError = '';
+
+        if ($orderId === '' || $productId === '') {
+            $pageError = 'Vui lòng chọn sản phẩm trong đơn hàng đã hoàn thành để đánh giá.';
+        } else {
+            $reviewProduct = $this->orderModel->getReviewableProduct($orderId, $productId, $userId);
+
+            if (!$reviewProduct) {
+                $pageError = 'Chỉ có thể đánh giá sản phẩm thuộc đơn hàng đã hoàn thành.';
+            } elseif ($this->orderModel->hasUserReviewedProduct($userId, $productId)) {
+                $pageError = 'Bạn đã đánh giá sản phẩm này rồi.';
+            }
+        }
+
         $this->view('order/feedback', [
             'title' => 'Feedback',
-            'order' => $this->orderModel->getLatestOrder(),
+            'order' => ['MaDonHang' => $orderId],
+            'product' => $reviewProduct,
+            'pageError' => $pageError,
             'errors' => $_SESSION['feedback_errors'] ?? [],
             'success' => $_SESSION['success'] ?? '',
             'old' => $_SESSION['feedback_old'] ?? [],
         ]);
         unset($_SESSION['feedback_errors'], $_SESSION['success'], $_SESSION['feedback_old']);
+        return;
     }
 
     public function submitFeedback()
     {
+        $this->requireLogin();
+
         if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
             header('Location: ?url=order/feedback');
             exit;
         }
 
-        $data = ['rating' => $_POST['rating'] ?? '', 'message' => trim($_POST['message'] ?? '')];
+        $orderId = trim($_POST['order_id'] ?? '');
+        $productId = trim($_POST['product_id'] ?? '');
+        $userId = $_SESSION['user_id'];
+
+        $data = [
+            'rating' => $_POST['rating'] ?? '',
+            'message' => trim($_POST['message'] ?? ''),
+        ];
         $_SESSION['feedback_old'] = $data;
         $errors = $this->orderModel->validateFeedback($data);
 
+        if ($orderId === '' || $productId === '') {
+            $errors['general'] = 'Thiếu thông tin đơn hàng hoặc sản phẩm.';
+        } elseif (!$this->orderModel->getReviewableProduct($orderId, $productId, $userId)) {
+            $errors['general'] = 'Chỉ có thể đánh giá sản phẩm thuộc đơn hàng đã hoàn thành.';
+        } elseif ($this->orderModel->hasUserReviewedProduct($userId, $productId)) {
+            $errors['general'] = 'Bạn đã đánh giá sản phẩm này rồi.';
+        }
+
         if (!empty($errors)) {
             $_SESSION['feedback_errors'] = $errors;
-            header('Location: ?url=order/feedback');
+            header('Location: ?url=order/feedback&id=' . urlencode($orderId) . '&product=' . urlencode($productId));
             exit;
         }
 
-        $_SESSION['success'] = 'Cảm ơn bạn đã gửi feedback.';
-        header('Location: ?url=order/success');
+        $saved = $this->orderModel->saveProductReview(
+            $userId,
+            $productId,
+            $data['rating'],
+            $data['message']
+        );
+
+        $_SESSION['review_message'] = $saved
+            ? 'Cảm ơn bạn đã đánh giá. Đánh giá đang chờ admin duyệt.'
+            : 'Không thể lưu đánh giá, vui lòng thử lại.';
+
+        unset($_SESSION['feedback_old']);
+        header('Location: ?url=order/tracking&id=' . urlencode($orderId));
         exit;
     }
 }

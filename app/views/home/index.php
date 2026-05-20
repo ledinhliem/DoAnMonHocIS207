@@ -215,28 +215,9 @@ if (!empty($data['categories'])) {
     </section>
 
     <!-- Liên hệ, CTA -->
-    <section class="py-24 px-8">
-        <div
-            class="max-w-5xl mx-auto bg-primary text-on-primary rounded-2xl p-12 md:p-20 text-center relative overflow-hidden">
-            <div class="absolute top-0 right-0 w-64 h-64 bg-primary-container rounded-full -translate-y-1/2 translate-x-1/2 opacity-20">
-            </div>
-            <div
-                class="absolute bottom-0 left-0 w-48 h-48 bg-primary-container rounded-full translate-y-1/2 -translate-x-1/2 opacity-20">
-            </div>
-            <h2 class="font-headline text-4xl md:text-5xl font-extrabold mb-6 relative z-10">Tham gia cộng đồng xanh.
-            </h2>
-            <p class="text-on-primary/80 text-lg mb-10 max-w-xl mx-auto relative z-10">Nhận mẹo sống xanh, cập nhật sản
-                phẩm có trách nhiệm và ưu đãi 10% cho đơn hàng đầu tiên.</p>
-            <form class="flex flex-col md:flex-row gap-4 max-w-lg mx-auto relative z-10" method="post" action="#">
-                <input
-                    class="flex-grow bg-white/10 border-transparent focus:border-white/40 focus:ring-0 rounded-lg px-6 py-4 text-white placeholder:text-white/50 transition-all"
-                    placeholder="Địa chỉ email" type="email" name="email" />
-                <button
-                    class="bg-surface text-primary font-bold px-8 py-4 rounded-lg hover:bg-surface-bright transition-colors"
-                    type="submit">Đăng ký</button>
-            </form>
-        </div>
-    </section>
+    <?php $newsletterOuterClass = 'py-24 px-8 max-w-7xl mx-auto'; ?>
+    <?php include __DIR__ . '/../components/newsletter_cta.php'; ?>
+    <?php unset($newsletterOuterClass); ?>
 </main>
 
 <?php include __DIR__ . '/../layouts/footer.php'; ?>

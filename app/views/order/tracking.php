@@ -48,6 +48,12 @@
             </div>
         <?php endif; ?>
 
+        <?php if (!empty($reviewMessage)): ?>
+            <div class="mb-6 rounded-2xl bg-green-100 text-green-800 px-5 py-4">
+                <?= htmlspecialchars($reviewMessage) ?>
+            </div>
+        <?php endif; ?>
+
         <?php if (empty($order)): ?>
             <div class="bg-white rounded-2xl border border-[#E5E7D8] p-8">
                 <p class="text-lg text-gray-700 mb-4">
@@ -152,6 +158,7 @@
                         <?php foreach ($items as $item): ?>
                             <?php
                                 $productName = $item['TenSanPham'] ?? 'Sản phẩm';
+                                $productId = $item['MaSanPham'] ?? '';
                                 $maBienThe = $item['MaBienThe'] ?? '';
                                 $variantText = trim(($item['KichThuoc'] ?? '') . ' ' . ($item['MauSac'] ?? ''));
                                 $quantity = (int)($item['SoLuong'] ?? 0);
@@ -195,6 +202,13 @@
                                     <p class="text-sm text-gray-500">
                                         Số lượng: <?= $quantity ?>
                                     </p>
+
+                                    <?php if ((string)$status === '3' && $productId !== ''): ?>
+                                        <a href="?url=order/feedback&id=<?= urlencode($orderId) ?>&product=<?= urlencode($productId) ?>"
+                                           class="inline-block mt-3 px-4 py-2 rounded-lg bg-[#2F512A] text-white text-sm font-semibold">
+                                            Đánh giá
+                                        </a>
+                                    <?php endif; ?>
                                 </div>
 
                                 <div class="text-right">

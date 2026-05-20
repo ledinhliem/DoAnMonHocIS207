@@ -84,6 +84,7 @@
                                     <?php foreach ($items as $item): ?>
                                         <?php
                                             $productName = $item['TenSanPham'] ?? 'Sản phẩm';
+                                            $productId = $item['MaSanPham'] ?? '';
                                             $maBienThe = $item['MaBienThe'] ?? '';
                                             $variantText = trim(($item['KichThuoc'] ?? '') . ' ' . ($item['MauSac'] ?? ''));
                                             $quantity = (int)($item['SoLuong'] ?? 0);
@@ -127,6 +128,13 @@
                                                 <p class="text-sm text-gray-500">
                                                     Số lượng: <?= $quantity ?>
                                                 </p>
+
+                                                <?php if ((string)$status === '3' && $productId !== ''): ?>
+                                                    <a href="?url=order/feedback&id=<?= urlencode($orderId) ?>&product=<?= urlencode($productId) ?>"
+                                                       class="inline-block mt-3 px-4 py-2 rounded-lg bg-[#2F512A] text-white text-sm font-semibold">
+                                                        Đánh giá
+                                                    </a>
+                                                <?php endif; ?>
                                             </div>
 
                                             <div class="text-right">

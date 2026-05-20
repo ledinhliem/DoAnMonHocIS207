@@ -163,23 +163,7 @@
     </section>
 
     <!-- ── CTA Section ── -->
-    <section class="bg-surface-container-high rounded-3xl p-12 md:p-24 text-center">
-        <h2 class="text-4xl md:text-6xl font-bold font-headline mb-8 tracking-tight">
-            Hãy cùng viết tiếp <br/> câu chuyện này.
-        </h2>
-        <p class="max-w-2xl mx-auto text-on-surface-variant text-lg mb-12">
-            Đăng ký nhận bản tin Zentro Journal để cập nhật về các dự án bền vững,
-            vật liệu mới và câu chuyện từ những người nghệ nhân.
-        </p>
-        <div data-newsletter class="flex flex-col md:flex-row justify-center gap-4 max-w-md mx-auto">
-            <input
-                type="email"
-                placeholder="Email của bạn"
-                class="zentro-input flex-grow"
-            >
-            <button class="zentro-button md:w-auto px-8">Tham gia ngay</button>
-        </div>
-    </section>
+    <?php include __DIR__ . '/../components/newsletter_cta.php'; ?>
 
 </main>
 
