@@ -44,8 +44,9 @@ INSERT INTO `baiviet` (`MaBaiViet`, `TieuDe`, `NoiDung`, `HinhAnhBia`, `NgayDang
 ('BL001', 'Hành trình Zero Waste: Từ ý tưởng đến lối sống bền vững mỗi ngày', '1. Cốt lõi của Zero Waste: Nguyên tắc 5R. Để bắt đầu, bạn không cần phải mua sắm những thiết bị đắt tiền. Hãy áp dụng triệt để nguyên tắc 5R: Refuse (Từ chối) những thứ không cần thiết; Reduce (Tiết giảm) mua sắm bốc đồng; Reuse (Tái sử dụng) các vật dụng như bình nước, túi vải; Recycle (Tái chế) rác vô cơ và Rot (Ủ phân) rác hữu cơ.\r\n\r\n2. 3 Bước Đơn Giản Để Bắt Đầu. Bạn có thể bắt đầu từ việc mang theo bộ dụng cụ ăn uống cá nhân và ống hút cỏ bàng Equo khi đi cà phê. Tiếp theo, hãy thay đổi không gian phòng tắm bằng bàn chải tre và mỹ phẩm thuần chay Cocoon để loại bỏ hạt vi nhựa.\r\n\r\nKết luận: Zero Waste không phải là sự hoàn hảo, mà là nỗ lực của hàng triệu người làm điều đó một cách không hoàn hảo để bảo vệ Trái Đất.', 'BL001_ZeroWaste.jpg', '2026-04-10 08:30:00', 'U001'),
 ('BL002', 'Công nghệ vải sợi Cà phê: Bước đột phá trong ngành thời trang tuần hoàn', 'Thời trang xanh không còn là xa xỉ. Ngành dệt may là ngành gây ô nhiễm thứ hai thế giới, nhưng sợi S.Café® đang thay đổi điều đó. Quy trình bắt đầu bằng việc thu gom bã cà phê từ các chuỗi cửa hàng, sau đó nghiền nhỏ thành bột mịn và trộn với polymer từ chai nhựa PET tái chế.\r\n\r\nƯu điểm vượt trội: Vải sợi cà phê có khả năng khử mùi tự nhiên (nhờ cấu trúc xốp của bã cafe), khô nhanh gấp 200% so với cotton và chống tia UV hiệu quả. Những chiếc áo Polo của Coolmate hay giày ShoeX tại Zentro chính là minh chứng cho việc phế phẩm nông nghiệp có thể trở thành sản phẩm thời trang cao cấp, bền bỉ và thân thiện với môi trường.', 'BL002_VaiSoiCafe.webp', '2026-04-15 14:20:00', 'U002'),
 ('BL003', 'Tẩy da chết thuần chay: Tại sao chúng ta nên nói không với hạt vi nhựa?', 'Hạt vi nhựa (Microbeads) - Kẻ thù thầm lặng. Hàng tỷ hạt nhựa nhỏ trong các loại kem tẩy tế bào chết công nghiệp đang trôi ra đại dương, xâm nhập vào chuỗi thức ăn và gây hại cho sức khỏe con người.\r\n\r\nGiải pháp từ nông sản Việt: Tại Zentro, chúng tôi tin dùng dòng tẩy da chết cà phê Đắk Lắk của Cocoon. Những hạt cà phê xay nhuyễn với kích thước chuẩn xác giúp loại bỏ lớp sừng già cỗi mà không gây xước da. Kết hợp cùng bơ ca cao Tiền Giang, sản phẩm không chỉ làm sạch mà còn dưỡng ẩm sâu. Quan trọng nhất, sau khi rửa trôi, hạt cà phê sẽ phân hủy hoàn toàn, trả lại sự trong lành cho nguồn nước.', 'BL003_TayDaChet.jpeg', '2026-04-24 16:45:00', 'U003'),
-('BL004', 'Limloop và giấc mơ tái sinh rác thải nhựa thành nghệ thuật thủ công', 'Mỗi chiếc túi là một câu chuyện. Phải mất 500 năm để một chiếc túi nilon phân hủy, nhưng tại Limloop, chúng chỉ mất vài ngày để trở thành một phụ kiện thời trang. Quy trình \"Upcycling\" (Tái chế nâng cấp) bắt đầu bằng việc thu gom túi nilon cũ, khử trùng và cắt thành sợi.\r\n\r\nCác nghệ nhân là người khuyết tật sẽ tỉ mỉ dệt những sợi nilon này trên khung cửi truyền thống để tạo ra những tấm vải có vân màu độc bản. Mỗi chiếc túi Laptop hay túi Tote bạn mua tại Zentro không chỉ giúp \"giải cứu\" môi trường khỏi rác thải nhựa mà còn tạo ra sinh kế bền vững và sự tự tin cho những mảnh đời kém may mắn.', 'BL004_Limloop.webp', '2026-04-24 16:45:00', 'U004');
-
+('BL004', 'Limloop và giấc mơ tái sinh rác thải nhựa thành nghệ thuật thủ công', 'Mỗi chiếc túi là một câu chuyện. Phải mất 500 năm để một chiếc túi nilon phân hủy, nhưng tại Limloop, chúng chỉ mất vài ngày để trở thành một phụ kiện thời trang. Quy trình \"Upcycling\" (Tái chế nâng cấp) bắt đầu bằng việc thu gom túi nilon cũ, khử trùng và cắt thành sợi.\r\n\r\nCác nghệ nhân là người khuyết tật sẽ tỉ mỉ dệt những sợi nilon này trên khung cửi truyền thống để tạo ra những tấm vải có vân màu độc bản. Mỗi chiếc túi Laptop hay túi Tote bạn mua tại Zentro không chỉ giúp \"giải cứu\" môi trường khỏi rác thải nhựa mà còn tạo ra sinh kế bền vững và sự tự tin cho những mảnh đời kém may mắn.', 'BL004_Limloop.webp', '2026-04-24 16:45:00', 'U004'),
+('BL005','Nghệ thuật mang thiên nhiên vào nhà với nội thất mây tre đan','Xu hướng "mang thiên nhiên vào không gian sống" đang ngày càng được ưa chuộng. Không cần những vật liệu đắt tiền hay kim loại lạnh lẽo, nội thất mây tre đan mang lại sự ấm cúng, mộc mạc và bình yên. Điểm nhấn không gian: Các sản phẩm như thảm cói, đèn hoa sen hay tủ mây từ Mây Tre Đan Trà không chỉ có độ bền cao mà còn mang đậm dấu ấn thủ công truyền thống. Sợi mây, cói tự nhiên giúp điều hòa không khí, tạo cảm giác thư giãn tuyệt đối. Lựa chọn nội thất mây tre cũng là cách bạn ủng hộ các làng nghề Việt và giảm thiểu rác thải công nghiệp chế tác.','BL005.jpg','2026-05-05 09:00:00','U002'),
+('BL006','Căn bếp "Xanh": Bắt đầu từ những thay đổi nhỏ nhất','Nhà bếp thường là nơi thải ra lượng rác thải nhựa dùng một lần lớn nhất trong gia đình. Tuy nhiên, việc chuyển đổi sang một căn bếp "Eco-friendly" lại dễ dàng hơn bạn nghĩ. Thay thế đồ dùng thông thường: Hãy bắt đầu bằng việc từ chối màng bọc thực phẩm nilon và chuyển sang dùng màng vải sáp ong tự nhiên. Với rác thải sinh hoạt, các loại túi rác và găng tay sinh học phân hủy hoàn toàn từ AnEco là giải pháp hoàn hảo. Chỉ mất 6-12 tháng để chúng phân hủy thành mùn hữu cơ. Một căn bếp xanh không chỉ bảo vệ sức khỏe gia đình mà còn góp phần chữa lành Trái Đất.','BL006.jpeg','2026-05-08 10:30:00','U004');
 -- --------------------------------------------------------
 
 --
@@ -77,8 +78,26 @@ INSERT INTO `bienthesanpham` (`MaBienThe`, `MaSanPham`, `KichThuoc`, `MauSac`, `
 ('V009', 'P007', '36x28', NULL, 430000.00, 5),
 ('V010', 'P008', 'Bộ 3 (S - M - L)', NULL, 99000.00, 45),
 ('V011', 'P009', '230g', 'LemonGrass&Ginger', 520000.00, 5),
-('V012', 'P009', '230g', 'Lemon&Lavender', 500000.00, 4);
-
+('V012', 'P009', '230g', 'Lemon&Lavender', 500000.00, 4),
+('V013','P010','96 x 60,4 cm',NULL,200000.00,10),
+('V014','P010','45 x 43 x 13.5 cm',NULL,200000.00,8),
+('V015','P011','Size M (cho nữ)',NULL,99000.00,40),
+('V016','P011','Size L (cho nam)',NULL,99000.00,60),
+('V017','P012','10 cái',NULL,35000.00,100),
+('V018','P013','120 x 120 cm',NULL,700000.00,5),
+('V019','P013','150 x 150 cm',NULL,780000.00,4),
+('V020','P014','25 cm',NULL,200000.00,10),
+('V021','P014','40 cm',NULL,250000.00,3),
+('V022','P014','50 cm',NULL,350000.00,2),
+('V023','P015','1m x 1m2',NULL,8500000.00,2),
+('V024','P016','Họa tiết tam giác',NULL,450000.00,15),
+('V025','P016','Họa tiết hình vuông',NULL,480000.00,13),
+('V026','P017','Họa tiết hoa sen',NULL,100000.00,56),
+('V027','P017','Họa tiết hoa Lan',NULL,100000.00,35),
+('V028','P017','Họa tiết cây tre',NULL,100000.00,40),
+('V029','P018',NULL,NULL,85000.00,1),
+('V030','P019',NULL,'Hồng Xám',150000.00,13),
+('V031','P019',NULL,'Đỏ Đen',180000.00,11);
 -- --------------------------------------------------------
 
 --
@@ -205,8 +224,10 @@ INSERT INTO `danhgia` (`MaDanhGia`, `MaNguoiDung`, `MaSanPham`, `SoSao`, `NoiDun
 ('RV002', 'U003', 'P002', 4, 'Dung tích lớn, tẩy trang sạch và khá dịu da.', '2026-04-27 09:06:38', 1, NULL),
 ('RV003', 'U004', 'P006', 5, 'Áo mặc mát, chất vải nhẹ và màu đen dễ phối.', '2026-04-27 09:06:38', 1, NULL),
 ('RV004', 'U005', 'P005', 4, 'Giày nhẹ, kiểu dáng đẹp, giá hơi cao nhưng chất lượng ổn.', '2026-04-27 09:06:38', 0, NULL),
-('RV005', 'U002', 'P009', 3, 'Mùi nến hơi nồng hơn mong đợi.', '2026-04-27 09:06:38', -1, NULL);
-
+('RV005', 'U002', 'P009', 3, 'Mùi nến hơi nồng hơn mong đợi.', '2026-04-27 09:06:38', -1, NULL),
+('RV006','U003','P013',5,'Thảm đan rất chắc tay, kích thước vừa vặn. Mùi cói tự nhiên rất thơm, lót sàn phòng khách nhìn cực mộc mạc và chill','2026-04-27 09:06:38',1,NULL),
+('RV007','U004','P010',5,'Túi rác dai, đựng được nhiều đồ mà không bị rách. Thích nhất là túi tự phân hủy được nên cảm giác xài đỡ áy náy với môi trường hơn hẳn','2026-04-27 09:06:38',1,NULL),
+('RV008','U005','P018',4,'Thiết kế loa bằng tre nguyên đốt quá độc lạ, để bàn làm việc ai cũng hỏi. Âm thanh nghe mộc mạc vừa đủ dùng, điểm nhấn decor tuyệt vời','2026-04-27 09:06:38',1,NULL);
 -- --------------------------------------------------------
 
 --
@@ -325,15 +346,65 @@ INSERT INTO `hinhanhsanpham` (`MaHinhAnh`, `MaSanPham`, `DuongDan`) VALUES
 ('IMG002', 'P002', 'P002_V002_TaytrangCocoon.jpg'),
 ('IMG003', 'P003', 'P003_V003_OnghutEquo.jpg'),
 ('IMG004', 'P004', 'P004_V004_Bodaomuongnia.jpg'),
+
 ('IMG005', 'P005', 'P005_V005_Giayshoex_xam.png'),
 ('IMG006', 'P005', 'P005_V005_Giayshoex_den.png'),
+
 ('IMG007', 'P006', 'P006_V007_AopoloCafe_den.avif'),
 ('IMG008', 'P006', 'P006_V008_AopoloCafe_xanhnavy.avif'),
+
 ('IMG009', 'P007', 'P007_V009_TuidungLapLimloop.webp'),
 ('IMG010', 'P008', 'P008_V010_Bocthucpham.jpg'),
-('IMG011', 'P009', 'P009_V011_Nenthom_LemonGrass&Ginger.jpg'),
-('IMG012', 'P009', 'P009_V012_Nenthom_Lemon&Lavender.jpg');
 
+('IMG011', 'P009', 'P009_V011_Nenthom_LemonGrass&Ginger.jpg'),
+('IMG012', 'P009', 'P009_V012_Nenthom_Lemon&Lavender.jpg'),
+
+('IMG013','P010','P010_V013_TuiRac1.png'),
+('IMG014','P010','P010_V013_TuiRac2.png'),
+('IMG015','P010','P010_V014_TuiRac1.png'),
+('IMG016','P010','P010_V014_TuiRac2.png'),
+
+('IMG017','P011','P011_V015_GangTay1.png'),
+('IMG018','P011','P011_V015_GangTay2.png'),
+('IMG019','P011','P011_V016_GangTay1.png'),
+
+('IMG020','P012','P012_V017_CocLanh.png'),
+
+('IMG021','P013','P013_V018_ThamTronNho1.png'),
+('IMG022','P013','P013_V018_ThamTronNho2.png'),
+('IMG023','P013','P013_V019_ThamTronTo1.png'),
+('IMG024','P013','P013_V019_ThamTronTo2.png'),
+
+('IMG025','P014','P014_Anh1.png'),
+('IMG026','P014','P014_Anh2.png'),
+('IMG027','P014','P014_Anh3.png'),
+
+('IMG028','P015','P015_V023_Anh1.png'),
+('IMG029','P015','P015_V023_Anh2.png'),
+
+('IMG030','P016','P016_V024_TamGiac1.jpg'),
+('IMG031','P016','P016_V024_TamGiac2.jpg'),
+('IMG032','P016','P016_V024_TamGiac3.jpg'),
+('IMG033','P016','P016_V025_HinhVuong1.jpg'),
+('IMG034','P016','P016_V025_HinhVuong2.jpg'),
+
+('IMG035','P017','P017_V026_HoaSen1.jpg'),
+('IMG036','P017','P017_V026_HoaSen2.jpg'),
+('IMG037','P017','P017_V027_Lan1.jpg'),
+('IMG038','P017','P017_V027_Lan2.jpg'),
+('IMG039','P017','P017_V028_Tre1.jpg'),
+('IMG040','P017','P017_V028_Tre2.jpg'),
+
+('IMG041','P018','P018_V029_Loa1.jpg'),
+('IMG042','P018','P018_V029_Loa2.jpg'),
+
+('IMG043','P019','P019_V030_HongXam1.jpg'),
+('IMG044','P019','P019_V030_HongXam2.jpg'),
+('IMG045','P019','P019_V030_HongXam3.jpg'),
+
+('IMG046','P019','P019_V031_DenDo1.jpg'),
+('IMG047','P019','P019_V031_DenDo2.jpg'),
+('IMG048','P019','P019_V031_DenDo3.jpg');
 -- --------------------------------------------------------
 
 --
@@ -355,8 +426,9 @@ INSERT INTO `magiamgia` (`MaCode`, `PhamTramGiam`, `SoLuong`, `NgayHetHan`) VALU
 ('DEALHUYDIET', 30, 30, '2026-04-30'),
 ('EARTHDAY26', 26, 100, '2026-05-30'),
 ('SAVEPLANET', 20, 50, '2026-06-30'),
-('ZENTROGREEN', 10, 500, '2026-12-31');
-
+('ZENTROGREEN', 10, 500, '2026-12-31'),
+('ECOKITCHEN',15,100,'2026-08-31'),
+('HEGREEN',20,50,'2026-07-31');
 -- --------------------------------------------------------
 
 --
@@ -548,8 +620,17 @@ INSERT INTO `sanpham` (`MaSanPham`, `TenSanPham`, `MaDanhMuc`, `MaThuongHieu`, `
 ('P006', 'Áo Polo Nam Cafe', 'C003', 'B004', 'M005', 'Áo thun mặc mát, chống tia UV, nhanh khô, khử mùi hôi cơ thể cực tốt nhờ sợi công nghệ cao', 85, 1, 'Coolmate', 'Là một sản phẩm tiên phong được tạo nên từ sự kết hợp độc đáo giữa sợi S.Café® (từ bã cà phê) và sợi PET tái chế (từ chai nhựa)', 1, 1),
 ('P007', 'Túi đựng Laptop dệt từ nilon tái chế', 'C003', 'B005', 'M006', 'Túi laptop bền bỉ, họa tiết độc bản được dệt thủ công bằng tay từ túi nilon cũ, tránh va đập tốt', 90, 1, 'Limloop', 'Giải cứu túi nilon khỏi bãi rác, tạo vòng đời mới và tạo việc làm cho người khuyết tật', 1, 1),
 ('P008', 'Bộ màng vải che thực phẩm', 'C001', 'B006', 'M007', 'Vải cotton tẩm sáp ong, nhựa thông và dầu jojoba, dùng sức nóng của tay để làm mềm và bọc kín tô/chén.', 95, 1, 'Lại Đây Refill', 'Có thể rửa bằng nước lạnh và tái sử dụng lên đến 1 năm, thay thế màng bọc màng co nilon', 1, 1),
-('P009', 'Nến thơm ', 'C002', 'B007', 'M008', 'Nến thư giãn làm từ sáp ong tự nhiên và tinh dầu mộc qua, cháy êm, không tỏa khói đen độc hại.', 92, 1, 'Himalaya', 'Không dùng sáp paraffin từ dầu mỏ như nến công nghiệp. Hũ thủy tinh dùng xong có thể tái sử dụng để trồng cây sen đá', 1, 1);
-
+('P009', 'Nến thơm ', 'C002', 'B007', 'M008', 'Nến thư giãn làm từ sáp ong tự nhiên và tinh dầu mộc qua, cháy êm, không tỏa khói đen độc hại.', 92, 1, 'Himalaya', 'Không dùng sáp paraffin từ dầu mỏ như nến công nghiệp. Hũ thủy tinh dùng xong có thể tái sử dụng để trồng cây sen đá', 1, 1),
+('P010', 'Túi rác phân hủy sinh học', 'C001', 'B009', 'M009', 'Được làm hoàn toàn từ nguyên liệu sinh học, túi rác AnEco có khả năng phân hủy hoàn toàn thành mùn, nước và CO2 trong vòng 6 tháng – 1 năm.', 100, 1, 'AnEco', 'Trung hòa carbon', 0, 1),
+('P011', 'Găng tay nấu ăn sinh học', 'C001', 'B009', 'M009', 'Được làm từ nguyên liệu sinh học PBAT và PLA, găng tay AnEco có khả năng phân huỷ hoàn toàn thành mùn, nước và CO2 trong vòng 6 - 12 tháng.', 99, 1, 'AnEco', 'Trung hòa carbon', 0, 1),
+('P012', 'Cốc lạnh AnEco', 'C001', 'B009', 'M009', 'Được làm từ nguyên liệu phân hủy hoàn toàn PLA, cốc lạnh AnEco có khả năng phân huỷ hoàn toàn thành mùn, nước và CO2 trong vòng 6 - 12 tháng.', 99, 1, 'AnEco', 'Trung hòa carbon', 0, 1),
+('P013', 'Thảm cói tròn', 'C002', 'B010', 'M010', 'Được làm từ sợi cói tự nhiên.', 100, 1, 'Mây Tre Đan Trà', 'Vật liệu tự nhiên', 0, 1),
+('P014', 'Đèn mây tre hoa sen', 'C002', 'B010', 'M010', 'Được làm từ chất liệu tre thật.', 95, 1, 'Mây Tre Đan Trà', 'Vật liệu tự nhiên', 0, 1),
+('P015', 'Tủ mây chữ nhật cao cấp', 'C002', 'B010', 'M010', 'Được làm từ chất liệu tre thật.', 85, 1, 'Mây Tre Đan Trà', 'Vật liệu tự nhiên', 0, 1),
+('P016', 'Chăn bông', 'C002', 'B008', 'M011', 'Chiếc chăn được làm từ 100% vải cotton vuông cùng tông màu, được ghép lại với nhau. Được làm thủ công bởi các nghệ nhân nữ.', 85, 1, 'Mekongquilts', 'Vật liệu tự nhiên', 0, 1),
+('P017', 'Quạt cầm tay', 'C002', 'B008', 'M012', 'Quạt cầm tay truyền thống làm từ lá cọ, thêu hoa sen bằng chỉ cotton.', 90, 1, 'Mekongquilts', 'Vật liệu tự nhiên', 0, 1),
+('P018', 'Loa bằng tre', 'C002', 'B008', 'M010', 'Loa được làm từ tre cao cấp nhất, mang đến chất lượng âm thanh vượt trội cùng vẻ ngoài thanh lịch.', 84, 1, 'Mekongquilts', 'Vật liệu tự nhiên', 0, 1),
+('P019', 'Găng tay lò nướng', 'C001', 'B008', 'M011', 'Chất liệu 100% cotton, kích thước 16×26 cm và có móc treo để dễ dàng cất giữ. Được làm thủ công bởi các nghệ nhân nữ.', 90, 1, 'Mekongquilts', 'Vật liệu tự nhiên', 0, 1);
 -- --------------------------------------------------------
 
 --
@@ -585,6 +666,9 @@ INSERT INTO `thuonghieu` (`MaThuongHieu`, `TenThuongHieu`, `XuatXu`) VALUES
 ('B005', 'Limloop', 'Việt Nam'),
 ('B006', 'Lại Đây Refill', 'Việt Nam'),
 ('B007', 'Himalaya', 'Việt Nam');
+('B008', 'Mekongquilts', 'Việt Nam'),
+('B009', 'AnEco', 'Việt Nam'),
+('B010', 'Mây Tre Đan Trà', 'Việt Nam');
 
 -- --------------------------------------------------------
 
@@ -610,8 +694,11 @@ INSERT INTO `vatlieu` (`MaVatLieu`, `TenVatLieu`, `MoTa`) VALUES
 ('M005', 'Sợi S.Café® & PET tái chế', 'Sự kết hợp đột phá giữa bã cà phê và chai nhựa cũ, tạo ra loại vải thân thiện với môi trường'),
 ('M006', 'Nilon tái chế', 'Túi nilon phế liệu được thu gom, làm sạch và dệt thủ công thành tấm vải bền chắc, giúp kéo dài vòng đời của nhựa'),
 ('M007', 'Sáp ong & Cotton hữu cơ', 'Vải cotton thấm sáp ong và nhựa thông, tạo ra lớp màng bảo quản thực phẩm có tính kháng khuẩn tự nhiên, tái sử dụng được nhiều lần'),
-('M008', 'Sáp ong & Tinh dầu tự nhiên', 'Sáp lành tính thay thế hoàn toàn cho sáp paraffin (gốc dầu mỏ), kết hợp tinh dầu thực vật không gây độc hại khi đốt');
-
+('M008', 'Sáp ong & Tinh dầu tự nhiên', 'Sáp lành tính thay thế hoàn toàn cho sáp paraffin (gốc dầu mỏ), kết hợp tinh dầu thực vật không gây độc hại khi đốt'),
+('M009', 'Nhựa sinh học (PLA & PBAT)', 'Nguyên liệu sinh học có nguồn gốc từ tự nhiên (như tinh bột ngô), có khả năng phân hủy hoàn toàn thành mùn, nước và CO2 trong thời gian ngắn.'),
+('M010', 'Sợi cói, mây & tre tự nhiên', 'Các loại vật liệu từ thực vật phát triển nhanh, được thu hoạch và xử lý thủ công không qua hóa chất, thân thiện tuyệt đối với môi trường.'),
+('M011', '100% Cotton tự nhiên', 'Sợi bông tinh khiết, thoáng khí, không sử dụng hóa chất nhuộm công nghiệp độc hại, an toàn cho da và có thể phân hủy sinh học.'),
+('M012', 'Lá cọ tự nhiên', 'Tận dụng lá cọ phơi khô tự nhiên, được các nghệ nhân đan lát thủ công, mang đậm tính truyền thống và không tạo ra rác thải khó phân hủy.');
 -- --------------------------------------------------------
 
 --
