@@ -66,7 +66,8 @@ class AdminController extends Controller
         }
 
         if ($_SERVER['REQUEST_METHOD'] !== 'POST' && $url === 'admin/products/edit' && $id !== '') {
-             $product = $this->adminModel->getProductById($id);
+            $product = $this->adminModel->getProductById($id);
+
             if (!$product) {
                 header('Location: index.php?url=admin/products&status=error&message=' . urlencode('Không tìm thấy sản phẩm.'));
                 exit;
@@ -95,6 +96,7 @@ class AdminController extends Controller
             switch ($action) {
                 case 'create_product':
                     $productId = $this->adminModel->generateProductId();
+
                     $productData = [
                         'MaSanPham' => $productId,
                         'TenSanPham' => trim($_POST['TenSanPham'] ?? ''),
@@ -116,6 +118,7 @@ class AdminController extends Controller
                     } elseif ($this->adminModel->createProduct($productData)) {
                         if (!empty($_FILES['product_image']['name'])) {
                             $uploadResult = $this->handleProductImageUpload($productId, $_FILES['product_image']);
+
                             if ($uploadResult !== true) {
                                 header('Location: index.php?url=admin/products/edit&id=' . urlencode($productId) . '&status=error&message=' . urlencode($uploadResult));
                                 exit;
@@ -132,6 +135,7 @@ class AdminController extends Controller
 
                 case 'update_product':
                     $productId = trim($_POST['MaSanPham'] ?? '');
+
                     $productData = [
                         'TenSanPham' => trim($_POST['TenSanPham'] ?? ''),
                         'MaDanhMuc' => trim($_POST['MaDanhMuc'] ?? ''),
@@ -155,6 +159,7 @@ class AdminController extends Controller
                     } elseif ($this->adminModel->updateProduct($productId, $productData)) {
                         if (!empty($_FILES['product_image']['name'])) {
                             $uploadResult = $this->handleProductImageUpload($productId, $_FILES['product_image']);
+
                             if ($uploadResult !== true) {
                                 $status = 'error';
                                 $message = $uploadResult;
@@ -186,13 +191,27 @@ class AdminController extends Controller
             return;
         }
 
-        $products = $this->adminModel->getProductsList([
+        $filters = [
             'keyword' => trim($_GET['keyword'] ?? ''),
             'category' => trim($_GET['category'] ?? ''),
             'brand' => trim($_GET['brand'] ?? '')
-        ]);
+        ];
 
-                $this->view('admin/products', [
+        $perPage = 10;
+        $currentPageNumber = max(1, (int)($_GET['page'] ?? 1));
+
+        $totalProducts = $this->adminModel->countProductsList($filters);
+        $totalPages = max(1, (int)ceil($totalProducts / $perPage));
+
+        if ($currentPageNumber > $totalPages) {
+            $currentPageNumber = $totalPages;
+        }
+
+        $offset = ($currentPageNumber - 1) * $perPage;
+
+        $products = $this->adminModel->getProductsList($filters, $perPage, $offset);
+
+        $this->view('admin/products', [
             'title' => 'Quản lý sản phẩm',
             'currentPage' => 'products',
             'products' => $products,
@@ -200,9 +219,15 @@ class AdminController extends Controller
             'brands' => $this->adminModel->getBrands(),
             'status' => $status ?? ($_GET['status'] ?? null),
             'message' => $message ?: ($_GET['message'] ?? ''),
-            'keyword' => trim($_GET['keyword'] ?? ''),
-            'category' => trim($_GET['category'] ?? ''),
-            'brand' => trim($_GET['brand'] ?? '')
+            'keyword' => $filters['keyword'],
+            'category' => $filters['category'],
+            'brand' => $filters['brand'],
+            'pagination' => [
+                'currentPage' => $currentPageNumber,
+                'totalPages' => $totalPages,
+                'perPage' => $perPage,
+                'totalItems' => $totalProducts
+            ]
         ]);
     }
 
@@ -417,8 +442,8 @@ class AdminController extends Controller
 
             header(
                 'Location: index.php?url=admin/products/gallery&id=' . urlencode($maSanPham)
-                . '&status=' . urlencode((string)$status)
-                . '&message=' . urlencode($message)
+                    . '&status=' . urlencode((string)$status)
+                    . '&message=' . urlencode($message)
             );
             exit;
         }
