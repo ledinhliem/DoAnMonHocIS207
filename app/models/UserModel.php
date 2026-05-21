@@ -1,172 +1,167 @@
 <?php
-/**
- * UserModel - Model cho quản lý người dùng
- * 
- * Sử dụng dữ liệu giả (mock data) để mô phỏng các bảng NguoiDung và DiaChi
- * Chưa kết nối với database thực tế (Tuần 1)
- */
-
-class UserModel extends Model
-{
-    /**
-     * Dữ liệu giả cho bảng NguoiDung (Người Dùng)
-     * Bao gồm: id, email, password, hoTen, soDienThoai, ngaySinh, gioiTinh
-     */
-    private $users = [
-        [
-            'id' => 1,
-            'email' => 'test@example.com',
-            'password' => 'password123',  // Mật khẩu giả (Week 1 chưa hash)
-            'hoTen' => 'Nguyễn Văn A',
-            'soDienThoai' => '0912345678',
-            'ngaySinh' => '1990-05-15',
-            'gioiTinh' => 'Nam'
-        ],
-        [
-            'id' => 2,
-            'email' => 'user2@example.com',
-            'password' => 'password456',
-            'hoTen' => 'Trần Thị B',
-            'soDienThoai' => '0987654321',
-            'ngaySinh' => '1995-10-20',
-            'gioiTinh' => 'Nữ'
-        ],
-        [
-            'id' => 3,
-            'email' => 'user3@example.com',
-            'password' => 'password789',
-            'hoTen' => 'Lê Minh C',
-            'soDienThoai' => '0909876543',
-            'ngaySinh' => '1988-03-08',
-            'gioiTinh' => 'Nam'
-        ]
-    ];
-
-    /**
-     * Dữ liệu giả cho bảng DiaChi (Địa Chỉ)
-     * Bao gồm: id, userId, tenDuong, thanhPho, quanHuyen, maSo, trangThai
-     */
-    private $addresses = [
-        [
-            'id' => 1,
-            'userId' => 1,
-            'tenDuong' => '123 Đường Nguyễn Huệ',
-            'thanhPho' => 'TP Hồ Chí Minh',
-            'quanHuyen' => 'Quận 1',
-            'maSo' => '70000',
-            'trangThai' => 'Mặc định'
-        ],
-        [
-            'id' => 2,
-            'userId' => 1,
-            'tenDuong' => '456 Đường Lê Lợi',
-            'thanhPho' => 'TP Hồ Chí Minh',
-            'quanHuyen' => 'Quận 1',
-            'maSo' => '70000',
-            'trangThai' => 'Phụ'
-        ],
-        [
-            'id' => 3,
-            'userId' => 1,
-            'tenDuong' => '789 Đường Trần Hưng Đạo',
-            'thanhPho' => 'Thành phố Hải Phòng',
-            'quanHuyen' => 'Quận Hải An',
-            'maSo' => '180000',
-            'trangThai' => 'Phụ'
-        ],
-        [
-            'id' => 4,
-            'userId' => 2,
-            'tenDuong' => '321 Đường Hai Bà Trưng',
-            'thanhPho' => 'TP Hà Nội',
-            'quanHuyen' => 'Quận Hoàn Kiếm',
-            'maSo' => '100000',
-            'trangThai' => 'Mặc định'
-        ],
-        [
-            'id' => 5,
-            'userId' => 3,
-            'tenDuong' => '654 Đường Đinh Tiên Hoàng',
-            'thanhPho' => 'TP Đà Nẵng',
-            'quanHuyen' => 'Quận Hải Châu',
-            'maSo' => '550000',
-            'trangThai' => 'Mặc định'
-        ]
-    ];
-
-    /**
-     * Xử lý đăng nhập người dùng
-     * 
-     * @param string $email Email người dùng
-     * @param string $password Mật khẩu người dùng
-     * @return array|false Trả về thông tin người dùng (không bao gồm password) hoặc false nếu đăng nhập thất bại
-     */
-    public function login($email, $password)
-    {
-        // Kiểm tra xem email có tồn tại trong dữ liệu giả không
-        foreach ($this->users as $user) {
-            if ($user['email'] === $email && $user['password'] === $password) {
-                // Trả về thông tin người dùng (trừ password)
-                return [
-                    'id' => $user['id'],
-                    'email' => $user['email'],
-                    'hoTen' => $user['hoTen'],
-                    'soDienThoai' => $user['soDienThoai'],
-                    'ngaySinh' => $user['ngaySinh'],
-                    'gioiTinh' => $user['gioiTinh']
-                ];
-            }
-        }
-
-        // Nếu không tìm thấy, trả về false
-        return false;
+class UserModel extends Model {
+    
+    public function getUserByEmail($email) {
+        $sql = "SELECT * FROM nguoidung WHERE Email = ?";
+        $stmt = $this->db->prepare($sql);
+        $stmt->execute([$email]);
+        return $stmt->fetch(PDO::FETCH_ASSOC);
     }
 
-    /**
-     * Lấy thông tin cá nhân của người dùng
-     * 
-     * @param int $userId ID của người dùng
-     * @return array|null Trả về thông tin người dùng hoặc null nếu không tìm thấy
-     */
-    public function getUserProfile($userId)
-    {
-        // Tìm kiếm người dùng theo ID
-        foreach ($this->users as $user) {
-            if ($user['id'] == $userId) {
-                // Trả về thông tin đầy đủ (không bao gồm password)
-                return [
-                    'id' => $user['id'],
-                    'email' => $user['email'],
-                    'hoTen' => $user['hoTen'],
-                    'soDienThoai' => $user['soDienThoai'],
-                    'ngaySinh' => $user['ngaySinh'],
-                    'gioiTinh' => $user['gioiTinh']
-                ];
-            }
-        }
-
-        // Nếu không tìm thấy, trả về null
-        return null;
+    public function createUser($data) {
+        // Tạo mã ID mới ngẫu nhiên dạng U + 4 số
+        $newId = $this->generateUserId(); 
+        
+        $sql = "INSERT INTO nguoidung (MaNguoiDung, HoTen, Email, MatKhau, MaQuyen) 
+                VALUES (?, ?, ?, ?, ?)";
+        $stmt = $this->db->prepare($sql);
+        
+        return $stmt->execute([
+            $newId,
+            $data['hoten'],
+            $data['email'],
+            $data['matkhau'], 
+            $data['maquyen'] 
+        ]);
     }
 
-    /**
-     * Lấy danh sách địa chỉ của người dùng
-     * 
-     * @param int $userId ID của người dùng
-     * @return array Trả về mảng các địa chỉ hoặc mảng rỗng nếu không có
-     */
-    public function getUserAddresses($userId)
-    {
-        $userAddresses = [];
+    public function getUserInfo($id) {
+        // JOIN bảng nguoidung và diachi để lấy luôn địa chỉ mặc định (nếu có)
+        $sql = "SELECT n.*, d.SoNha_Duong, d.PhuongXa, d.QuanHuyen, d.TinhThanh 
+                FROM nguoidung n 
+                LEFT JOIN diachi d ON n.MaNguoiDung = d.MaNguoiDung AND d.MacDinh = 1 
+                WHERE n.MaNguoiDung = ?";
+        $stmt = $this->db->prepare($sql);
+        $stmt->execute([$id]);
+        return $stmt->fetch(PDO::FETCH_ASSOC);
+    }
 
-        // Lọc các địa chỉ theo userId
-        foreach ($this->addresses as $address) {
-            if ($address['userId'] == $userId) {
-                $userAddresses[] = $address;
-            }
+    public function getUserById($id) {
+        $sql = "SELECT * FROM nguoidung WHERE MaNguoiDung = ?";
+        $stmt = $this->db->prepare($sql);
+        $stmt->execute([$id]);
+        return $stmt->fetch(PDO::FETCH_ASSOC);
+    }
+
+    public function updateProfile($data) {
+        $userId = $data['id'] ?? '';
+        $fullName = trim($data['HoTen'] ?? '');
+        $phone = trim($data['SoDienThoai'] ?? '');
+        $street = trim($data['SoNha_Duong'] ?? '');
+        $ward = trim($data['PhuongXa'] ?? '');
+        $district = trim($data['QuanHuyen'] ?? '');
+        $province = trim($data['TinhThanh'] ?? '');
+
+        if ($userId === '' || $fullName === '') {
+            return false;
         }
 
-        // Trả về danh sách địa chỉ (có thể là mảng rỗng)
-        return $userAddresses;
+        try {
+            $this->db->beginTransaction();
+
+            $stmt = $this->db->prepare("
+                UPDATE nguoidung
+                SET HoTen = ?, SoDienThoai = ?
+                WHERE MaNguoiDung = ?
+            ");
+            $stmt->execute([$fullName, $phone, $userId]);
+
+            $existingStmt = $this->db->prepare("
+                SELECT MaDiaChi
+                FROM diachi
+                WHERE MaNguoiDung = ? AND MacDinh = 1
+                LIMIT 1
+            ");
+            $existingStmt->execute([$userId]);
+            $addressId = $existingStmt->fetchColumn();
+            $hasAddressInput = $street !== '' || $ward !== '' || $district !== '' || $province !== '';
+
+            if ($addressId) {
+                $addressStmt = $this->db->prepare("
+                    UPDATE diachi
+                    SET SoNha_Duong = ?, PhuongXa = ?, QuanHuyen = ?, TinhThanh = ?, MacDinh = 1
+                    WHERE MaDiaChi = ?
+                ");
+                $addressStmt->execute([$street, $ward, $district, $province, $addressId]);
+            } elseif ($hasAddressInput) {
+                $this->db->prepare("UPDATE diachi SET MacDinh = 0 WHERE MaNguoiDung = ?")->execute([$userId]);
+
+                $addressStmt = $this->db->prepare("
+                    INSERT INTO diachi (MaDiaChi, MaNguoiDung, SoNha_Duong, PhuongXa, QuanHuyen, TinhThanh, MacDinh)
+                    VALUES (?, ?, ?, ?, ?, ?, 1)
+                ");
+                $addressStmt->execute([
+                    $this->generateAddressId(),
+                    $userId,
+                    $street,
+                    $ward,
+                    $district,
+                    $province
+                ]);
+            }
+
+            $this->db->commit();
+            return true;
+        } catch (Throwable $e) {
+            if ($this->db->inTransaction()) {
+                $this->db->rollBack();
+            }
+
+            return false;
+        }
+    }
+
+    private function generateUserId() {
+        $sql = "SELECT MaNguoiDung
+                FROM nguoidung
+                WHERE MaNguoiDung LIKE 'U%'
+                ORDER BY CAST(SUBSTRING(MaNguoiDung, 2) AS UNSIGNED) DESC
+                LIMIT 1";
+        $stmt = $this->db->query($sql);
+        $lastId = $stmt->fetchColumn();
+        $nextNumber = $lastId ? ((int) substr($lastId, 1)) + 1 : 1;
+
+        return 'U' . str_pad($nextNumber, 3, '0', STR_PAD_LEFT);
+    }
+
+    private function generateAddressId() {
+        $sql = "SELECT MaDiaChi
+                FROM diachi
+                WHERE MaDiaChi LIKE 'DC%'
+                ORDER BY CAST(SUBSTRING(MaDiaChi, 3) AS UNSIGNED) DESC
+                LIMIT 1";
+        $stmt = $this->db->query($sql);
+        $lastId = $stmt->fetchColumn();
+        $nextNumber = $lastId ? ((int) substr($lastId, 2)) + 1 : 1;
+
+        return 'DC' . str_pad($nextNumber, 3, '0', STR_PAD_LEFT);
+    }
+
+    // Lấy toàn bộ danh sách người dùng kèm tên nhóm quyền
+   public function getAllUsers($search = '') {
+    // Thêm n.* để lấy tất cả các cột bao gồm TrangThai mới thêm
+    $sql = "SELECT n.*, q.TenQuyen 
+            FROM nguoidung n 
+            JOIN nhomquyen q ON n.MaQuyen = q.MaQuyen";
+    
+    if (!empty($search)) {
+        $sql .= " WHERE n.HoTen LIKE ? OR n.Email LIKE ? OR n.SoDienThoai LIKE ?";
+        $stmt = $this->db->prepare($sql);
+        $searchParam = "%$search%";
+        $stmt->execute([$searchParam, $searchParam, $searchParam]);
+    } else {
+        $stmt = $this->db->query($sql);
+    }
+    return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    }
+    // Cập nhật quyền (Role)
+    public function updateRole($userId, $newRole) {
+        $sql = "UPDATE nguoidung SET MaQuyen = ? WHERE MaNguoiDung = ?";
+        return $this->db->prepare($sql)->execute([$newRole, $userId]);
+    }
+
+    // Lấy danh sách nhóm quyền để đổ vào Select box
+    public function getAllRoles() {
+        return $this->db->query("SELECT * FROM nhomquyen")->fetchAll(PDO::FETCH_ASSOC);
     }
 }
