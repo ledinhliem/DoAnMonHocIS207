@@ -1,5 +1,41 @@
 <?php include __DIR__ . '/../layouts/header.php'; ?>
 
+<?php
+$pagination = $pagination ?? [
+    'currentPage' => 1,
+    'totalPages' => 1,
+    'perPage' => 9,
+    'totalProducts' => count($products ?? []),
+    'from' => count($products ?? []) > 0 ? 1 : 0,
+    'to' => count($products ?? []),
+];
+
+$currentPage = (int)($pagination['currentPage'] ?? 1);
+$totalPages = (int)($pagination['totalPages'] ?? 1);
+$totalProducts = (int)($pagination['totalProducts'] ?? count($products ?? []));
+$from = (int)($pagination['from'] ?? 0);
+$to = (int)($pagination['to'] ?? count($products ?? []));
+
+function product_page_url(int $page, array $filters): string
+{
+    $params = [
+        'url' => 'product',
+        'keyword' => $filters['keyword'] ?? '',
+        'category' => $filters['category'] ?? '',
+        'impact' => $filters['impact'] ?? '',
+        'price_max' => $filters['price_max'] ?? '',
+        'sort' => $filters['sort'] ?? '',
+        'page' => $page,
+    ];
+
+    $params = array_filter($params, function ($value) {
+        return $value !== '' && $value !== null;
+    });
+
+    return '?' . http_build_query($params);
+}
+?>
+
 <main class="min-h-screen bg-[#FAFAF2] px-8 py-14">
     <section class="max-w-7xl mx-auto">
         <div class="grid grid-cols-1 lg:grid-cols-4 gap-10">
@@ -10,22 +46,23 @@
                     <input type="hidden" name="url" value="product">
 
                     <div class="bg-[#FAFAF2] rounded-2xl p-4 sticky top-28">
-                      <h2 class="text-2xl font-bold text-[#2F512A] mb-6">
-    Tìm kiếm
-</h2>
+                        <h2 class="text-2xl font-bold text-[#2F512A] mb-6">
+                            Tìm kiếm
+                        </h2>
 
-<div class="relative mb-8">
-    <input type="text"
-           name="keyword"
-           value="<?= htmlspecialchars($filters['keyword'] ?? '') ?>"
-           placeholder="Tên sản phẩm..."
-           class="w-full rounded-xl border border-[#D8DDCB] bg-white px-10 py-3">
-    <span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-[#8B8F7A]">
-        search
-    </span>
-</div>
+                        <div class="relative mb-8">
+                            <input type="text"
+                                   name="keyword"
+                                   value="<?= htmlspecialchars($filters['keyword'] ?? '') ?>"
+                                   placeholder="Tên sản phẩm..."
+                                   class="w-full rounded-xl border border-[#D8DDCB] bg-white px-10 py-3">
 
-<hr class="my-8 border-[#E0E3D5]">
+                            <span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-[#8B8F7A]">
+                                search
+                            </span>
+                        </div>
+
+                        <hr class="my-8 border-[#E0E3D5]">
 
                         <h2 class="text-2xl font-bold text-[#2F512A] mb-6">
                             Danh mục
@@ -113,7 +150,11 @@
 
                 <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-4 mb-8">
                     <p class="font-semibold text-[#6B4C2F]">
-                        Tìm thấy <?= count($products ?? []) ?> sản phẩm
+                        <?php if ($totalProducts > 0): ?>
+                            Hiển thị <?= $from ?> - <?= $to ?> trong <?= $totalProducts ?> sản phẩm
+                        <?php else: ?>
+                            Tìm thấy 0 sản phẩm
+                        <?php endif; ?>
                     </p>
 
                     <form method="GET" action="" class="flex items-center gap-3">
@@ -122,6 +163,7 @@
                         <input type="hidden" name="category" value="<?= htmlspecialchars($filters['category'] ?? '') ?>">
                         <input type="hidden" name="impact" value="<?= htmlspecialchars($filters['impact'] ?? '') ?>">
                         <input type="hidden" name="price_max" value="<?= htmlspecialchars($filters['price_max'] ?? '') ?>">
+                        <input type="hidden" name="page" value="1">
 
                         <label class="font-semibold">Sắp xếp:</label>
 
@@ -155,14 +197,14 @@
                     <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-8">
                         <?php foreach ($products as $product): ?>
                             <?php
-                                $maSanPham = $product['MaSanPham'] ?? $product['id'] ?? '';
-                                $maBienThe = $product['MaBienTheMacDinh'] ?? '';
-                                $image = $product['image'] ?? '';
-                                $name = $product['TenSanPham'] ?? $product['name'] ?? 'Sản phẩm';
-                                $category = $product['TenDanhMuc'] ?? '';
-                                $price = (float)($product['GiaTien'] ?? $product['price'] ?? 0);
-                                $ecoTag = $product['eco_tag'] ?? 'ĐIỂM XANH CAO';
-                                $stock = (int)($product['TongTon'] ?? 0);
+                            $maSanPham = $product['MaSanPham'] ?? $product['id'] ?? '';
+                            $maBienThe = $product['MaBienTheMacDinh'] ?? '';
+                            $image = $product['image'] ?? '';
+                            $name = $product['TenSanPham'] ?? $product['name'] ?? 'Sản phẩm';
+                            $category = $product['TenDanhMuc'] ?? '';
+                            $price = (float)($product['GiaTien'] ?? $product['price'] ?? 0);
+                            $ecoTag = $product['eco_tag'] ?? 'ĐIỂM XANH CAO';
+                            $stock = (int)($product['TongTon'] ?? 0);
                             ?>
 
                             <article class="group">
@@ -179,7 +221,6 @@
                                         <?php endif; ?>
                                     </a>
 
-                                    <!-- Hover overlay -->
                                     <div class="absolute inset-0 bg-black/0 group-hover:bg-black/10 transition-all duration-300 pointer-events-none"></div>
 
                                     <?php if (!empty($product['is_bestseller'])): ?>
@@ -188,7 +229,6 @@
                                         </span>
                                     <?php endif; ?>
 
-                                    <!-- Add to cart button: hidden by default, shown on card hover -->
                                     <form method="POST" action="?url=cart/add">
                                         <input type="hidden"
                                                name="MaSanPham"
@@ -244,6 +284,34 @@
                             </article>
                         <?php endforeach; ?>
                     </div>
+
+                    <?php if ($totalPages > 1): ?>
+                        <div class="mt-12 flex flex-wrap items-center justify-center gap-3">
+                            <?php if ($currentPage > 1): ?>
+                                <a href="<?= htmlspecialchars(product_page_url($currentPage - 1, $filters)) ?>"
+                                   class="min-w-11 h-11 px-4 rounded-xl border border-[#D8DDCB] bg-white text-[#2F512A] font-bold flex items-center justify-center hover:bg-[#EEF1E7] transition">
+                                    Trước
+                                </a>
+                            <?php endif; ?>
+
+                            <?php for ($page = 1; $page <= $totalPages; $page++): ?>
+                                <a href="<?= htmlspecialchars(product_page_url($page, $filters)) ?>"
+                                   class="min-w-11 h-11 px-4 rounded-xl border font-bold flex items-center justify-center transition
+                                   <?= $page === $currentPage
+                                       ? 'bg-[#2F512A] text-white border-[#2F512A]'
+                                       : 'bg-white text-[#2F512A] border-[#D8DDCB] hover:bg-[#EEF1E7]' ?>">
+                                    <?= $page ?>
+                                </a>
+                            <?php endfor; ?>
+
+                            <?php if ($currentPage < $totalPages): ?>
+                                <a href="<?= htmlspecialchars(product_page_url($currentPage + 1, $filters)) ?>"
+                                   class="min-w-11 h-11 px-4 rounded-xl border border-[#D8DDCB] bg-white text-[#2F512A] font-bold flex items-center justify-center hover:bg-[#EEF1E7] transition">
+                                    Sau
+                                </a>
+                            <?php endif; ?>
+                        </div>
+                    <?php endif; ?>
                 <?php endif; ?>
             </section>
         </div>
