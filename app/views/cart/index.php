@@ -32,7 +32,6 @@
                 <div class="lg:col-span-2 space-y-5">
                     <?php foreach ($items as $item): ?>
                         <?php
-                            $maBienThe = $item['MaBienThe'] ?? '';
                             $name = $item['name'] ?? 'Sản phẩm';
                             $variant = $item['variant'] ?? '';
                             $image = $item['image'] ?? '';
@@ -64,9 +63,6 @@
                                     </p>
                                 <?php endif; ?>
 
-                                <p class="text-gray-600 mt-1">
-                                    Mã biến thể: <?= htmlspecialchars($maBienThe) ?>
-                                </p>
 
                                 <p class="text-gray-600 mt-1">
                                     Giá: <?= number_format($price, 0, ',', '.') ?>₫
@@ -78,7 +74,6 @@
 
                                 <div class="flex items-center gap-3 mt-4">
                                     <form method="POST" action="?url=cart/update">
-                                        <input type="hidden" name="MaBienThe" value="<?= htmlspecialchars($maBienThe) ?>">
                                         <input type="hidden" name="SoLuong" value="<?= max(0, $quantity - 1) ?>">
                                         <button type="submit"
                                                 class="w-10 h-10 rounded-xl border border-[#D8DDCB] font-bold">
@@ -91,7 +86,6 @@
                                     </span>
 
                                     <form method="POST" action="?url=cart/update">
-                                        <input type="hidden" name="MaBienThe" value="<?= htmlspecialchars($maBienThe) ?>">
                                         <input type="hidden" name="SoLuong" value="<?= $quantity + 1 ?>">
                                         <button type="submit"
                                                 class="w-10 h-10 rounded-xl border border-[#D8DDCB] font-bold">
@@ -106,10 +100,7 @@
                                     <?= number_format($lineTotal, 0, ',', '.') ?>₫
                                 </p>
 
-                                <a href="?url=cart/remove&MaBienThe=<?= urlencode($maBienThe) ?>"
-                                   class="px-4 py-2 rounded-xl border border-red-300 text-red-600 font-semibold">
-                                    Xóa
-                                </a>
+
                             </div>
                         </div>
                     <?php endforeach; ?>

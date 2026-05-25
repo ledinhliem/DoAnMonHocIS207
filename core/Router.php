@@ -323,7 +323,6 @@ class Router
                 $controller = new ProfileController();
                 $controller->update();
                 break;
-///////////////////////////////////////////////////////////
             case 'ourstory':
             case 'sustainability':
             case 'terms':
@@ -333,7 +332,17 @@ class Router
                 $controller = new FooterController();
                 $controller->handle($url);
                 break;
-
+            case 'order/pending-notification':
+                require_once __DIR__ . '/../app/controllers/OrderController.php';
+                $controller = new OrderController();
+                $controller->pendingNotification();
+                break;
+ 
+            case 'order/mark-notified':
+                require_once __DIR__ . '/../app/controllers/OrderController.php';
+                $controller = new OrderController();
+                $controller->markNotified();
+                break;
             default:
                 echo '404 - Không tìm thấy trang';
                 break;

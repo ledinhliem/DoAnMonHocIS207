@@ -26,7 +26,8 @@ $error = $error ?? '';
 
     <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
         <div class="lg:col-span-2 space-y-8">
-            <form method="POST"
+            <form id="checkoutForm"
+                  method="POST"
                   action="?url=order/payment"
                   class="bg-white rounded-2xl border border-outline-variant/30 p-6 space-y-5">
 
@@ -91,10 +92,10 @@ $error = $error ?? '';
                     <label class="block text-sm font-semibold mb-2">Phương thức giao hàng</label>
                     <select name="delivery_method"
                             class="w-full rounded-xl border border-outline-variant bg-white px-4 py-3">
-                        <option value="standard" <?= (($checkoutData['delivery_method'] ?? 'standard') === 'standard') ? 'selected' : '' ?>>
+                        <option value="standard" data-cost="15000" <?= (($checkoutData['delivery_method'] ?? 'standard') === 'standard') ? 'selected' : '' ?>>
                             Giao hàng tiêu chuẩn - 15.000₫
                         </option>
-                        <option value="express" <?= (($checkoutData['delivery_method'] ?? '') === 'express') ? 'selected' : '' ?>>
+                        <option value="express" data-cost="30000" <?= (($checkoutData['delivery_method'] ?? '') === 'express') ? 'selected' : '' ?>>
                             Giao hàng nhanh - 30.000₫
                         </option>
                     </select>
@@ -128,17 +129,6 @@ $error = $error ?? '';
                     <?php endif; ?>
                 </div>
 
-                <div class="flex gap-4">
-                    <a href="?url=cart"
-                       class="px-5 py-3 rounded-xl border border-outline-variant font-semibold">
-                        Quay lại giỏ hàng
-                    </a>
-
-                    <button type="submit"
-                            class="px-5 py-3 rounded-xl bg-primary text-white font-semibold">
-                        Tiếp tục thanh toán
-                    </button>
-                </div>
             </form>
 
             <form method="POST"
@@ -203,26 +193,40 @@ $error = $error ?? '';
             <div class="space-y-2 border-t border-outline-variant/30 pt-4">
                 <div class="flex justify-between">
                     <span>Tạm tính</span>
-                    <span><?= number_format($summary['subtotal'] ?? 0, 0, ',', '.') ?>₫</span>
+                    <span data-checkout-subtotal><?= number_format($summary['subtotal'] ?? 0, 0, ',', '.') ?>₫</span>
                 </div>
 
                 <div class="flex justify-between">
                     <span>Giảm giá</span>
-                    <span>- <?= number_format($summary['discount'] ?? 0, 0, ',', '.') ?>₫</span>
+                    <span>- <span data-checkout-discount><?= number_format($summary['discount'] ?? 0, 0, ',', '.') ?>₫</span></span>
                 </div>
 
                 <div class="flex justify-between">
                     <span>Phí vận chuyển</span>
-                    <span><?= number_format($summary['shipping'] ?? 0, 0, ',', '.') ?>₫</span>
+                    <span data-checkout-shipping><?= number_format($summary['shipping'] ?? 0, 0, ',', '.') ?>₫</span>
                 </div>
 
                 <div class="flex justify-between font-bold text-primary text-lg pt-2">
                     <span>Tổng cộng</span>
-                    <span><?= number_format($summary['total'] ?? 0, 0, ',', '.') ?>₫</span>
+                    <span data-checkout-total><?= number_format($summary['total'] ?? 0, 0, ',', '.') ?>₫</span>
                 </div>
+            </div>
+
+            <div class="flex flex-col gap-3 mt-6 pt-5 border-t border-outline-variant/30">
+                <button type="submit"
+                        form="checkoutForm"
+                        class="w-full px-5 py-3 rounded-xl bg-primary text-white font-semibold text-center">
+                    Tiếp tục thanh toán
+                </button>
+
+                <a href="?url=cart"
+                   class="w-full px-5 py-3 rounded-xl border border-outline-variant font-semibold text-center">
+                    Quay lại giỏ hàng
+                </a>
             </div>
         </div>
     </div>
 </main>
+<script src="<?= BASE_URL ?>public/assets/js/order.js"></script>
 
 <?php include __DIR__ . '/../layouts/footer.php'; ?>

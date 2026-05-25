@@ -2,15 +2,17 @@ document.addEventListener('DOMContentLoaded', function () {
     const checkoutForm = document.querySelector('#checkout-form');
     const subtotalEl = document.querySelector('[data-checkout-subtotal]');
     const shippingEl = document.querySelector('[data-checkout-shipping]');
-    const taxEl = document.querySelector('[data-checkout-tax]');
     const totalEl = document.querySelector('[data-checkout-total]');
+    const discountEl = document.querySelector('[data-checkout-discount]');
 
+    // Parse số tiền VNĐ từ text (vd: "130.000₫" → 130000)
     function parseMoney(text) {
-        return parseFloat(String(text).replace('$', '').replace(',', '').trim()) || 0;
+        return parseFloat(String(text).replace(/[^\d]/g, '')) || 0;
     }
 
+    // Format số tiền VNĐ (vd: 30000 → "30.000₫")
     function formatMoney(value) {
-        return '$' + value.toFixed(2);
+        return value.toLocaleString('vi-VN') + '₫';
     }
 
     function updateSelectedCardUI(groupName, cardClass) {
@@ -31,13 +33,24 @@ document.addEventListener('DOMContentLoaded', function () {
 
     function updateTotals() {
         const subtotal = subtotalEl ? parseMoney(subtotalEl.textContent) : 0;
-        const selectedShipping = document.querySelector('input[name="shipping_method"]:checked');
-        const shipping = selectedShipping ? parseFloat(selectedShipping.dataset.cost || '0') : 0;
-        const tax = subtotal * 0.08;
-        const total = subtotal + shipping + tax;
+        const discount = discountEl ? parseMoney(discountEl.textContent) : 0;
 
-        if (shippingEl) shippingEl.textContent = shipping === 0 ? 'Free' : formatMoney(shipping);
-        if (taxEl) taxEl.textContent = formatMoney(tax);
+        // Hỗ trợ cả radio button lẫn <select> dropdown cho shipping
+        let shipping = 0;
+        const shippingRadio = document.querySelector('input[name="shipping_method"]:checked');
+        const shippingSelect = document.querySelector('select[name="delivery_method"]');
+
+        if (shippingRadio) {
+            shipping = parseFloat(shippingRadio.dataset.cost || '0');
+        } else if (shippingSelect) {
+            const opt = shippingSelect.options[shippingSelect.selectedIndex];
+            shipping = parseFloat(opt?.dataset.cost || '0');
+            console.log('shipping cost:', shipping, 'data-cost:', opt?.dataset.cost);
+        }
+
+        const total = Math.max(0, subtotal - discount + shipping);
+
+        if (shippingEl) shippingEl.textContent = formatMoney(shipping);
         if (totalEl) totalEl.textContent = formatMoney(total);
     }
 
@@ -81,12 +94,18 @@ document.addEventListener('DOMContentLoaded', function () {
             }
         });
 
-        if (!document.querySelector('input[name="shipping_method"]:checked')) {
+        // Kiểm tra shipping: hỗ trợ cả radio lẫn select
+        const hasShippingRadio = document.querySelector('input[name="shipping_method"]');
+        const hasShippingSelect = document.querySelector('select[name="delivery_method"]');
+        if (hasShippingRadio && !document.querySelector('input[name="shipping_method"]:checked')) {
             alert('Vui lòng chọn phương thức vận chuyển');
             valid = false;
         }
+        // select luôn có giá trị nên không cần check thêm
 
-        if (!document.querySelector('input[name="payment_method"]:checked')) {
+        // Kiểm tra payment: hỗ trợ cả radio lẫn select
+        const hasPaymentRadio = document.querySelector('input[name="payment_method"]');
+        if (hasPaymentRadio && !document.querySelector('input[name="payment_method"]:checked')) {
             alert('Vui lòng chọn phương thức thanh toán');
             valid = false;
         }
@@ -94,6 +113,7 @@ document.addEventListener('DOMContentLoaded', function () {
         return valid;
     }
 
+    // Radio buttons cho shipping
     document.querySelectorAll('input[name="shipping_method"]').forEach(input => {
         input.addEventListener('change', function () {
             updateSelectedCardUI('shipping_method', 'shipping-card');
@@ -101,6 +121,13 @@ document.addEventListener('DOMContentLoaded', function () {
         });
     });
 
+    // Select dropdown cho shipping — cập nhật tổng tiền khi đổi
+    const shippingSelect = document.querySelector('select[name="delivery_method"]');
+    if (shippingSelect) {
+        shippingSelect.addEventListener('change', updateTotals);
+    }
+
+    // Radio buttons cho payment
     document.querySelectorAll('input[name="payment_method"]').forEach(input => {
         input.addEventListener('change', function () {
             updateSelectedCardUI('payment_method', 'payment-card');
@@ -109,16 +136,11 @@ document.addEventListener('DOMContentLoaded', function () {
 
     if (checkoutForm) {
         checkoutForm.addEventListener('submit', function (e) {
-            e.preventDefault();
-
-            if (!validateCheckoutForm()) return;
-
-            const selectedPayment = document.querySelector('input[name="payment_method"]:checked');
-            const nextUrl = selectedPayment ? selectedPayment.dataset.next : null;
-
-            if (nextUrl) {
-                window.location.href = nextUrl;
+            if (!validateCheckoutForm()) {
+                e.preventDefault();
+                return;
             }
+            // Để form POST lên server bình thường — server tự điều hướng theo payment_method
         });
     }
 

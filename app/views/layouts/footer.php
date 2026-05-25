@@ -67,3 +67,4 @@
 </footer>
 
 <script src="public/assets/js/auth.js"></script>
+<script src="public/assets/js/order-notification.js"></script>

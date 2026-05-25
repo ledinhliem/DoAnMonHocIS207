@@ -1,4 +1,3 @@
-
 document.addEventListener('DOMContentLoaded', () => {
 
     // ── 1. Reading progress bar ────────────────────────────────────────────
@@ -18,33 +17,39 @@ document.addEventListener('DOMContentLoaded', () => {
     }, { passive: true });
 
     // ── 2. Sticky TOC active highlight ────────────────────────────────────
-    const tocLinks = document.querySelectorAll('aside a[href^="#"]');
+    const tocLinks = document.querySelectorAll('aside a.toc-link');
     const sections = [...tocLinks]
         .map(a => document.querySelector(a.getAttribute('href')))
         .filter(Boolean);
 
-    const updateTOC = activeId => {
+    const setActive = id => {
         tocLinks.forEach(a => {
-            const isActive = a.getAttribute('href') === `#${activeId}`;
-
-            // Active state: pill filled
-            a.classList.toggle('bg-primary',        isActive);
-            a.classList.toggle('text-white',        isActive);
-            a.classList.toggle('font-medium',       isActive);
-            a.classList.toggle('translate-x-0',     isActive);
-
-            // Inactive state
-            a.classList.toggle('text-on-surface-variant', !isActive);
-            a.classList.toggle('text-on-surface/60',      false); // remove old class
+            const isActive = a.getAttribute('href') === `#${id}`;
+            if (isActive) {
+                a.style.color       = 'var(--primary)';
+                a.style.fontWeight  = '700';
+                a.style.borderBottom = '2px solid var(--primary)';
+                a.style.paddingBottom = '4px';
+                a.style.width       = 'fit-content';
+            } else {
+                a.style.color       = 'rgba(var(--on-surface-variant), 0.7)';
+                a.style.fontWeight  = '';
+                a.style.borderBottom = '';
+                a.style.paddingBottom = '';
+                a.style.width       = '';
+            }
         });
     };
+
+    // Khởi tạo active link đầu tiên
+    if (tocLinks.length) setActive(tocLinks[0].getAttribute('href').slice(1));
 
     if (sections.length) {
         const io = new IntersectionObserver(entries => {
             entries.forEach(entry => {
-                if (entry.isIntersecting) updateTOC(entry.target.id);
+                if (entry.isIntersecting) setActive(entry.target.id);
             });
-        }, { rootMargin: '-25% 0px -65% 0px' });
+        }, { rootMargin: '-30% 0px -60% 0px' });
 
         sections.forEach(sec => io.observe(sec));
 

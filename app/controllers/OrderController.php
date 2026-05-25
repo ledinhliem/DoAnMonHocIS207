@@ -22,6 +22,59 @@ class OrderController extends Controller
         }
     }
 
+    /**
+     * API endpoint: trả về JSON thông tin đơn hàng hoàn thành
+     * chưa được thông báo cho user đang đăng nhập.
+     * Route: ?url=order/pending-notification  (GET, không cần login guard
+     * riêng vì trả về null khi chưa đăng nhập)
+     */
+    public function pendingNotification()
+    {
+        header('Content-Type: application/json');
+ 
+        $userId = $_SESSION['user_id'] ?? null;
+        if (!$userId) {
+            echo json_encode(['order' => null]);
+            exit;
+        }
+ 
+        $pending = $this->orderModel->getPendingDeliveryNotification($userId);
+        echo json_encode(['order' => $pending]);
+        exit;
+    }
+ 
+    /**
+     * API endpoint: đánh dấu đơn hàng đã thông báo.
+     * Route: ?url=order/mark-notified  (POST)
+     * Body: MaDonHang (string)
+     */
+    public function markNotified()
+    {
+        header('Content-Type: application/json');
+ 
+        if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
+            http_response_code(405);
+            echo json_encode(['success' => false, 'message' => 'Method not allowed']);
+            exit;
+        }
+ 
+        $userId = $_SESSION['user_id'] ?? null;
+        if (!$userId) {
+            echo json_encode(['success' => false, 'message' => 'Unauthenticated']);
+            exit;
+        }
+ 
+        $orderId = trim($_POST['MaDonHang'] ?? '');
+        if ($orderId === '') {
+            echo json_encode(['success' => false, 'message' => 'Thiếu MaDonHang']);
+            exit;
+        }
+ 
+        $result = $this->orderModel->markOrderAsNotified($orderId, $userId);
+        echo json_encode(['success' => $result]);
+        exit;
+    }
+
     // Lấy tóm tắt đơn hàng (tối ưu tính phí ship chuẩn MVC)
     private function getCheckoutSummary()
     {
@@ -174,6 +227,10 @@ class OrderController extends Controller
                 $this->completeOrder('COD');
             } elseif ($checkoutData['payment_method'] === 'transfer') {
                 header('Location: ?url=order/transfer');
+                exit;
+            } else {
+                // card: redirect sang trang nhập thông tin thẻ
+                header('Location: ?url=order/payment');
                 exit;
             }
         }
