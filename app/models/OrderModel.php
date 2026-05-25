@@ -65,61 +65,80 @@ class OrderModel extends Model
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
 
-    public function calculateDiscount($subtotal, $promoCode)
+    public function calculateDiscount($items, $promoCode)
     {
         $promoCode = strtoupper(trim($promoCode));
 
         if ($promoCode === '') {
-            return [
-                'valid' => false,
-                'message' => 'Vui long nhap ma giam gia.',
-                'discount' => 0,
-                'code' => '',
-            ];
+            return ['valid' => false, 'message' => 'Vui lòng nhập mã giảm giá.', 'discount' => 0, 'code' => ''];
         }
 
+        // Lấy thông tin mã từ DB
         $stmt = $this->db->prepare("
-            SELECT MaCode, PhamTramGiam, SoLuong, NgayHetHan
-            FROM magiamgia
-            WHERE MaCode = ?
-            LIMIT 1
-        ");
+        SELECT MaCode, PhamTramGiam, SoLuong, NgayHetHan, MaDanhMuc
+        FROM magiamgia
+        WHERE MaCode = ? LIMIT 1
+    ");
         $stmt->execute([$promoCode]);
         $promo = $stmt->fetch(PDO::FETCH_ASSOC);
 
+        // Kiểm tra mã tồn tại, hết hạn, hết số lượng
         if (!$promo) {
-            return [
-                'valid' => false,
-                'message' => 'Ma giam gia khong hop le.',
-                'discount' => 0,
-                'code' => $promoCode,
-            ];
+            return ['valid' => false, 'message' => 'Mã không hợp lệ.', 'discount' => 0, 'code' => $promoCode];
         }
-
         if ((int)$promo['SoLuong'] <= 0) {
-            return [
-                'valid' => false,
-                'message' => 'Ma giam gia da het luot su dung.',
-                'discount' => 0,
-                'code' => $promoCode,
-            ];
+            return ['valid' => false, 'message' => 'Mã đã hết lượt dùng.', 'discount' => 0, 'code' => $promoCode];
+        }
+        if (!empty($promo['NgayHetHan']) && strtotime($promo['NgayHetHan']) < strtotime(date('Y-m-d'))) {
+            return ['valid' => false, 'message' => 'Mã đã hết hạn.', 'discount' => 0, 'code' => $promoCode];
         }
 
-        if (!empty($promo['NgayHetHan']) && strtotime($promo['NgayHetHan']) < strtotime(date('Y-m-d'))) {
-            return [
-                'valid' => false,
-                'message' => 'Ma giam gia da het han.',
-                'discount' => 0,
-                'code' => $promoCode,
-            ];
+        $maDanhMucYeuCau = $promo['MaDanhMuc']; // Đây là giá trị lấy từ DB (NULL hoặc C001, C003...)
+        $subtotalApDung = 0;
+        $hasValidProduct = false;
+
+        // --- LOGIC MỚI: Kiểm tra danh mục ---
+        // Nếu MaDanhMuc là NULL (áp dụng toàn bộ) -> Bỏ qua check danh mục
+        if ($maDanhMucYeuCau === null || $maDanhMucYeuCau === '') {
+            $hasValidProduct = true;
+            foreach ($items as $item) {
+                $price = (float)($item['price'] ?? $item['DonGia'] ?? 0);
+                $quantity = (int)($item['quantity'] ?? $item['SoLuong'] ?? 1);
+                $subtotalApDung += ($price * $quantity);
+            }
+        } else {
+            // Nếu có mã danh mục -> Mới check từng sản phẩm
+            $checkCatStmt = $this->db->prepare("
+            SELECT s.MaDanhMuc 
+            FROM bienthesanpham b 
+            JOIN sanpham s ON b.MaSanPham = s.MaSanPham 
+            WHERE b.MaBienThe = ?
+        ");
+
+            foreach ($items as $item) {
+                $maBienThe = $item['MaBienThe'] ?? $item['variant_id'] ?? '';
+                $checkCatStmt->execute([$maBienThe]);
+                $cate = $checkCatStmt->fetchColumn();
+
+                if ($cate === $maDanhMucYeuCau) {
+                    $hasValidProduct = true;
+                    $price = (float)($item['price'] ?? $item['DonGia'] ?? 0);
+                    $quantity = (int)($item['quantity'] ?? $item['SoLuong'] ?? 1);
+                    $subtotalApDung += ($price * $quantity);
+                }
+            }
+        }
+
+        if (!$hasValidProduct) {
+            return ['valid' => false, 'message' => 'Mã không áp dụng cho sản phẩm này.', 'discount' => 0, 'code' => $promoCode];
         }
 
         $percent = (int)$promo['PhamTramGiam'];
-        $discount = min((float)$subtotal, (float)$subtotal * ($percent / 100));
+        $discount = $subtotalApDung * ($percent / 100);
 
         return [
             'valid' => true,
-            'message' => 'Ap dung ma ' . $promoCode . ' thanh cong.',
+            'message' => 'Áp dụng mã ' . $promoCode . ' thành công.',
             'discount' => $discount,
             'code' => $promoCode,
             'percent' => $percent,
@@ -464,5 +483,41 @@ class OrderModel extends Model
     private function mapDeliveryMethod($deliveryMethod)
     {
         return $deliveryMethod === 'express' ? '2' : '1';
+    }
+
+    public function getAvailablePromos()
+    {
+        try {
+            // Nối chuỗi để hiển thị rành mạch: "Giảm 15% (Chỉ Zentro Kitchen)"
+            $sql = "SELECT 
+                        m.MaCode AS MaGiamGia, 
+                        CONCAT('Giảm ', m.PhamTramGiam, '%', IF(m.MaDanhMuc IS NOT NULL, CONCAT(' (Chỉ ', d.TenDanhMuc, ')'), ' (Toàn Shop)')) AS MoTa, 
+                        m.NgayHetHan 
+                    FROM magiamgia m
+                    LEFT JOIN danhmuc d ON m.MaDanhMuc = d.MaDanhMuc
+                    WHERE m.NgayHetHan >= CURDATE() AND m.SoLuong > 0";
+
+            $stmt = $this->db->prepare($sql);
+            $stmt->execute();
+
+            return $stmt->fetchAll(PDO::FETCH_ASSOC);
+        } catch (Throwable $e) {
+            return [];
+        }
+    }
+
+    // Thêm hàm này vào class OrderModel trong app/models/OrderModel.php
+   /**
+     * Tự động sinh link mã QR VietQR động (Task 5c)
+     */
+    public function generateVietQRUrl($totalAmount, $orderCode) {
+        $accountNo = "0769509303"; // Đổi thành STK thật của ông nếu cần
+        $accountName = "NGUY TRONG PHUC"; // Tên thật của shop
+        
+        // Gọi API của VietQR với định dạng compact2 (gọn đẹp)
+        return "https://img.vietqr.io/image/mbbank-" . $accountNo . "-compact2.png?" . 
+               "amount=" . (int)$totalAmount . 
+               "&addInfo=" . urlencode($orderCode) . 
+               "&accountName=" . urlencode($accountName);
     }
 }
