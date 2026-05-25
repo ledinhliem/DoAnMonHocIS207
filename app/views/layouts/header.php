@@ -1,11 +1,47 @@
 <?php
-// Tính số lượng giỏ hàng
 $cartCount = 0;
 if (!empty($_SESSION['cart']) && is_array($_SESSION['cart'])) {
     foreach ($_SESSION['cart'] as $item) {
         $cartCount += (int)($item['quantity'] ?? 0);
     }
 }
+
+$currentUrl = trim($_GET['url'] ?? '', '/');
+$navItems = [
+    [
+        'label' => 'Cửa hàng',
+        'url' => 'product',
+        'matches' => ['product', 'product/shop', 'product/detail', 'product/search'],
+    ],
+    [
+        'label' => 'Blog',
+        'url' => 'blog',
+        'matches' => ['blog', 'blog/detail'],
+    ],
+    [
+        'label' => 'Lịch sử',
+        'url' => 'order/history',
+        'matches' => ['order/history', 'order/tracking'],
+    ],
+];
+
+$isNavActive = static function (array $item) use ($currentUrl): bool {
+    return in_array($currentUrl, $item['matches'] ?? [], true);
+};
+
+$navItemClass = static function (bool $active, string $mode = 'desktop'): string {
+    $base = 'font-headline text-sm font-bold uppercase tracking-tight transition-all';
+    $state = $active ? 'text-primary' : 'text-on-surface/70 hover:text-primary';
+
+    if ($mode === 'mobile') {
+        return $base . ' ' . $state . ' whitespace-nowrap px-2 py-2 border-b-2 '
+            . ($active ? 'border-primary' : 'border-transparent');
+    }
+
+    return $base . ' ' . $state
+        . ' relative after:absolute after:left-0 after:-bottom-2 after:h-0.5 after:bg-primary after:transition-all '
+        . ($active ? 'after:w-full' : 'after:w-0 hover:after:w-full');
+};
 ?>
 <!DOCTYPE html>
 <html class="light" lang="vi">
@@ -61,39 +97,43 @@ if (!empty($_SESSION['cart']) && is_array($_SESSION['cart'])) {
 <body class="bg-surface text-on-surface font-body">
 
 <header class="w-full sticky top-0 z-50 glass-nav shadow-sm border-b border-outline-variant/30">
-    <div class="flex justify-between items-center px-8 py-6 max-w-7xl mx-auto">
+    <div class="grid grid-cols-[auto_1fr_auto] items-center gap-5 px-5 sm:px-8 py-5 max-w-7xl mx-auto">
         <a href="index.php?url=" class="text-2xl font-bold text-primary uppercase tracking-widest font-headline">
             ZENTRO
         </a>
 
-        <nav class="hidden md:flex gap-8 items-center font-headline text-sm font-bold uppercase tracking-tight">
-            <a class="text-on-surface/70 hover:text-primary transition-all" href="index.php?url=product">Cửa hàng</a>
-            <a class="text-on-surface/70 hover:text-primary transition-all" href="index.php?url=product">Danh mục</a>
-            <a class="text-on-surface/70 hover:text-primary transition-all" href="index.php?url=blog">Blog</a>
-            <a class="text-on-surface/70 hover:text-primary transition-all" href="index.php?url=order/history">Lịch sử</a>
+        <nav class="hidden md:flex justify-center gap-10 items-center" aria-label="Điều hướng chính">
+            <?php foreach ($navItems as $item): ?>
+                <?php $active = $isNavActive($item); ?>
+                <a class="<?= $navItemClass($active) ?>"
+                   href="index.php?url=<?= htmlspecialchars($item['url']) ?>"
+                   <?= $active ? 'aria-current="page"' : '' ?>>
+                    <?= htmlspecialchars($item['label']) ?>
+                </a>
+            <?php endforeach; ?>
         </nav>
 
-        <div class="flex items-center gap-6">
-            <a href="index.php?url=product/search" class="material-symbols-outlined text-primary hover:scale-110 transition-transform">
+        <div class="flex items-center justify-end gap-4 sm:gap-6">
+            <a href="index.php?url=product/search" class="material-symbols-outlined text-primary hover:scale-110 transition-transform" aria-label="Tìm kiếm">
                 search
             </a>
 
             <?php if (isset($_SESSION['user_id'])): ?>
-                <a href="index.php?url=profile" class="flex items-center gap-2 group">
+                <a href="index.php?url=profile" class="flex items-center gap-2 group" aria-label="Tài khoản">
                     <span class="material-symbols-outlined text-primary group-hover:scale-110 transition-transform">
                         account_circle
                     </span>
                     <span class="text-xs font-bold text-primary hidden lg:block uppercase">
-                        Hi, <?= explode(' ', $_SESSION['user_name'] ?? 'User')[0] ?>
+                        Hi, <?= htmlspecialchars(explode(' ', $_SESSION['user_name'] ?? 'User')[0]) ?>
                     </span>
                 </a>
             <?php else: ?>
-                <a href="index.php?url=login" class="material-symbols-outlined text-primary hover:scale-110 transition-transform">
+                <a href="index.php?url=login" class="material-symbols-outlined text-primary hover:scale-110 transition-transform" aria-label="Đăng nhập">
                     account_circle
                 </a>
             <?php endif; ?>
 
-            <a href="index.php?url=cart" class="relative inline-flex items-center justify-center">
+            <a href="index.php?url=cart" class="relative inline-flex items-center justify-center" aria-label="Giỏ hàng">
                 <span class="material-symbols-outlined text-primary hover:scale-110 transition-transform">
                     shopping_cart
                 </span>
@@ -105,4 +145,15 @@ if (!empty($_SESSION['cart']) && is_array($_SESSION['cart'])) {
             </a>
         </div>
     </div>
+
+    <nav class="md:hidden flex justify-center gap-7 px-5 pb-4 overflow-x-auto" aria-label="Điều hướng chính trên mobile">
+        <?php foreach ($navItems as $item): ?>
+            <?php $active = $isNavActive($item); ?>
+            <a class="<?= $navItemClass($active, 'mobile') ?>"
+               href="index.php?url=<?= htmlspecialchars($item['url']) ?>"
+               <?= $active ? 'aria-current="page"' : '' ?>>
+                <?= htmlspecialchars($item['label']) ?>
+            </a>
+        <?php endforeach; ?>
+    </nav>
 </header>

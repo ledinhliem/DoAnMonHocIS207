@@ -14,9 +14,11 @@ class ProductController extends Controller
     // ─── LIST / FILTER / PAGINATION ─────────────────────────────────────────
     public function index(): void
     {
+        $categoryInput = trim($_GET['category_id'] ?? $_GET['category'] ?? '');
+
         $filters = [
             'keyword'   => trim($_GET['keyword'] ?? ''),
-            'category'  => trim($_GET['category'] ?? ''),
+            'category'  => $this->model->resolveCategoryId($categoryInput),
             'impact'    => trim($_GET['impact'] ?? ''),
             'price_max' => trim($_GET['price_max'] ?? ''),
             'sort'      => trim($_GET['sort'] ?? ''),
@@ -87,7 +89,16 @@ class ProductController extends Controller
         $keyword = trim($_GET['q'] ?? $_GET['keyword'] ?? '');
         $products = $keyword ? $this->model->search($keyword) : [];
 
-        $this->view('product/search', compact('products', 'keyword'));
+        // Lấy các sản phẩm gợi ý nếu không tìm thấy kết quả
+        $suggestions = [];
+        if (empty($products) && !empty($keyword)) {
+            $suggestions = $this->model->getSuggestions($keyword, 8);
+        } else if (empty($keyword)) {
+            // Nếu không có từ khóa, hiển thị các sản phẩm gợi ý
+            $suggestions = $this->model->getSuggestions('', 8);
+        }
+
+        $this->view('product/search', compact('products', 'keyword', 'suggestions'));
     }
 
     // ─── CART: ADD ───────────────────────────────────────────────────────────

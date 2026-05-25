@@ -2,6 +2,7 @@
 <?php
 $products = $products ?? [];
 $keyword = $keyword ?? '';
+$suggestions = $suggestions ?? [];
 ?>
 
 <main class="max-w-7xl mx-auto px-8 py-12">
@@ -96,24 +97,62 @@ $keyword = $keyword ?? '';
             <?php endforeach; ?>
         </section>
     <?php else: ?>
-        <p class="text-center text-gray-500 mt-10">Không tìm thấy sản phẩm</p>
+        <?php if (!empty($keyword)): ?>
+            <p class="text-center text-gray-500 mt-10 mb-16">Không tìm thấy sản phẩm phù hợp với "<strong><?= htmlspecialchars($keyword) ?></strong>"</p>
+        <?php else: ?>
+            <p class="text-center text-gray-500 mt-10 mb-16">Vui lòng nhập từ khóa để tìm kiếm sản phẩm</p>
+        <?php endif; ?>
     <?php endif; ?>
 
-    <section class="mt-24 pt-16 border-t border-outline-variant/10">
-        <h2 class="font-headline text-2xl font-bold text-primary mb-8 tracking-tight">Gợi ý tìm kiếm liên quan</h2>
-        <div class="flex flex-wrap gap-4">
-            <a class="px-6 py-3 bg-surface-container-low hover:bg-surface-container-high rounded-full border border-outline-variant/30 text-primary font-medium transition-all"
-               href="<?= BASE_URL ?>?url=product">Vải cotton hữu cơ</a>
-            <a class="px-6 py-3 bg-surface-container-low hover:bg-surface-container-high rounded-full border border-outline-variant/30 text-primary font-medium transition-all"
-               href="<?= BASE_URL ?>?url=product">Đồ trang trí tiết kiệm năng lượng</a>
-            <a class="px-6 py-3 bg-surface-container-low hover:bg-surface-container-high rounded-full border border-outline-variant/30 text-primary font-medium transition-all"
-               href="<?= BASE_URL ?>?url=product">Đồ thủy tinh tái chế</a>
-            <a class="px-6 py-3 bg-surface-container-low hover:bg-surface-container-high rounded-full border border-outline-variant/30 text-primary font-medium transition-all"
-               href="<?= BASE_URL ?>?url=product">Sợi gai dầu</a>
-            <a class="px-6 py-3 bg-surface-container-low hover:bg-surface-container-high rounded-full border border-outline-variant/30 text-primary font-medium transition-all"
-               href="<?= BASE_URL ?>?url=product">Xà phòng phân hủy sinh học</a>
-        </div>
-    </section>
+    <?php if (!empty($suggestions)): ?>
+        <section class="mt-24 pt-16 border-t border-outline-variant/10">
+            <?php if (empty($products) && !empty($keyword)): ?>
+                <h2 class="font-headline text-2xl font-bold text-primary mb-8 tracking-tight">Sản phẩm gợi ý tương tự</h2>
+            <?php else: ?>
+                <h2 class="font-headline text-2xl font-bold text-primary mb-8 tracking-tight">Sản phẩm khác bạn có thể quan tâm</h2>
+            <?php endif; ?>
+            
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-10">
+                <?php foreach ($suggestions as $s): ?>
+                    <?php
+                        $maSanPham = $s['id'] ?? '';
+                        $maBienThe = $s['MaBienTheMacDinh'] ?? '';
+                        $stock = (int)($s['TongTon'] ?? 0);
+                    ?>
+                    <div class="group flex flex-col space-y-4 cursor-pointer"
+                         onclick="window.location.href='<?= BASE_URL ?>?url=product/detail&id=<?= htmlspecialchars($maSanPham) ?>'">
+                        <div class="relative aspect-[4/5] overflow-hidden rounded-xl bg-surface-container-low">
+                            <img class="w-full h-full object-cover"
+                                 src="<?= htmlspecialchars($s['image'] ?? 'https://via.placeholder.com/300') ?>"
+                                 alt="<?= htmlspecialchars($s['name']) ?>" />
+
+                            <form method="POST" action="<?= BASE_URL ?>?url=cart/add" class="absolute bottom-4 right-4" onclick="event.stopPropagation()">
+                                <input type="hidden" name="MaSanPham" value="<?= htmlspecialchars($maSanPham) ?>">
+                                <input type="hidden" name="MaBienThe" value="<?= htmlspecialchars($maBienThe) ?>">
+                                <input type="hidden" name="SoLuong" value="1">
+                                <button type="submit"
+                                        <?= (empty($maSanPham) || empty($maBienThe) || $stock <= 0) ? 'disabled' : '' ?>
+                                        class="bg-white/90 p-3 rounded-full disabled:opacity-50 disabled:cursor-not-allowed">
+                                    <span class="material-symbols-outlined">add_shopping_cart</span>
+                                </button>
+                            </form>
+                        </div>
+
+                        <div>
+                            <h3 class="font-headline font-bold text-xl">
+                                <?= htmlspecialchars($s['name']) ?>
+                            </h3>
+                            <?php if (!empty($s['category_name'])): ?>
+                                <p class="text-sm text-on-surface-variant mt-1">
+                                    <?= htmlspecialchars($s['category_name']) ?>
+                                </p>
+                            <?php endif; ?>
+                        </div>
+                    </div>
+                <?php endforeach; ?>
+            </div>
+        </section>
+    <?php endif; ?>
 </main>
 
 <?php include __DIR__ . '/../layouts/footer.php'; ?>
