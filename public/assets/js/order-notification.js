@@ -1,19 +1,3 @@
-/**
- * order-notification.js
- * Hiển thị pop-up thông báo ở góc dưới phải khi có đơn hàng
- * vừa hoàn thành chưa được đánh giá.
- *
- * Luồng:
- *  1. Gọi GET  ?url=order/pending-notification  → nhận { order: {...} | null }
- *  2. Nếu có đơn → render pop-up
- *  3. Khi pop-up hiện ra → gọi POST ?url=order/mark-notified (đánh dấu đã thông báo)
- *  4. Khi user nhấn nút → redirect sang trang feedback
- *  5. Khi user nhấn ✕  → đóng pop-up (đã mark ở bước 3 nên không hiện lại)
- *
- * Để sử dụng: include file này trong footer.php (hoặc layout chính),
- * sau khi DOM đã load.
- *   <script src="public/assets/js/order-notification.js"></script>
- */
 
 (function () {
   'use strict';
