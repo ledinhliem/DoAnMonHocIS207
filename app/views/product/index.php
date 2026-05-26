@@ -88,21 +88,29 @@ function product_page_url(int $page, array $filters): string
 
                         <hr class="my-8 border-[#E0E3D5]">
 
-                        <h2 class="text-2xl font-bold text-[#2F512A] mb-6">
-                            Mức giá tối đa
-                        </h2>
+                           <div class="mb-8">
+    <div class="flex items-center justify-between mb-3">
+        <span class="font-semibold text-[#2F512A]">
+            Giá tối đa
+        </span>
 
-                        <div class="relative mb-8">
-                            <span class="absolute left-4 top-1/2 -translate-y-1/2 font-bold text-[#2F512A]">
-                                ₫
-                            </span>
+        <span id="priceDisplay" class="text-sm text-gray-600">
+            <?= !empty($filters['price_max'])
+                ? number_format((int)$filters['price_max'], 0, ',', '.') . '₫'
+                : 'Không giới hạn'
+            ?>
+        </span>
+    </div>
 
-                            <input type="number"
-                                   name="price_max"
-                                   value="<?= htmlspecialchars($filters['price_max'] ?? '') ?>"
-                                   placeholder="Không giới hạn"
-                                   class="w-full rounded-xl border border-[#D8DDCB] bg-white px-10 py-3">
-                        </div>
+    <input type="range"
+           id="priceRange"
+           name="price_max"
+           min="0"
+           max="5000000"
+           step="50000"
+           value="<?= !empty($filters['price_max']) ? (int)$filters['price_max'] : 5000000 ?>"
+           class="w-full accent-[#2F512A] cursor-pointer">
+</div>
 
                         <hr class="my-8 border-[#E0E3D5]">
 
@@ -110,23 +118,23 @@ function product_page_url(int $page, array $filters): string
                             Tác động môi trường
                         </h2>
 
-                        <?php foreach (($impacts ?? []) as $impactId => $impactName): ?>
-                            <label class="flex items-center gap-3 mb-4 cursor-pointer">
-                                <input type="radio"
-                                       name="impact"
-                                       value="<?= htmlspecialchars($impactId) ?>"
-                                       <?= (($filters['impact'] ?? '') === $impactId) ? 'checked' : '' ?>>
-                                <span><?= htmlspecialchars($impactName) ?></span>
-                            </label>
-                        <?php endforeach; ?>
+<label class="flex items-center gap-3 mb-4 cursor-pointer">
+    <input type="radio"
+           name="impact"
+           value=""
+           <?= empty($filters['impact']) ? 'checked' : '' ?>>
+    <span>Tất cả tác động</span>
+</label>
 
-                        <label class="flex items-center gap-3 mb-6 cursor-pointer">
-                            <input type="radio"
-                                   name="impact"
-                                   value=""
-                                   <?= empty($filters['impact']) ? 'checked' : '' ?>>
-                            <span>Tất cả tác động</span>
-                        </label>
+<?php foreach (($impacts ?? []) as $impactId => $impactName): ?>
+    <label class="flex items-center gap-3 mb-4 cursor-pointer">
+        <input type="radio"
+               name="impact"
+               value="<?= htmlspecialchars($impactId) ?>"
+               <?= (($filters['impact'] ?? '') === $impactId) ? 'checked' : '' ?>>
+        <span><?= htmlspecialchars($impactName) ?></span>
+    </label>
+<?php endforeach; ?>
 
                         <button type="submit"
                                 class="w-full rounded-xl bg-[#2F512A] text-white font-bold py-3 hover:bg-[#244020] transition">
@@ -190,9 +198,52 @@ function product_page_url(int $page, array $filters): string
                 </div>
 
                 <?php if (empty($products)): ?>
-                    <div class="bg-white rounded-2xl border border-[#E5E7D8] p-8">
-                        Không tìm thấy sản phẩm phù hợp.
-                    </div>
+                   <div class="bg-white rounded-2xl border border-[#E5E7D8] p-12 text-center">
+    <h3 class="text-2xl font-bold text-[#2F512A] mb-3">
+        Không tìm thấy sản phẩm
+    </h3>
+
+    <p class="text-gray-600 mb-6">
+        Hãy thử thay đổi bộ lọc hoặc từ khóa tìm kiếm.
+    </p>
+
+    <a href="?url=product"
+       class="inline-block bg-[#2F512A] text-white px-6 py-3 rounded-xl hover:bg-[#244020] transition">
+        Xem tất cả sản phẩm
+    </a>
+</div>
+                    <div class="mt-20">
+    <h2 class="text-2xl font-bold text-[#2F512A] mb-6">
+        Gợi ý tìm kiếm liên quan
+    </h2>
+
+    <div class="flex flex-wrap gap-4">
+
+        <?php
+        $suggestions = [
+            'Sản phẩm xanh',
+            'Đồ tái chế',
+            'Không nhựa',
+            'Eco living',
+            'Thời trang bền vững',
+            'Chăm sóc da thiên nhiên',
+            'Nhà bếp bền vững'
+        ];
+        ?>
+
+        <?php foreach ($suggestions as $item): ?>
+            <a href="?url=product&keyword=<?= urlencode($item) ?>"
+               class="px-5 py-3 rounded-full border border-[#D8DDCB]
+                      hover:bg-[#2F512A]
+                      hover:text-white
+                      transition">
+
+                <?= htmlspecialchars($item) ?>
+            </a>
+        <?php endforeach; ?>
+
+    </div>
+</div>
                 <?php else: ?>
                     <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-8">
                         <?php foreach ($products as $product): ?>
@@ -317,5 +368,25 @@ function product_page_url(int $page, array $filters): string
         </div>
     </section>
 </main>
+<script>
+const priceRange = document.getElementById('priceRange');
+const priceDisplay = document.getElementById('priceDisplay');
 
+if (priceRange && priceDisplay) {
+    function updatePrice() {
+        const value = parseInt(priceRange.value);
+
+        if (value >= 5000000) {
+            priceDisplay.innerText = 'Không giới hạn';
+        } else {
+            priceDisplay.innerText =
+                value.toLocaleString('vi-VN') + '₫';
+        }
+    }
+
+    updatePrice();
+
+    priceRange.addEventListener('input', updatePrice);
+}
+</script>
 <?php include __DIR__ . '/../layouts/footer.php'; ?>
