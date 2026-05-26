@@ -30,7 +30,7 @@
         <?php else: ?>
             <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
                 <div class="lg:col-span-2 space-y-5">
-                    <?php foreach ($items as $item): ?>
+                    <?php foreach ($items as $key => $item): ?>
                         <?php
                             $name = $item['name'] ?? 'Sản phẩm';
                             $variant = $item['variant'] ?? '';
@@ -41,7 +41,16 @@
                             $lineTotal = $price * $quantity;
                         ?>
 
-                        <div class="bg-white rounded-2xl border border-[#E5E7D8] p-5 flex flex-col md:flex-row gap-5">
+                        <div class="bg-white rounded-2xl border border-[#E5E7D8] p-5 flex flex-col md:flex-row gap-5 items-center">
+                            
+                            <div class="flex items-center justify-center pr-2 self-center md:self-auto">
+                                <input type="checkbox" 
+                                       value="<?= htmlspecialchars($key) ?>" 
+                                       checked 
+                                       class="cart-checkbox w-6 h-6 rounded border-[#D8DDCB] text-[#2F512A] focus:ring-[#2F512A] cursor-pointer"
+                                       data-line-total="<?= $lineTotal ?>">
+                            </div>
+
                             <?php if (!empty($image)): ?>
                                 <img src="<?= htmlspecialchars($image) ?>"
                                      alt="<?= htmlspecialchars($name) ?>"
@@ -52,7 +61,7 @@
                                 </div>
                             <?php endif; ?>
 
-                            <div class="flex-1">
+                            <div class="flex-1 w-full">
                                 <h3 class="text-xl font-bold text-[#2F512A]">
                                     <?= htmlspecialchars($name) ?>
                                 </h3>
@@ -76,7 +85,7 @@
                                     <form method="POST" action="?url=cart/update">
                                         <input type="hidden" name="SoLuong" value="<?= max(0, $quantity - 1) ?>">
                                         <button type="submit"
-                                                class="w-10 h-10 rounded-xl border border-[#D8DDCB] font-bold">
+                                                class="w-10 h-10 rounded-xl border border-[#D8DDCB] font-bold hover:bg-gray-100 transition">
                                             -
                                         </button>
                                     </form>
@@ -88,19 +97,26 @@
                                     <form method="POST" action="?url=cart/update">
                                         <input type="hidden" name="SoLuong" value="<?= $quantity + 1 ?>">
                                         <button type="submit"
-                                                class="w-10 h-10 rounded-xl border border-[#D8DDCB] font-bold">
+                                                class="w-10 h-10 rounded-xl border border-[#D8DDCB] font-bold hover:bg-gray-100 transition">
                                             +
                                         </button>
                                     </form>
                                 </div>
                             </div>
 
-                            <div class="flex md:flex-col justify-between md:items-end gap-4">
+                            <div class="flex md:flex-col justify-between md:items-end gap-4 w-full md:w-auto border-t md:border-t-0 pt-3 md:pt-0">
                                 <p class="font-black text-[#2F512A] text-lg">
                                     <?= number_format($lineTotal, 0, ',', '.') ?>₫
                                 </p>
 
+<<<<<<< HEAD
 
+=======
+                                <a href="?url=cart/remove&MaBienThe=<?= urlencode($maBienThe) ?>"
+                                   class="px-4 py-2 rounded-xl border border-red-300 text-red-600 font-semibold hover:bg-red-50 transition">
+                                    Xóa
+                                </a>
+>>>>>>> lan/fix-loi
                             </div>
                         </div>
                     <?php endforeach; ?>
@@ -111,19 +127,91 @@
                         Tóm tắt giỏ hàng
                     </h2>
 
-                    <div class="flex justify-between mb-4">
+                    <div class="flex justify-between mb-6">
                         <span>Tạm tính</span>
-                        <strong><?= number_format($subtotal, 0, ',', '.') ?>₫</strong>
+                        <strong id="cart-subtotal" class="text-xl text-[#2F512A]">
+                            <?= number_format($subtotal, 0, ',', '.') ?>₫
+                        </strong>
                     </div>
 
-                    <a href="?url=checkout"
-                       class="block w-full text-center px-6 py-4 rounded-2xl bg-[#2F512A] text-white font-bold">
-                        Tiếp tục thanh toán
-                    </a>
+                    <form id="checkout-form" method="POST" action="?url=checkout">
+                        <button type="submit" 
+                                id="checkout-btn"
+                                class="block w-full text-center px-6 py-4 rounded-2xl bg-[#2F512A] text-white font-bold hover:opacity-90 transition">
+                            Tiếp tục thanh toán
+                        </button>
+                    </form>
                 </div>
             </div>
         <?php endif; ?>
     </section>
 </main>
+
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+    const checkboxes = document.querySelectorAll('.cart-checkbox');
+    const subtotalDisplay = document.getElementById('cart-subtotal');
+    const checkoutBtn = document.getElementById('checkout-btn');
+    const checkoutForm = document.getElementById('checkout-form');
+
+    // 1. Hàm tính lại tổng tiền tạm tính khi bấm bật/tắt checkbox
+    function recalculateTotal() {
+        let total = 0;
+        let checkedCount = 0;
+
+        checkboxes.forEach(cb => {
+            if (cb.checked) {
+                total += parseFloat(cb.getAttribute('data-line-total'));
+                checkedCount++;
+            }
+        });
+
+        // Format định dạng tiền Việt Nam (VD: 1.500.000₫)
+        subtotalDisplay.textContent = new Intl.NumberFormat('vi-VN').format(total) + '₫';
+
+        // Nếu không chọn sản phẩm nào, vô hiệu hóa nút thanh toán luôn
+        if (checkedCount === 0) {
+            checkoutBtn.disabled = true;
+            checkoutBtn.classList.remove('bg-[#2F512A]', 'hover:opacity-90');
+            checkoutBtn.classList.add('bg-gray-400', 'cursor-not-allowed');
+        } else {
+            checkoutBtn.disabled = false;
+            checkoutBtn.classList.remove('bg-gray-400', 'cursor-not-allowed');
+            checkoutBtn.classList.add('bg-[#2F512A]', 'hover:opacity-90');
+        }
+    }
+
+    // Lắng nghe sự kiện click checkbox
+    checkboxes.forEach(cb => {
+        cb.addEventListener('change', recalculateTotal);
+    });
+
+    // 2. Gom toàn bộ sản phẩm được chọn đổ vào form trước khi submit sang checkout
+    if (checkoutForm) {
+        checkoutForm.addEventListener('submit', function (e) {
+            // Xóa các input ẩn cũ (nếu có) tránh trùng lặp khi quay lại
+            const oldInputs = checkoutForm.querySelectorAll('input[name="selected_items[]"]');
+            oldInputs.forEach(input => input.remove());
+
+            const checkedBoxes = document.querySelectorAll('.cart-checkbox:checked');
+            
+            if (checkedBoxes.length === 0) {
+                e.preventDefault();
+                alert('Vui lòng chọn ít nhất một sản phẩm để tiến hành thanh toán.');
+                return;
+            }
+
+            // Tạo input ẩn tương ứng cho từng sản phẩm được chọn gửi sang controller
+            checkedBoxes.forEach(cb => {
+                const hiddenInput = document.createElement('input');
+                hiddenInput.type = 'hidden';
+                hiddenInput.name = 'selected_items[]';
+                hiddenInput.value = cb.value;
+                checkoutForm.appendChild(hiddenInput);
+            });
+        });
+    }
+});
+</script>
 
 <?php include __DIR__ . '/../layouts/footer.php'; ?>

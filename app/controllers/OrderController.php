@@ -1,18 +1,24 @@
 <?php
 require_once __DIR__ . '/../models/CartModel.php';
 require_once __DIR__ . '/../models/OrderModel.php';
+<<<<<<< HEAD
 use SePay\SePayClient;
 use SePay\Builders\CheckoutBuilder;
+=======
+require_once __DIR__ . '/../models/UserModel.php';
+>>>>>>> lan/fix-loi
 
 class OrderController extends Controller
 {
     private $cartModel;
     private $orderModel;
+    private $userModel;
 
     public function __construct()
     {
         $this->cartModel = new CartModel();
         $this->orderModel = new OrderModel();
+        $this->userModel = new UserModel();
     }
 
     private function requireLogin()
@@ -24,6 +30,7 @@ class OrderController extends Controller
         }
     }
 
+<<<<<<< HEAD
     /**
      * API endpoint: trả về JSON thông tin đơn hàng hoàn thành
      * chưa được thông báo cho user đang đăng nhập.
@@ -79,8 +86,37 @@ class OrderController extends Controller
 
     // Lấy tóm tắt đơn hàng (tối ưu tính phí ship chuẩn MVC)
     private function getCheckoutSummary()
+=======
+    //Lọc danh sách sản phẩm ĐÃ ĐƯỢC CHỌN từ giỏ hàng để mang đi thanh toán
+    private function getFilteredCartItems()
+>>>>>>> lan/fix-loi
     {
-        $subtotal = $this->cartModel->getSubtotal();
+        $allItems = $this->cartModel->getItems() ?? [];
+        $selectedKeys = $_SESSION['selected_cart_keys'] ?? [];
+
+        // Nếu không tìm thấy vết session đã chọn (ví dụ user F5 hoặc vào trực tiếp link), mặc định chọn cả giỏ hàng
+        if (empty($selectedKeys)) {
+            return $allItems;
+        }
+
+        $filtered = [];
+        foreach ($allItems as $key => $item) {
+            // Kiểm tra khớp theo mã key mảng hoặc thuộc tính ID sản phẩm gửi lên
+            if (in_array($key, $selectedKeys) || (isset($item['id']) && in_array($item['id'], $selectedKeys))) {
+                $filtered[$key] = $item;
+            }
+        }
+        return $filtered;
+    }
+
+    // Tối ưu hàm tính toán hóa đơn: nhận danh sách món đã lọc để tính tiền chính xác
+    private function getCheckoutSummary($items)
+    {
+        $subtotal = 0;
+        foreach ($items as $item) {
+            $subtotal += ($item['price'] ?? 0) * ($item['quantity'] ?? 1);
+        }
+
         $discount = $_SESSION['promo']['discount'] ?? 0;
         $deliveryMethod = $_SESSION['checkout_data']['delivery_method'] ?? 'standard';
         $shipping = $this->orderModel->getShippingFee($deliveryMethod);
@@ -99,10 +135,12 @@ class OrderController extends Controller
     private function completeOrder($paymentMethod, $extraData = [])
     {
         try {
+            $items = $this->getFilteredCartItems();
+
             $orderData = [
                 'customer' => $_SESSION['checkout_data'] ?? [],
-                'items' => $this->cartModel->getItems(),
-                'summary' => $this->getCheckoutSummary(),
+                'items' => $items,
+                'summary' => $this->getCheckoutSummary($items),
                 'payment_method' => $paymentMethod,
             ];
 
@@ -111,13 +149,23 @@ class OrderController extends Controller
 
             $order = $this->orderModel->saveOrder($orderData);
 
-            // Xóa giỏ hàng và dữ liệu tạm
-            $this->cartModel->clear();
+            // 🌟 CHỈ XÓA CÁC SẢN PHẨM ĐÃ THANH TOÁN KHỎI GIỎ HÀNG
+            foreach (array_keys($items) as $key) {
+                if (method_exists($this->cartModel, 'removeItem')) {
+                    $this->cartModel->removeItem($key);
+                } elseif (method_exists($this->cartModel, 'delete')) {
+                    $this->cartModel->delete($key);
+                } else {
+                    unset($_SESSION['cart'][$key]); // Phương án dự phòng nếu lưu thô trong session gốc
+                }
+            }
+
             unset(
                 $_SESSION['promo'],
                 $_SESSION['payment_old'],
                 $_SESSION['payment_errors'],
-                $_SESSION['checkout_data']
+                $_SESSION['checkout_data'],
+                $_SESSION['selected_cart_keys'] // Xóa lịch sử ghi nhớ tích chọn sản phẩm
             );
 
             // Lưu ID đơn hàng mới nhất để trang success hiển thị đúng
@@ -137,19 +185,39 @@ class OrderController extends Controller
     {
         $this->requireLogin();
 
-        $items = $this->cartModel->getItems();
+        // 🌟 HỨNG DANH SÁCH TÍCH CHỌN SẢN PHẨM TỪ GIỎ HÀNG GỬI SANG QUA POST
+        if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['selected_items'])) {
+            $_SESSION['selected_cart_keys'] = $_POST['selected_items'];
+        }
+
+        $items = $this->getFilteredCartItems();
 
         if (empty($items)) {
-            $_SESSION['error'] = 'Giỏ hàng đang trống.';
+            $_SESSION['error'] = 'Vui lòng chọn ít nhất một sản phẩm để thanh toán.';
             header('Location: ?url=cart');
             exit;
         }
 
+        //Lấy thông tin user từ dtb
+        $userId = $_SESSION['user_id'];
+        $user = $this->userModel->getUserInfo($userId);
+
+        $fullAddress = '';
+        if (!empty($user['SoNha_Duong'])) {
+            $addressParts = array_filter([
+                $user['SoNha_Duong'] ?? '',
+                $user['PhuongXa'] ?? '',
+                $user['QuanHuyen'] ?? '',
+                $user['TinhThanh'] ?? ''
+            ]);
+            $fullAddress = implode(', ', $addressParts);
+        }
+
         $checkoutData = $_SESSION['checkout_data'] ?? [
-            'full_name' => '',
-            'email' => '',
-            'phone' => '',
-            'address' => '',
+            'full_name' => $user['HoTen'] ?? '',
+            'email' => $user['Email'] ?? '',
+            'phone' => $user['SoDienThoai'] ?? '',
+            'address' => $fullAddress,
             'delivery_method' => 'standard',
             'payment_method' => 'card',
         ];
@@ -160,7 +228,7 @@ class OrderController extends Controller
         $this->view('order/checkout', [
             'title' => 'Thanh toán',
             'items' => $items,
-            'summary' => $this->getCheckoutSummary(),
+            'summary' => $this->getCheckoutSummary($items),
             'checkoutData' => $checkoutData,
             'availablePromos' => $availablePromos,
             'errors' => $_SESSION['checkout_errors'] ?? [],
@@ -181,6 +249,7 @@ class OrderController extends Controller
             exit;
         }
 
+<<<<<<< HEAD
         $promoCode = trim($_POST['promo_code'] ?? '');
 
         if ($promoCode === '') {
@@ -195,6 +264,18 @@ class OrderController extends Controller
         $result = $this->orderModel->calculateDiscount(
             $this->cartModel->getItems(),
             $promoCode
+=======
+        // Áp mã giảm giá dựa trên tổng tiền tạm tính của các món ĐÃ ĐƯỢC CHỌN mua
+        $items = $this->getFilteredCartItems();
+        $subtotal = 0;
+        foreach ($items as $item) {
+            $subtotal += ($item['price'] ?? 0) * ($item['quantity'] ?? 1);
+        }
+
+        $result = $this->orderModel->calculateDiscount(
+            $subtotal,
+            $_POST['promo_code'] ?? ''
+>>>>>>> lan/fix-loi
         );
 
         if ($result['valid']) {
@@ -214,9 +295,10 @@ class OrderController extends Controller
     public function payment()
     {
         $this->requireLogin();
+        $items = $this->getFilteredCartItems();
 
-        if (empty($this->cartModel->getItems())) {
-            $_SESSION['error'] = 'Giỏ hàng đang trống.';
+        if (empty($items)) {
+            $_SESSION['error'] = 'Giỏ hàng thanh toán đang trống.';
             header('Location: ?url=cart');
             exit;
         }
@@ -255,7 +337,7 @@ class OrderController extends Controller
 
         $this->view('order/payment', [
             'title' => 'Thanh toán thẻ',
-            'summary' => $this->getCheckoutSummary(),
+            'summary' => $this->getCheckoutSummary($items),
             'checkoutData' => $_SESSION['checkout_data'] ?? [],
             'errors' => $_SESSION['payment_errors'] ?? [],
             'old' => $_SESSION['payment_old'] ?? [],
@@ -273,7 +355,7 @@ class OrderController extends Controller
             exit;
         }
 
-        if (empty($this->cartModel->getItems())) {
+        if (empty($this->getFilteredCartItems())) {
             $_SESSION['error'] = 'Không có sản phẩm nào để thanh toán.';
             header('Location: ?url=product');
             exit;
@@ -303,8 +385,12 @@ class OrderController extends Controller
     public function transfer()
     {
         $this->requireLogin();
+        $items = $this->getFilteredCartItems();
 
+<<<<<<< HEAD
         $items = $this->cartModel->getItems();
+=======
+>>>>>>> lan/fix-loi
         if (empty($items)) {
             $_SESSION['error'] = 'Giỏ hàng đang trống.';
             header('Location: ?url=cart');
@@ -317,6 +403,7 @@ class OrderController extends Controller
         // Tạo mã đơn hàng tự động ngẫu nhiên (Ví dụ: ZN123456)
         $orderCode = 'ZN' . rand(100000, 999999);
 
+<<<<<<< HEAD
         // 1. Khởi tạo SePay Client (Cần lấy 2 tham số này trên my.sepay.vn)
         $merchantId = "SP-TEST-NP568B75"; 
         $secretKey = "spsk_test_vQMfPZNoii1x3Vg5hFpU5MDvUkXtZ34g";
@@ -380,6 +467,12 @@ class OrderController extends Controller
             header('Location: ?url=checkout');
             exit;
         }
+=======
+        $this->view('order/transfer', [
+            'title' => 'Chuyển khoản',
+            'summary' => $this->getCheckoutSummary($items),
+        ]);
+>>>>>>> lan/fix-loi
     }
 
     public function success()

@@ -59,14 +59,16 @@
                         <label class="block text-xs font-bold uppercase tracking-wider text-primary">Password</label>
                         <a class="text-xs text-secondary font-semibold hover:underline" href="index.php?url=forgot-password">Quên mật khẩu?</a>
                     </div>
-                    <div class="relative">
+                    <div class="relative flex items-center">
                         <input id="login_pass" name="password" required 
                             class="w-full bg-surface-container-high border-none rounded-lg p-4 pr-12 focus:ring-1 focus:ring-primary/30 focus:bg-surface-container-lowest transition-all" 
                             placeholder="••••••••" type="password" />
     
-                        <span id="toggleEye" style="z-index: 10;" class="material-symbols-outlined absolute right-4 top-1/2 -translate-y-1/2 text-outline-variant cursor-pointer hover:text-primary transition-colors select-none">
-                            visibility_off
-                        </span>
+                        <button type="button" style="z-index: 30;"
+                            onclick="const input = document.getElementById('login_pass'); const icon = this.querySelector('span'); if(input.type === 'password'){ input.type = 'text'; icon.textContent = 'visibility'; this.classList.add('text-primary'); this.classList.remove('text-outline-variant'); } else { input.type = 'password'; icon.textContent = 'visibility_off'; this.classList.remove('text-primary'); this.classList.add('text-outline-variant'); }"
+                            class="absolute right-2 w-10 h-10 flex items-center justify-center cursor-pointer text-outline-variant hover:text-primary transition-colors select-none">
+                            <span class="material-symbols-outlined pointer-events-none">visibility_off</span>
+                        </button>
                     </div>
                 </div>
 
@@ -108,41 +110,7 @@
 
 <script>
 document.addEventListener('DOMContentLoaded', function() {
-    const toggleEye = document.getElementById('toggleEye');
-    const passwordInput = document.getElementById('login_pass');
-
-    // 1. Logic Click để ẩn/hiện mật khẩu
-    if (toggleEye && passwordInput) {
-        toggleEye.addEventListener('click', function() {
-            if (passwordInput.type === 'password') {
-                passwordInput.type = 'text';
-                this.textContent = 'visibility'; // Hiện mật khẩu -> đổi sang mắt mở
-                this.classList.add('text-primary');
-            } else {
-                passwordInput.type = 'password';
-                this.textContent = 'visibility_off'; // Ẩn mật khẩu -> đổi sang mắt gạch
-                this.classList.remove('text-primary');
-            }
-        });
-
-        // 2. TÍNH NĂNG CON MẮT THÔNG MINH (Đổi icon khi gõ)
-        passwordInput.addEventListener('input', function() {
-            if (this.value.length > 0) {
-                // Nếu đang gõ và đang ở chế độ ẩn, hiện icon nhắc nhở có thể mở mắt
-                if (this.type === 'password') {
-                    toggleEye.textContent = 'visibility'; 
-                }
-            } else {
-                // Nếu xóa sạch text, quay về icon mặc định gạch chéo
-                toggleEye.textContent = 'visibility_off';
-                // Đảm bảo type cũng trở về password khi xóa sạch
-                passwordInput.type = 'password';
-                toggleEye.classList.remove('text-primary');
-            }
-        });
-    }
-
-    // 3. Hiệu ứng nút Sign In
+    // Hiệu ứng nút Sign In khi gửi form
     const loginForm = document.getElementById('loginForm');
     if (loginForm) {
         loginForm.addEventListener('submit', function() {
