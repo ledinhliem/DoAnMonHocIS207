@@ -1,11 +1,5 @@
 <?php
-/**
- * views/footer/privacy.php
- * Chính sách Bảo mật — Zentro
- *
- * $meta is injected by FooterController::render()
- * Layout follows the same pattern as views/product/detail.php
- */
+
 include __DIR__ . '/../layouts/header.php';
 ?>
 

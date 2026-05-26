@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Máy chủ: 127.0.0.1
--- Thời gian đã tạo: Th4 27, 2026 lúc 04:08 AM
+-- Thời gian đã tạo: Th5 25, 2026 lúc 04:16 PM
 -- Phiên bản máy phục vụ: 10.4.32-MariaDB
 -- Phiên bản PHP: 8.2.12
 
@@ -45,10 +45,11 @@ INSERT INTO `baiviet` (`MaBaiViet`, `TieuDe`, `NoiDung`, `HinhAnhBia`, `NgayDang
 ('BL002', 'Công nghệ vải sợi Cà phê: Bước đột phá trong ngành thời trang tuần hoàn', 'Thời trang xanh không còn là xa xỉ. Ngành dệt may là ngành gây ô nhiễm thứ hai thế giới, nhưng sợi S.Café® đang thay đổi điều đó. Quy trình bắt đầu bằng việc thu gom bã cà phê từ các chuỗi cửa hàng, sau đó nghiền nhỏ thành bột mịn và trộn với polymer từ chai nhựa PET tái chế.\r\n\r\nƯu điểm vượt trội: Vải sợi cà phê có khả năng khử mùi tự nhiên (nhờ cấu trúc xốp của bã cafe), khô nhanh gấp 200% so với cotton và chống tia UV hiệu quả. Những chiếc áo Polo của Coolmate hay giày ShoeX tại Zentro chính là minh chứng cho việc phế phẩm nông nghiệp có thể trở thành sản phẩm thời trang cao cấp, bền bỉ và thân thiện với môi trường.', 'BL002_VaiSoiCafe.webp', '2026-04-15 14:20:00', 'U002'),
 ('BL003', 'Tẩy da chết thuần chay: Tại sao chúng ta nên nói không với hạt vi nhựa?', 'Hạt vi nhựa (Microbeads) - Kẻ thù thầm lặng. Hàng tỷ hạt nhựa nhỏ trong các loại kem tẩy tế bào chết công nghiệp đang trôi ra đại dương, xâm nhập vào chuỗi thức ăn và gây hại cho sức khỏe con người.\r\n\r\nGiải pháp từ nông sản Việt: Tại Zentro, chúng tôi tin dùng dòng tẩy da chết cà phê Đắk Lắk của Cocoon. Những hạt cà phê xay nhuyễn với kích thước chuẩn xác giúp loại bỏ lớp sừng già cỗi mà không gây xước da. Kết hợp cùng bơ ca cao Tiền Giang, sản phẩm không chỉ làm sạch mà còn dưỡng ẩm sâu. Quan trọng nhất, sau khi rửa trôi, hạt cà phê sẽ phân hủy hoàn toàn, trả lại sự trong lành cho nguồn nước.', 'BL003_TayDaChet.jpeg', '2026-04-24 16:45:00', 'U003'),
 ('BL004', 'Limloop và giấc mơ tái sinh rác thải nhựa thành nghệ thuật thủ công', 'Mỗi chiếc túi là một câu chuyện. Phải mất 500 năm để một chiếc túi nilon phân hủy, nhưng tại Limloop, chúng chỉ mất vài ngày để trở thành một phụ kiện thời trang. Quy trình \"Upcycling\" (Tái chế nâng cấp) bắt đầu bằng việc thu gom túi nilon cũ, khử trùng và cắt thành sợi.\r\n\r\nCác nghệ nhân là người khuyết tật sẽ tỉ mỉ dệt những sợi nilon này trên khung cửi truyền thống để tạo ra những tấm vải có vân màu độc bản. Mỗi chiếc túi Laptop hay túi Tote bạn mua tại Zentro không chỉ giúp \"giải cứu\" môi trường khỏi rác thải nhựa mà còn tạo ra sinh kế bền vững và sự tự tin cho những mảnh đời kém may mắn.', 'BL004_Limloop.webp', '2026-04-24 16:45:00', 'U004'),
-('BL005','Nghệ thuật mang thiên nhiên vào nhà với nội thất mây tre đan','Xu hướng "mang thiên nhiên vào không gian sống" đang ngày càng được ưa chuộng. Không cần những vật liệu đắt tiền hay kim loại lạnh lẽo, nội thất mây tre đan mang lại sự ấm cúng, mộc mạc và bình yên. Điểm nhấn không gian: Các sản phẩm như thảm cói, đèn hoa sen hay tủ mây từ Mây Tre Đan Trà không chỉ có độ bền cao mà còn mang đậm dấu ấn thủ công truyền thống. Sợi mây, cói tự nhiên giúp điều hòa không khí, tạo cảm giác thư giãn tuyệt đối. Lựa chọn nội thất mây tre cũng là cách bạn ủng hộ các làng nghề Việt và giảm thiểu rác thải công nghiệp chế tác.','BL005.jpg','2026-05-05 09:00:00','U002'),
-('BL006','Căn bếp "Xanh": Bắt đầu từ những thay đổi nhỏ nhất','Nhà bếp thường là nơi thải ra lượng rác thải nhựa dùng một lần lớn nhất trong gia đình. Tuy nhiên, việc chuyển đổi sang một căn bếp "Eco-friendly" lại dễ dàng hơn bạn nghĩ. Thay thế đồ dùng thông thường: Hãy bắt đầu bằng việc từ chối màng bọc thực phẩm nilon và chuyển sang dùng màng vải sáp ong tự nhiên. Với rác thải sinh hoạt, các loại túi rác và găng tay sinh học phân hủy hoàn toàn từ AnEco là giải pháp hoàn hảo. Chỉ mất 6-12 tháng để chúng phân hủy thành mùn hữu cơ. Một căn bếp xanh không chỉ bảo vệ sức khỏe gia đình mà còn góp phần chữa lành Trái Đất.','BL006.jpeg','2026-05-08 10:30:00','U004'),
+('BL005', 'Nghệ thuật mang thiên nhiên vào nhà với nội thất mây tre đan', 'Xu hướng \"mang thiên nhiên vào không gian sống\" đang ngày càng được ưa chuộng. Không cần những vật liệu đắt tiền hay kim loại lạnh lẽo, nội thất mây tre đan mang lại sự ấm cúng, mộc mạc và bình yên. Điểm nhấn không gian: Các sản phẩm như thảm cói, đèn hoa sen hay tủ mây từ Mây Tre Đan Trà không chỉ có độ bền cao mà còn mang đậm dấu ấn thủ công truyền thống. Sợi mây, cói tự nhiên giúp điều hòa không khí, tạo cảm giác thư giãn tuyệt đối. Lựa chọn nội thất mây tre cũng là cách bạn ủng hộ các làng nghề Việt và giảm thiểu rác thải công nghiệp chế tác.', 'BL005.jpg', '2026-05-05 09:00:00', 'U002'),
+('BL006', 'Căn bếp \"Xanh\": Bắt đầu từ những thay đổi nhỏ nhất', 'Nhà bếp thường là nơi thải ra lượng rác thải nhựa dùng một lần lớn nhất trong gia đình. Tuy nhiên, việc chuyển đổi sang một căn bếp \"Eco-friendly\" lại dễ dàng hơn bạn nghĩ. Thay thế đồ dùng thông thường: Hãy bắt đầu bằng việc từ chối màng bọc thực phẩm nilon và chuyển sang dùng màng vải sáp ong tự nhiên. Với rác thải sinh hoạt, các loại túi rác và găng tay sinh học phân hủy hoàn toàn từ AnEco là giải pháp hoàn hảo. Chỉ mất 6-12 tháng để chúng phân hủy thành mùn hữu cơ. Một căn bếp xanh không chỉ bảo vệ sức khỏe gia đình mà còn góp phần chữa lành Trái Đất.', 'BL006.jpeg', '2026-05-08 10:30:00', 'U004'),
 ('BL007', 'Microplastics và sức khỏe: Vì sao nên giảm nhựa trong chăm sóc cá nhân', '1. Microplastics là gì và vì sao đáng lo? Microplastics là những mảnh nhựa siêu nhỏ được tạo ra khi các sản phẩm nhựa lớn phân rã theo thời gian. Chúng không chỉ xuất hiện trong môi trường mà còn được phát hiện trong cơ thể con người như máu, mô, sữa mẹ và các dịch sinh học khác. Điều này đặt ra nhiều lo ngại về ảnh hưởng lâu dài của nhựa đối với sức khỏe. \r\n\r\n2. Tác động tiềm ẩn đến sức khỏe. Một số nghiên cứu cho thấy microplastics có thể liên quan đến stress oxy hóa, viêm, rối loạn miễn dịch và ảnh hưởng đến hệ thần kinh hoặc sức khỏe sinh sản. Ngoài bản thân hạt nhựa, các hóa chất độc hại trong nhựa cũng có thể xâm nhập vào cơ thể và làm tăng nguy cơ gây hại cho tế bào. \r\n\r\n3. Giảm tiếp xúc với nhựa từ thói quen hằng ngày. Để hạn chế microplastics, chúng ta có thể tránh hâm nóng thức ăn trong hộp nhựa, ưu tiên thực phẩm ít bao bì, dùng bình nước thủy tinh hoặc inox, thay dụng cụ bếp nhựa bằng kim loại hoặc tre. Trong chăm sóc cá nhân, nên chọn xà phòng dạng thanh, dầu gội dạng thanh hoặc sản phẩm đóng gói bằng thủy tinh, nhôm và có thể refill. Kết luận: Giảm nhựa không chỉ giúp bảo vệ môi trường mà còn là cách chăm sóc sức khỏe chủ động hơn. Từ những lựa chọn nhỏ như đổi bao bì nhựa sang chai nhôm tái sử dụng, mỗi người đều có thể góp phần xây dựng lối sống an toàn và bền vững hơn.', 'BL007.webp', '2026-04-15 09:00:00', 'U001'),
 ('BL008', 'Không chỉ là chai đựng: Giữ nhựa ra khỏi sản phẩm chăm sóc cá nhân', '1. Nhựa không chỉ nằm ở bao bì. Khi nói đến giảm nhựa, nhiều người thường nghĩ đến việc thay thế chai nhựa bằng chai tái sử dụng. Tuy nhiên, trong ngành chăm sóc cá nhân, nhựa còn có thể xuất hiện bên trong chính thành phần sản phẩm. Một số chất phụ gia trong nhựa có thể thôi nhiễm vào sản phẩm và đi vào cơ thể qua thực phẩm, nước uống hoặc mỹ phẩm sử dụng hằng ngày. \r\n\r\n2. Những thành phần cần chú ý. Một số thành phần như phthalates, nhựa lỏng và polyethylene có thể gây lo ngại cho sức khỏe và môi trường. Phthalates thường ẩn dưới tên gọi “fragrance”, nhựa lỏng có thể xuất hiện trong các chất kết thúc bằng “-cone” hoặc “-siloxane”, còn polyethylene thường được dùng trong hạt vi nhựa tẩy tế bào chết. Các chất này có thể góp phần gây ô nhiễm nhựa và ảnh hưởng đến hệ sinh thái khi trôi xuống nguồn nước. \r\n\r\n3. Lựa chọn sản phẩm minh bạch và ít nhựa hơn. Người tiêu dùng có thể bắt đầu bằng cách đọc bảng thành phần, ưu tiên sản phẩm có bao bì thủy tinh, nhôm hoặc có thể refill, đồng thời chọn thương hiệu công khai rõ ràng thành phần sử dụng. Những lựa chọn như dầu gội refill, nước rửa tay refill hay sữa dưỡng thể trong chai nhôm giúp giảm nhựa dùng một lần và hỗ trợ lối sống bền vững hơn. Kết luận: Giảm nhựa không chỉ là thay đổi bao bì bên ngoài, mà còn là quan tâm đến những gì có bên trong sản phẩm. Một sản phẩm chăm sóc cá nhân xanh cần an toàn hơn cho người dùng, minh bạch về thành phần và giảm tác động tiêu cực đến môi trường.', 'BL008.webp', '2026-04-18 09:00:00', 'U001');
+
 -- --------------------------------------------------------
 
 --
@@ -69,8 +70,8 @@ CREATE TABLE `bienthesanpham` (
 --
 
 INSERT INTO `bienthesanpham` (`MaBienThe`, `MaSanPham`, `KichThuoc`, `MauSac`, `GiaTien`, `SoLuongTon`) VALUES
-('V001', 'P001', '200ml', NULL, 130000.00, 50),
-('V002', 'P002', '1000ml', NULL, 530000.00, 12),
+('V001', 'P001', '200ml', NULL, 130000.00, 49),
+('V002', 'P002', '1000ml', NULL, 530000.00, 11),
 ('V003', 'P003', '50 cái/hộp', NULL, 55000.00, 99),
 ('V004', 'P004', '30 chiếc/hộp (mỗi loại 10 chiếc)', NULL, 70000.00, 48),
 ('V005', 'P005', 'Size EU 38 ', 'Xám', 1900000.00, 10),
@@ -119,6 +120,7 @@ INSERT INTO `bienthesanpham` (`MaBienThe`, `MaSanPham`, `KichThuoc`, `MauSac`, `
 ('V050', 'P024', 'Size S', 'Dove Marl', 290000.00, 10),
 ('V051', 'P024', 'Size M', 'Dove Marl', 290000.00, 12),
 ('V052', 'P024', 'Size L', 'Dove Marl', 290000.00, 8);
+
 -- --------------------------------------------------------
 
 --
@@ -144,7 +146,9 @@ INSERT INTO `chitietdonhang` (`MaDonHang`, `MaBienThe`, `SoLuong`, `DonGia`) VAL
 ('O003', 'V007', 1, 320000.00),
 ('O004', 'V005', 1, 1900000.00),
 ('O005', 'V011', 1, 520000.00),
-('O005', 'V012', 1, 500000.00);
+('O005', 'V012', 1, 500000.00),
+('O006', 'V002', 1, 530000.00),
+('O007', 'V001', 1, 130000.00);
 
 -- --------------------------------------------------------
 
@@ -246,9 +250,10 @@ INSERT INTO `danhgia` (`MaDanhGia`, `MaNguoiDung`, `MaSanPham`, `SoSao`, `NoiDun
 ('RV003', 'U004', 'P006', 5, 'Áo mặc mát, chất vải nhẹ và màu đen dễ phối.', '2026-04-27 09:06:38', 1, NULL),
 ('RV004', 'U005', 'P005', 4, 'Giày nhẹ, kiểu dáng đẹp, giá hơi cao nhưng chất lượng ổn.', '2026-04-27 09:06:38', 0, NULL),
 ('RV005', 'U002', 'P009', 3, 'Mùi nến hơi nồng hơn mong đợi.', '2026-04-27 09:06:38', -1, NULL),
-('RV006','U003','P013',5,'Thảm đan rất chắc tay, kích thước vừa vặn. Mùi cói tự nhiên rất thơm, lót sàn phòng khách nhìn cực mộc mạc và chill','2026-04-27 09:06:38',1,NULL),
-('RV007','U004','P010',5,'Túi rác dai, đựng được nhiều đồ mà không bị rách. Thích nhất là túi tự phân hủy được nên cảm giác xài đỡ áy náy với môi trường hơn hẳn','2026-04-27 09:06:38',1,NULL),
-('RV008','U005','P018',4,'Thiết kế loa bằng tre nguyên đốt quá độc lạ, để bàn làm việc ai cũng hỏi. Âm thanh nghe mộc mạc vừa đủ dùng, điểm nhấn decor tuyệt vời','2026-04-27 09:06:38',1,NULL);
+('RV006', 'U003', 'P013', 5, 'Thảm đan rất chắc tay, kích thước vừa vặn. Mùi cói tự nhiên rất thơm, lót sàn phòng khách nhìn cực mộc mạc và chill', '2026-04-27 09:06:38', 1, NULL),
+('RV007', 'U004', 'P010', 5, 'Túi rác dai, đựng được nhiều đồ mà không bị rách. Thích nhất là túi tự phân hủy được nên cảm giác xài đỡ áy náy với môi trường hơn hẳn', '2026-04-27 09:06:38', 1, NULL),
+('RV008', 'U005', 'P018', 4, 'Thiết kế loa bằng tre nguyên đốt quá độc lạ, để bàn làm việc ai cũng hỏi. Âm thanh nghe mộc mạc vừa đủ dùng, điểm nhấn decor tuyệt vời', '2026-04-27 09:06:38', 1, NULL);
+
 -- --------------------------------------------------------
 
 --
@@ -266,11 +271,11 @@ CREATE TABLE `danhmuc` (
 -- Đang đổ dữ liệu cho bảng `danhmuc`
 --
 
-INSERT INTO `danhmuc` (`MaDanhMuc`, `TenDanhMuc`, `HinhAnh`) VALUES
-('C001', 'Zentro Kitchen', 'zentro-kitchen.jpg'),
-('C002', 'Zentro Decor', 'zentro-decor.jpg'),
-('C003', 'Zentro Fashion', 'zentro-fashion.jpg'),
-('C004', 'Zentro Care', 'zentro-care.jpg');
+INSERT INTO `danhmuc` (`MaDanhMuc`, `TenDanhMuc`, `HinhAnh`, `TrangThai`) VALUES
+('C001', 'Zentro Kitchen', 'zentro-kitchen.jpg', 1),
+('C002', 'Zentro Decor', 'zentro-decor.jpg', 1),
+('C003', 'Zentro Fashion', 'zentro-fashion.jpg', 1),
+('C004', 'Zentro Care', 'zentro-care.jpg', 1);
 
 -- --------------------------------------------------------
 
@@ -309,19 +314,22 @@ CREATE TABLE `donhang` (
   `SDTNguoiNhan` varchar(15) DEFAULT NULL,
   `SoTienGiam` decimal(15,2) DEFAULT 0.00,
   `PhiVanChuyen` decimal(15,2) DEFAULT 0.00,
-  `ThanhTienCuoi` decimal(15,2) NOT NULL
+  `ThanhTienCuoi` decimal(15,2) NOT NULL,
+  `DaThongBao` tinyint(1) NOT NULL DEFAULT 0 COMMENT '0 = chưa thông báo, 1 = đã thông báo'
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 --
 -- Đang đổ dữ liệu cho bảng `donhang`
 --
 
-INSERT INTO `donhang` (`MaDonHang`, `MaNguoiDung`, `NgayDat`, `TongTien`, `TrangThai`, `DiaChiGiaoHang`, `MaPTTT`, `MaPTVC`, `MaCode`, `MaDiaChi`, `TenNguoiNhan`, `SDTNguoiNhan`, `SoTienGiam`, `PhiVanChuyen`, `ThanhTienCuoi`) VALUES
-('O001', 'U002', '2026-04-24 00:00:00', 240000.00, '0', 'Dĩ An, Bình Dương', NULL, NULL, NULL, NULL, 'Nguyễn Thị B', '911111111', 0.00, 20000.00, 260000.00),
-('O002', 'U003', '2026-04-24 00:00:00', 629000.00, '1', 'TP. Thủ Đức, TP.HCM', NULL, NULL, NULL, NULL, 'Nguyễn Thị C', '922222222', 0.00, 25000.00, 654000.00),
-('O003', 'U004', '2026-04-25 00:00:00', 320000.00, '2', 'Quận 7, TP.HCM', NULL, NULL, NULL, NULL, 'Nguyễn Thị D', '933333333', 0.00, 20000.00, 340000.00),
-('O004', 'U005', '2026-04-25 00:00:00', 1900000.00, '3', 'Quận 1, TP.HCM', NULL, NULL, NULL, NULL, 'Nguyễn Thị E', '944444444', 0.00, 0.00, 1900000.00),
-('O005', 'U002', '2026-04-26 00:00:00', 1020000.00, '4', 'Dĩ An, Bình Dương', NULL, NULL, NULL, NULL, 'Nguyễn Thị B', '911111111', 0.00, 0.00, 1020000.00);
+INSERT INTO `donhang` (`MaDonHang`, `MaNguoiDung`, `NgayDat`, `TongTien`, `TrangThai`, `DiaChiGiaoHang`, `MaPTTT`, `MaPTVC`, `MaCode`, `MaDiaChi`, `TenNguoiNhan`, `SDTNguoiNhan`, `SoTienGiam`, `PhiVanChuyen`, `ThanhTienCuoi`, `DaThongBao`) VALUES
+('O001', 'U002', '2026-04-24 00:00:00', 240000.00, '0', 'Dĩ An, Bình Dương', NULL, NULL, NULL, NULL, 'Nguyễn Thị B', '911111111', 0.00, 20000.00, 260000.00, 0),
+('O002', 'U003', '2026-04-24 00:00:00', 629000.00, '1', 'TP. Thủ Đức, TP.HCM', NULL, NULL, NULL, NULL, 'Nguyễn Thị C', '922222222', 0.00, 25000.00, 654000.00, 0),
+('O003', 'U004', '2026-04-25 00:00:00', 320000.00, '2', 'Quận 7, TP.HCM', NULL, NULL, NULL, NULL, 'Nguyễn Thị D', '933333333', 0.00, 20000.00, 340000.00, 0),
+('O004', 'U005', '2026-04-25 00:00:00', 1900000.00, '3', 'Quận 1, TP.HCM', NULL, NULL, NULL, NULL, 'Nguyễn Thị E', '944444444', 0.00, 0.00, 1900000.00, 0),
+('O005', 'U002', '2026-04-26 00:00:00', 1020000.00, '4', 'Dĩ An, Bình Dương', NULL, NULL, NULL, NULL, 'Nguyễn Thị B', '911111111', 0.00, 0.00, 1020000.00, 0),
+('O006', 'U013', '2026-05-25 17:16:38', 530000.00, '3', 'dddd', '1', '1', NULL, NULL, 'aaaaaa', '0903642483', 0.00, 15000.00, 545000.00, 1),
+('O007', 'U013', '2026-05-25 19:15:37', 130000.00, '3', 'dddd', '1', '1', NULL, NULL, 'ssss', '029307465', 0.00, 15000.00, 145000.00, 1);
 
 -- --------------------------------------------------------
 
@@ -367,131 +375,103 @@ INSERT INTO `hinhanhsanpham` (`MaHinhAnh`, `MaSanPham`, `DuongDan`) VALUES
 ('IMG002', 'P002', 'P002_V002_TaytrangCocoon.jpg'),
 ('IMG003', 'P003', 'P003_V003_OnghutEquo.jpg'),
 ('IMG004', 'P004', 'P004_V004_Bodaomuongnia.jpg'),
-
 ('IMG005', 'P005', 'P005_V005_Giayshoex_xam.png'),
 ('IMG006', 'P005', 'P005_V005_Giayshoex_den.png'),
-
 ('IMG007', 'P006', 'P006_V007_AopoloCafe_den.avif'),
 ('IMG008', 'P006', 'P006_V008_AopoloCafe_xanhnavy.avif'),
-
 ('IMG009', 'P007', 'P007_V009_TuidungLapLimloop.webp'),
 ('IMG010', 'P008', 'P008_V010_Bocthucpham.jpg'),
-
 ('IMG011', 'P009', 'P009_V011_Nenthom_LemonGrass&Ginger.jpg'),
 ('IMG012', 'P009', 'P009_V012_Nenthom_Lemon&Lavender.jpg'),
-
-('IMG013','P010','P010_V013_TuiRac1.png'),
-('IMG014','P010','P010_V013_TuiRac2.png'),
-('IMG015','P010','P010_V014_TuiRac1.png'),
-('IMG016','P010','P010_V014_TuiRac2.png'),
-
-('IMG017','P011','P011_V015_GangTay1.png'),
-('IMG018','P011','P011_V015_GangTay2.png'),
-('IMG019','P011','P011_V016_GangTay1.png'),
-
-('IMG020','P012','P012_V017_CocLanh.png'),
-
-('IMG021','P013','P013_V018_ThamTronNho1.png'),
-('IMG022','P013','P013_V018_ThamTronNho2.png'),
-('IMG023','P013','P013_V019_ThamTronTo1.png'),
-('IMG024','P013','P013_V019_ThamTronTo2.png'),
-
-('IMG025','P014','P014_Anh1.png'),
-('IMG026','P014','P014_Anh2.png'),
-('IMG027','P014','P014_Anh3.png'),
-
-('IMG028','P015','P015_V023_Anh1.png'),
-('IMG029','P015','P015_V023_Anh2.png'),
-
-('IMG030','P016','P016_V024_TamGiac1.jpg'),
-('IMG031','P016','P016_V024_TamGiac2.jpg'),
-('IMG032','P016','P016_V024_TamGiac3.jpg'),
-('IMG033','P016','P016_V025_HinhVuong1.jpg'),
-('IMG034','P016','P016_V025_HinhVuong2.jpg'),
-
-('IMG035','P017','P017_V026_HoaSen1.jpg'),
-('IMG036','P017','P017_V026_HoaSen2.jpg'),
-('IMG037','P017','P017_V027_Lan1.jpg'),
-('IMG038','P017','P017_V027_Lan2.jpg'),
-('IMG039','P017','P017_V028_Tre1.jpg'),
-('IMG040','P017','P017_V028_Tre2.jpg'),
-
-('IMG041','P018','P018_V029_Loa1.jpg'),
-('IMG042','P018','P018_V029_Loa2.jpg'),
-
-('IMG043','P019','P019_V030_HongXam1.jpg'),
-('IMG044','P019','P019_V030_HongXam2.jpg'),
-('IMG045','P019','P019_V030_HongXam3.jpg'),
-
-('IMG046','P019','P019_V031_DenDo1.jpg'),
-('IMG047','P019','P019_V031_DenDo2.jpg'),
-('IMG048','P019','P019_V031_DenDo3.jpg'),
+('IMG013', 'P010', 'P010_V013_TuiRac1.png'),
+('IMG014', 'P010', 'P010_V013_TuiRac2.png'),
+('IMG015', 'P010', 'P010_V014_TuiRac1.png'),
+('IMG016', 'P010', 'P010_V014_TuiRac2.png'),
+('IMG017', 'P011', 'P011_V015_GangTay1.png'),
+('IMG018', 'P011', 'P011_V015_GangTay2.png'),
+('IMG019', 'P011', 'P011_V016_GangTay1.png'),
+('IMG020', 'P012', 'P012_V017_CocLanh.png'),
+('IMG021', 'P013', 'P013_V018_ThamTronNho1.png'),
+('IMG022', 'P013', 'P013_V018_ThamTronNho2.png'),
+('IMG023', 'P013', 'P013_V019_ThamTronTo1.png'),
+('IMG024', 'P013', 'P013_V019_ThamTronTo2.png'),
+('IMG025', 'P014', 'P014_Anh1.png'),
+('IMG026', 'P014', 'P014_Anh2.png'),
+('IMG027', 'P014', 'P014_Anh3.png'),
+('IMG028', 'P015', 'P015_V023_Anh1.png'),
+('IMG029', 'P015', 'P015_V023_Anh2.png'),
+('IMG030', 'P016', 'P016_V024_TamGiac1.jpg'),
+('IMG031', 'P016', 'P016_V024_TamGiac2.jpg'),
+('IMG032', 'P016', 'P016_V024_TamGiac3.jpg'),
+('IMG033', 'P016', 'P016_V025_HinhVuong1.jpg'),
+('IMG034', 'P016', 'P016_V025_HinhVuong2.jpg'),
+('IMG035', 'P017', 'P017_V026_HoaSen1.jpg'),
+('IMG036', 'P017', 'P017_V026_HoaSen2.jpg'),
+('IMG037', 'P017', 'P017_V027_Lan1.jpg'),
+('IMG038', 'P017', 'P017_V027_Lan2.jpg'),
+('IMG039', 'P017', 'P017_V028_Tre1.jpg'),
+('IMG040', 'P017', 'P017_V028_Tre2.jpg'),
+('IMG041', 'P018', 'P018_V029_Loa1.jpg'),
+('IMG042', 'P018', 'P018_V029_Loa2.jpg'),
+('IMG043', 'P019', 'P019_V030_HongXam1.jpg'),
+('IMG044', 'P019', 'P019_V030_HongXam2.jpg'),
+('IMG045', 'P019', 'P019_V030_HongXam3.jpg'),
+('IMG046', 'P019', 'P019_V031_DenDo1.jpg'),
+('IMG047', 'P019', 'P019_V031_DenDo2.jpg'),
+('IMG048', 'P019', 'P019_V031_DenDo3.jpg'),
 ('IMG049', 'P020', 'P020_V032_BoodyQuarterZip_Oyster_Texture.webp'),
 ('IMG050', 'P020', 'P020_V032_BoodyQuarterZip_Oyster_Model.webp'),
 ('IMG051', 'P020', 'P020_V032_BoodyQuarterZip_Oyster_Back.webp'),
 ('IMG052', 'P020', 'P020_V032_BoodyQuarterZip_Oyster_Front.jpg'),
-
 ('IMG053', 'P020', 'P020_V033_BoodyQuarterZip_Black_Front.webp'),
 ('IMG054', 'P020', 'P020_V033_BoodyQuarterZip_Black_Texture.webp'),
-
 ('IMG055', 'P021', 'P021_V034_BoodySeamfreeBoxer_Navy_Front.webp'),
 ('IMG056', 'P021', 'P021_V034_BoodySeamfreeBoxer_Navy_Texture.jpg'),
 ('IMG057', 'P021', 'P021_V034_BoodySeamfreeBoxer_Navy_Model.webp'),
 ('IMG058', 'P021', 'P021_V034_BoodySeamfreeBoxer_Navy_Detail.webp'),
-
 ('IMG059', 'P021', 'P021_V035_BoodySeamfreeBoxer_Black_Front.webp'),
 ('IMG060', 'P021', 'P021_V035_BoodySeamfreeBoxer_Black_Texture.jpg'),
 ('IMG061', 'P021', 'P021_V035_BoodySeamfreeBoxer_Black_Model.webp'),
 ('IMG062', 'P021', 'P021_V035_BoodySeamfreeBoxer_Black_Detail.webp'),
-
 ('IMG063', 'P022', 'P022_V036_BoodyCrewNeckSweater_Oyster_Front.webp'),
 ('IMG064', 'P022', 'P022_V036_BoodyCrewNeckSweater_Oyster_Texture.jpg'),
 ('IMG065', 'P022', 'P022_V036_BoodyCrewNeckSweater_Oyster_Model.webp'),
 ('IMG066', 'P022', 'P022_V036_BoodyCrewNeckSweater_Oyster_Detail.jpg'),
-
 ('IMG067', 'P022', 'P022_V037_BoodyCrewNeckSweater_Black_Front.webp'),
 ('IMG068', 'P022', 'P022_V037_BoodyCrewNeckSweater_Black_Texture.jpg'),
 ('IMG069', 'P022', 'P022_V037_BoodyCrewNeckSweater_Black_Model.webp'),
 ('IMG070', 'P022', 'P022_V037_BoodyCrewNeckSweater_Black_Detail.jpg'),
-
 ('IMG071', 'P023', 'P023_V038_BoodyGoodnightSlip_Black_Front.webp'),
 ('IMG072', 'P023', 'P023_V038_BoodyGoodnightSlip_Black_Texture.jpg'),
 ('IMG073', 'P023', 'P023_V038_BoodyGoodnightSlip_Black_Model.webp'),
-
 ('IMG074', 'P023', 'P023_V039_BoodyGoodnightSlip_DustyPink_Front.webp'),
 ('IMG075', 'P023', 'P023_V039_BoodyGoodnightSlip_DustyPink_Back.webp'),
 ('IMG076', 'P023', 'P023_V039_BoodyGoodnightSlip_DustyPink_Texture.jpg'),
 ('IMG077', 'P023', 'P023_V039_BoodyGoodnightSlip_DustyPink_Model.webp'),
-
 ('IMG078', 'P024', 'P024_V040_BoodyChunkyBedSocks_BlushMarl_Front.webp'),
 ('IMG079', 'P024', 'P024_V040_BoodyChunkyBedSocks_BlushMarl_SizeGuide.webp'),
-
 ('IMG080', 'P024', 'P024_V041_BoodyChunkyBedSocks_DoveMarl_Front.webp'),
-
 ('IMG081', 'P025', 'P025_V042_PlaineShampoo_1.webp'),
 ('IMG082', 'P025', 'P025_V042_PlaineShampoo_2.webp'),
 ('IMG083', 'P025', 'P025_V042_PlaineShampoo_3.webp'),
 ('IMG084', 'P025', 'P025_V042_PlaineShampoo_4.webp'),
-
 ('IMG085', 'P026', 'P026_V043_PlaineBodyLotion_1.webp'),
 ('IMG086', 'P026', 'P026_V043_PlaineBodyLotion_2.webp'),
 ('IMG087', 'P026', 'P026_V043_PlaineBodyLotion_3.webp'),
 ('IMG088', 'P026', 'P026_V043_PlaineBodyLotion_4.webp'),
-
 ('IMG089', 'P027', 'P027_V044_PlaineHandWash_1.webp'),
 ('IMG090', 'P027', 'P027_V044_PlaineHandWash_2.webp'),
 ('IMG091', 'P027', 'P027_V044_PlaineHandWash_3.webp'),
 ('IMG092', 'P027', 'P027_V044_PlaineHandWash_4.webp'),
-
 ('IMG093', 'P028', 'P028_V045_PlaineFaceToner_1.webp'),
 ('IMG094', 'P028', 'P028_V045_PlaineFaceToner_2.webp'),
 ('IMG095', 'P028', 'P028_V045_PlaineFaceToner_3.webp'),
 ('IMG096', 'P028', 'P028_V045_PlaineFaceToner_4.webp'),
-
 ('IMG097', 'P029', 'P029_V046_PlaineTravelSet_1.webp'),
 ('IMG098', 'P029', 'P029_V046_PlaineTravelSet_2.webp'),
 ('IMG099', 'P029', 'P029_V046_PlaineTravelSet_3.webp'),
 ('IMG100', 'P029', 'P029_V046_PlaineTravelSet_4.webp');
+
 -- --------------------------------------------------------
 
 --
@@ -512,10 +492,24 @@ CREATE TABLE `magiamgia` (
 INSERT INTO `magiamgia` (`MaCode`, `PhamTramGiam`, `SoLuong`, `NgayHetHan`) VALUES
 ('DEALHUYDIET', 30, 30, '2026-04-30'),
 ('EARTHDAY26', 26, 100, '2026-05-30'),
+('ECOKITCHEN', 15, 100, '2026-08-31'),
+('HEGREEN', 20, 50, '2026-07-31'),
 ('SAVEPLANET', 20, 50, '2026-06-30'),
-('ZENTROGREEN', 10, 500, '2026-12-31'),
-('ECOKITCHEN',15,100,'2026-08-31'),
-('HEGREEN',20,50,'2026-07-31');
+('ZENTROGREEN', 10, 500, '2026-12-31');
+
+-- --------------------------------------------------------
+
+--
+-- Cấu trúc bảng cho bảng `newsletter_subscribers`
+--
+
+CREATE TABLE `newsletter_subscribers` (
+  `MaDangKy` int(11) NOT NULL,
+  `Email` varchar(150) NOT NULL,
+  `NgayDangKy` datetime DEFAULT current_timestamp(),
+  `TrangThai` tinyint(1) DEFAULT 1
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
 -- --------------------------------------------------------
 
 --
@@ -549,20 +543,9 @@ INSERT INTO `nguoidung` (`MaNguoiDung`, `HoTen`, `Email`, `MatKhau`, `SoDienThoa
 ('U008', 'Admin Test 03', 'admin03@zentro.test', '123456', '0901000003', '1', '2026-05-20 13:45:00'),
 ('U009', 'User Test 01', 'user01@zentro.test', '123456', '0911000001', '2', '2026-05-20 13:45:00'),
 ('U010', 'User Test 02', 'user02@zentro.test', '123456', '0911000002', '2', '2026-05-20 13:45:00'),
-('U011', 'User Test 03', 'user03@zentro.test', '123456', '0911000003', '2', '2026-05-20 13:45:00');
-
--- --------------------------------------------------------
-
---
--- Cấu trúc bảng cho bảng `newsletter_subscribers`
---
-
-CREATE TABLE IF NOT EXISTS `newsletter_subscribers` (
-  `MaDangKy` INT AUTO_INCREMENT PRIMARY KEY,
-  `Email` VARCHAR(150) NOT NULL UNIQUE,
-  `NgayDangKy` DATETIME DEFAULT CURRENT_TIMESTAMP,
-  `TrangThai` TINYINT(1) DEFAULT 1
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+('U011', 'User Test 03', 'user03@zentro.test', '123456', '0911000003', '2', '2026-05-20 13:45:00'),
+('U012', 'salem', '24520954@gm.uit.edu.vn', '$2y$10$yf5JXmfyBRLDIRnvCDpgUurSd8EEn5SNxlXzSl0fYSvvw6TRxxhDO', NULL, '2', '2026-05-21 10:10:51'),
+('U013', 'demo', 'demo@gmail.com', '$2y$10$T34qZEQCtmaz6dbIRGhaZ.478SwFHEUwiSM4ERaCKeZsR23mUJ8Ai', NULL, '2', '2026-05-23 00:33:01');
 
 -- --------------------------------------------------------
 
@@ -747,6 +730,7 @@ INSERT INTO `sanpham` (`MaSanPham`, `TenSanPham`, `MaDanhMuc`, `MaThuongHieu`, `
 ('P027', 'Nước rửa tay refill Plaine Products', 'C004', 'B012', 'M016', 'Nước rửa tay dùng hằng ngày, thiết kế trong chai nhôm refill, phù hợp với thói quen chăm sóc cá nhân bền vững.', 95, 1, 'Plaine Products', 'Mô hình refill giúp giảm bao bì nhựa sau mỗi lần mua.', 1, 1),
 ('P028', 'Toner da mặt refill Plaine Products', 'C004', 'B012', 'M016', 'Toner chăm sóc da mặt dạng chai nhôm nhỏ gọn, có thể refill và tái sử dụng, phù hợp cho quy trình skincare hằng ngày.', 94, 1, 'Plaine Products', 'Giảm bao bì nhựa trong quy trình skincare.', 1, 1),
 ('P029', 'Bộ travel set refill Plaine Products', 'C004', 'B012', 'M017', 'Bộ sản phẩm chăm sóc cá nhân mini gồm dầu gội, dầu xả, sữa tắm và sữa dưỡng thể, phù hợp khi đi du lịch hoặc mang theo hằng ngày.', 97, 1, 'Plaine Products', 'Bao bì refill mini, có thể tái sử dụng và giảm rác thải nhựa.', 1, 1);
+
 -- --------------------------------------------------------
 
 --
@@ -822,6 +806,7 @@ INSERT INTO `vatlieu` (`MaVatLieu`, `TenVatLieu`, `MoTa`) VALUES
 ('M015', 'Chai nhôm tái sử dụng', 'Bao bì nhôm có thể tái sử dụng và refill nhiều lần, giúp giảm chai nhựa dùng một lần trong chăm sóc cá nhân.'),
 ('M016', 'Công thức refill không sulfate', 'Công thức chăm sóc cá nhân dạng refill, hạn chế hóa chất mạnh và giảm rác thải bao bì nhựa.'),
 ('M017', 'Bao bì refill thân thiện môi trường', 'Bao bì thiết kế cho mô hình refill, hỗ trợ tái sử dụng và giảm lượng bao bì thải ra sau mỗi lần mua.');
+
 -- --------------------------------------------------------
 
 --
@@ -932,6 +917,13 @@ ALTER TABLE `magiamgia`
   ADD PRIMARY KEY (`MaCode`);
 
 --
+-- Chỉ mục cho bảng `newsletter_subscribers`
+--
+ALTER TABLE `newsletter_subscribers`
+  ADD PRIMARY KEY (`MaDangKy`),
+  ADD UNIQUE KEY `Email` (`Email`);
+
+--
 -- Chỉ mục cho bảng `nguoidung`
 --
 ALTER TABLE `nguoidung`
@@ -1004,6 +996,16 @@ ALTER TABLE `vatlieu`
 ALTER TABLE `yeuthich`
   ADD PRIMARY KEY (`MaNguoiDung`,`MaSanPham`),
   ADD KEY `MaSanPham` (`MaSanPham`);
+
+--
+-- AUTO_INCREMENT cho các bảng đã đổ
+--
+
+--
+-- AUTO_INCREMENT cho bảng `newsletter_subscribers`
+--
+ALTER TABLE `newsletter_subscribers`
+  MODIFY `MaDangKy` int(11) NOT NULL AUTO_INCREMENT;
 
 --
 -- Các ràng buộc cho các bảng đã đổ

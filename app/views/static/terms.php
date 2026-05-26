@@ -13,18 +13,24 @@
 
         <!-- ── STICKY SIDEBAR TOC ──────────────────────────────────────────── -->
         <aside class="hidden lg:block lg:col-span-3">
-            <div class="sticky top-32 space-y-1">
-                <h3 class="text-xs font-bold uppercase tracking-widest text-primary/50 mb-6 px-4">Mục lục</h3>
-                <a class="block py-3 px-4 bg-primary text-white rounded-r-full font-medium transition-all" href="#intro">Giới thiệu</a>
-                <a class="block py-3 px-4 text-on-surface/60 hover:bg-surface-container-high hover:translate-x-1 rounded-r-full transition-all" href="#usage">Quy định sử dụng</a>
-                <a class="block py-3 px-4 text-on-surface/60 hover:bg-surface-container-high hover:translate-x-1 rounded-r-full transition-all" href="#purchase">Mua hàng &amp; Thanh toán</a>
-                <a class="block py-3 px-4 text-on-surface/60 hover:bg-surface-container-high hover:translate-x-1 rounded-r-full transition-all" href="#ip">Sở hữu trí tuệ</a>
-            </div>
+            <div class="sticky top-32 space-y-4">
+                <p class="text-xs font-bold uppercase tracking-widest text-primary/50">Nội dung chính</p>
+                <ul class="space-y-3">
+                    <li><a class="toc-link block transition-colors hover:text-primary" href="#intro">1. Chấp nhận Điều khoản</a></li>
+                    <li><a class="toc-link block transition-colors hover:text-primary" href="#usage">2. Giấy phép Sử dụng</a></li>
+                    <li><a class="toc-link block transition-colors hover:text-primary" href="#purchase">3. Thanh toán &amp; Giao dịch</a></li>
+                    <li><a class="toc-link block transition-colors hover:text-primary" href="#ip">4. Sở hữu Trí tuệ</a></li>
+                </ul>
 
-            <!-- Last updated card -->
-            <div class="mt-12 p-6 bg-surface-container rounded-xl border-l-4 border-primary">
-                <p class="text-xs font-bold text-primary uppercase tracking-tighter mb-2">Cập nhật lần cuối</p>
-                <p class="text-sm italic text-on-surface-variant">Ngày 24 tháng 05, 2024</p>
+                <!-- Support card -->
+                <div class="mt-8 p-6 rounded-xl bg-surface-container border border-outline-variant/10">
+                    <p class="text-sm font-semibold text-on-surface mb-2">Cần hỗ trợ?</p>
+                    <p class="text-xs text-on-surface-variant leading-relaxed mb-4">
+                        Mọi thắc mắc về Điều khoản Dịch vụ, vui lòng liên hệ đội ngũ pháp lý của chúng tôi.
+                    </p>
+                    <a class="text-sm font-bold text-primary underline hover:text-primary-container transition-colors"
+                       href="mailto:legal@zentro.vn">legal@zentro.vn</a>
+                </div>
             </div>
         </aside>
 

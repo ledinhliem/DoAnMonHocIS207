@@ -377,6 +377,53 @@ class OrderModel extends Model
         return $this->getOrderByIdForSession($orderId);
     }
 
+    /**
+     * Lấy đơn hàng hoàn thành (TrangThai = '3') chưa hiển thị pop-up
+     * thông báo cho người dùng hiện tại.
+     *
+     * Trả về mảng chứa MaDonHang và MaSanPham của sản phẩm đầu tiên
+     * trong đơn (để link sang trang feedback), hoặc null nếu không có.
+     */
+    public function getPendingDeliveryNotification(string $userId): ?array
+    {
+        $stmt = $this->db->prepare("
+            SELECT
+                dh.MaDonHang,
+                bt.MaSanPham
+            FROM donhang dh
+            JOIN chitietdonhang ct  ON ct.MaDonHang  = dh.MaDonHang
+            JOIN bienthesanpham bt  ON bt.MaBienThe  = ct.MaBienThe
+            WHERE dh.MaNguoiDung = ?
+              AND dh.TrangThai   = '3'
+              AND dh.DaThongBao  = 0
+            ORDER BY dh.NgayDat DESC
+            LIMIT 1
+        ");
+        $stmt->execute([$userId]);
+ 
+        $row = $stmt->fetch(PDO::FETCH_ASSOC);
+        return $row ?: null;
+    }
+ 
+    /**
+     * Đánh dấu đơn hàng đã được thông báo (DaThongBao = 1).
+     * Chỉ cập nhật khi đơn thuộc về đúng userId để tránh IDOR.
+     */
+    public function markOrderAsNotified(string $orderId, string $userId): bool
+    {
+        $stmt = $this->db->prepare("
+            UPDATE donhang
+            SET    DaThongBao = 1
+            WHERE  MaDonHang   = ?
+              AND  MaNguoiDung = ?
+              AND  TrangThai   = '3'
+              AND  DaThongBao  = 0
+        ");
+        $stmt->execute([$orderId, $userId]);
+ 
+        return $stmt->rowCount() > 0;
+    }
+
     private function generateOrderId()
     {
         $stmt = $this->db->query("
@@ -448,6 +495,10 @@ class OrderModel extends Model
         $stmt = $this->db->prepare("SELECT * FROM donhang WHERE MaDonHang = ? LIMIT 1");
         $stmt->execute([$orderId]);
         $order = $stmt->fetch(PDO::FETCH_ASSOC);
+
+        if ($order) {
+            $order['items'] = $this->getOrderItems($orderId);
+        }
 
         return $order ?: null;
     }
