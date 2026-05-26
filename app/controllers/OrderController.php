@@ -1,12 +1,9 @@
 <?php
 require_once __DIR__ . '/../models/CartModel.php';
 require_once __DIR__ . '/../models/OrderModel.php';
-<<<<<<< HEAD
+require_once __DIR__ . '/../models/UserModel.php';
 use SePay\SePayClient;
 use SePay\Builders\CheckoutBuilder;
-=======
-require_once __DIR__ . '/../models/UserModel.php';
->>>>>>> lan/fix-loi
 
 class OrderController extends Controller
 {
@@ -30,7 +27,6 @@ class OrderController extends Controller
         }
     }
 
-<<<<<<< HEAD
     /**
      * API endpoint: trả về JSON thông tin đơn hàng hoàn thành
      * chưa được thông báo cho user đang đăng nhập.
@@ -84,12 +80,8 @@ class OrderController extends Controller
         exit;
     }
 
-    // Lấy tóm tắt đơn hàng (tối ưu tính phí ship chuẩn MVC)
-    private function getCheckoutSummary()
-=======
     //Lọc danh sách sản phẩm ĐÃ ĐƯỢC CHỌN từ giỏ hàng để mang đi thanh toán
     private function getFilteredCartItems()
->>>>>>> lan/fix-loi
     {
         $allItems = $this->cartModel->getItems() ?? [];
         $selectedKeys = $_SESSION['selected_cart_keys'] ?? [];
@@ -102,7 +94,15 @@ class OrderController extends Controller
         $filtered = [];
         foreach ($allItems as $key => $item) {
             // Kiểm tra khớp theo mã key mảng hoặc thuộc tính ID sản phẩm gửi lên
-            if (in_array($key, $selectedKeys) || (isset($item['id']) && in_array($item['id'], $selectedKeys))) {
+            $cartKey = (string)$key;
+            $variantId = (string)($item['MaBienThe'] ?? $item['variant_id'] ?? '');
+            $itemId = (string)($item['id'] ?? '');
+
+            if (
+                in_array($cartKey, $selectedKeys, true) ||
+                ($variantId !== '' && in_array($variantId, $selectedKeys, true)) ||
+                ($itemId !== '' && in_array($itemId, $selectedKeys, true))
+            ) {
                 $filtered[$key] = $item;
             }
         }
@@ -110,8 +110,9 @@ class OrderController extends Controller
     }
 
     // Tối ưu hàm tính toán hóa đơn: nhận danh sách món đã lọc để tính tiền chính xác
-    private function getCheckoutSummary($items)
+    private function getCheckoutSummary(?array $items = null)
     {
+        $items = $items ?? $this->getFilteredCartItems();
         $subtotal = 0;
         foreach ($items as $item) {
             $subtotal += ($item['price'] ?? 0) * ($item['quantity'] ?? 1);
@@ -150,13 +151,16 @@ class OrderController extends Controller
             $order = $this->orderModel->saveOrder($orderData);
 
             // 🌟 CHỈ XÓA CÁC SẢN PHẨM ĐÃ THANH TOÁN KHỎI GIỎ HÀNG
-            foreach (array_keys($items) as $key) {
+            foreach ($items as $key => $item) {
+                $cartKey = $item['MaBienThe'] ?? $item['variant_id'] ?? $key;
                 if (method_exists($this->cartModel, 'removeItem')) {
-                    $this->cartModel->removeItem($key);
+                    $this->cartModel->removeItem($cartKey);
                 } elseif (method_exists($this->cartModel, 'delete')) {
-                    $this->cartModel->delete($key);
+                    $this->cartModel->delete($cartKey);
+                } elseif (method_exists($this->cartModel, 'remove')) {
+                    $this->cartModel->remove($cartKey);
                 } else {
-                    unset($_SESSION['cart'][$key]); // Phương án dự phòng nếu lưu thô trong session gốc
+                    unset($_SESSION['cart'][$cartKey]);
                 }
             }
 
@@ -165,6 +169,7 @@ class OrderController extends Controller
                 $_SESSION['payment_old'],
                 $_SESSION['payment_errors'],
                 $_SESSION['checkout_data'],
+                $_SESSION['pending_transfer_order_code'],
                 $_SESSION['selected_cart_keys'] // Xóa lịch sử ghi nhớ tích chọn sản phẩm
             );
 
@@ -249,7 +254,6 @@ class OrderController extends Controller
             exit;
         }
 
-<<<<<<< HEAD
         $promoCode = trim($_POST['promo_code'] ?? '');
 
         if ($promoCode === '') {
@@ -261,21 +265,10 @@ class OrderController extends Controller
         }
 
         // Truyền $this->cartModel->getItems() để check Danh Mục
-        $result = $this->orderModel->calculateDiscount(
-            $this->cartModel->getItems(),
-            $promoCode
-=======
-        // Áp mã giảm giá dựa trên tổng tiền tạm tính của các món ĐÃ ĐƯỢC CHỌN mua
         $items = $this->getFilteredCartItems();
-        $subtotal = 0;
-        foreach ($items as $item) {
-            $subtotal += ($item['price'] ?? 0) * ($item['quantity'] ?? 1);
-        }
-
         $result = $this->orderModel->calculateDiscount(
-            $subtotal,
-            $_POST['promo_code'] ?? ''
->>>>>>> lan/fix-loi
+            $items,
+            $promoCode
         );
 
         if ($result['valid']) {
@@ -387,10 +380,6 @@ class OrderController extends Controller
         $this->requireLogin();
         $items = $this->getFilteredCartItems();
 
-<<<<<<< HEAD
-        $items = $this->cartModel->getItems();
-=======
->>>>>>> lan/fix-loi
         if (empty($items)) {
             $_SESSION['error'] = 'Giỏ hàng đang trống.';
             header('Location: ?url=cart');
@@ -399,19 +388,34 @@ class OrderController extends Controller
 
         $summary = $this->getCheckoutSummary();
         $totalAmount = (int)($summary['total'] ?? 0);
-        
-        // Tạo mã đơn hàng tự động ngẫu nhiên (Ví dụ: ZN123456)
-        $orderCode = 'ZN' . rand(100000, 999999);
 
-<<<<<<< HEAD
+        // Tạo và giữ mã thanh toán trong session để khi SePay trả về còn hoàn tất được đơn.
+        $orderCode = $_SESSION['pending_transfer_order_code'] ?? ('ZN' . rand(100000, 999999));
+        $_SESSION['pending_transfer_order_code'] = $orderCode;
+
+        if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+            $this->completeOrder('Transfer', ['transfer_code' => $orderCode]);
+        }
+
+        if (!class_exists(SePayClient::class) || !class_exists(CheckoutBuilder::class)) {
+            $this->view('order/transfer', [
+                'title' => 'Chuyển khoản',
+                'summary' => $summary,
+                'totalAmount' => $totalAmount,
+                'orderCode' => $orderCode,
+                'qrUrl' => $this->orderModel->generateVietQRUrl($totalAmount, $orderCode),
+            ]);
+            return;
+        }
+
         // 1. Khởi tạo SePay Client (Cần lấy 2 tham số này trên my.sepay.vn)
-        $merchantId = "SP-TEST-NP568B75"; 
-        $secretKey = "spsk_test_vQMfPZNoii1x3Vg5hFpU5MDvUkXtZ34g";
+        $merchantId = "SP-LIVE-NP29465A";
+        $secretKey = "spsk_live_pkMy2rEhLV7wpNwVXiBMiSSsrZUHmkra";
         
         $sepayClient = new SePayClient(
             $merchantId, 
             $secretKey,
-            SePayClient::ENVIRONMENT_SANDBOX // Đang dùng Sandbox (môi trường thử nghiệm)
+            SePayClient::ENVIRONMENT_PRODUCTION
         );
 
         // 2. Sử dụng CheckoutBuilder đúng cú pháp của SePay SDK
@@ -467,16 +471,16 @@ class OrderController extends Controller
             header('Location: ?url=checkout');
             exit;
         }
-=======
-        $this->view('order/transfer', [
-            'title' => 'Chuyển khoản',
-            'summary' => $this->getCheckoutSummary($items),
-        ]);
->>>>>>> lan/fix-loi
     }
 
     public function success()
     {
+        if (!empty($_SESSION['pending_transfer_order_code']) && !empty($this->getFilteredCartItems())) {
+            $this->completeOrder('Transfer', [
+                'transfer_code' => $_SESSION['pending_transfer_order_code']
+            ]);
+        }
+
         $orderId = $_SESSION['latest_order_id'] ?? '';
         $userId = $_SESSION['user_id'] ?? null;
         $order = ($orderId !== '' && $userId)

@@ -5,6 +5,8 @@
 $keyword = $keyword ?? ($_GET['keyword'] ?? '');
 $category = $category ?? ($_GET['category'] ?? '');
 $brand = $brand ?? ($_GET['brand'] ?? '');
+$status = $status ?? ($_GET['status'] ?? null);
+$message = $message ?? ($_GET['message'] ?? '');
 
 $categories = $categories ?? [];
 $brands = $brands ?? [];
@@ -76,6 +78,12 @@ if (!function_exists('productValue')) {
             Thêm sản phẩm mới
         </a>
     </header>
+
+    <?php if (!empty($status) && !empty($message)): ?>
+        <div class="mb-6 rounded-xl p-4 <?= $status === 'success' ? 'bg-green-50 text-green-800' : 'bg-red-50 text-red-800' ?>">
+            <?= e($message) ?>
+        </div>
+    <?php endif; ?>
 
     <!-- Tìm kiếm & Bộ lọc Controls -->
     <section class="bg-surface-container-low rounded-xl p-6 mb-8 shadow-sm">
@@ -202,6 +210,7 @@ if (!function_exists('productValue')) {
                         <th class="px-6 py-4 text-xs font-black uppercase tracking-widest text-outline">Danh mục</th>
                         <th class="px-6 py-4 text-xs font-black uppercase tracking-widest text-outline">Giá</th>
                         <th class="px-6 py-4 text-xs font-black uppercase tracking-widest text-outline">Tồn kho</th>
+                        <th class="px-6 py-4 text-xs font-black uppercase tracking-widest text-outline">Trạng thái</th>
                         <th class="px-6 py-4 text-xs font-black uppercase tracking-widest text-outline">SKU</th>
                         <th class="px-6 py-4 text-xs font-black uppercase tracking-widest text-outline text-right">
                             Thao tác
@@ -221,6 +230,8 @@ if (!function_exists('productValue')) {
                             $stock = productValue($product, ['stock', 'quantity'], '—');
                             $sku = productValue($product, ['sku'], '—');
                             $image = productValue($product, ['image', 'image_url', 'thumbnail'], '');
+                            $productStatus = (int) productValue($product, ['status'], 0);
+                            $isVisible = $productStatus === 1;
                             ?>
 
                             <tr class="border-t border-outline-variant/10 hover:bg-surface-container-low transition-colors">
@@ -270,6 +281,12 @@ if (!function_exists('productValue')) {
                                     <?php endif; ?>
                                 </td>
 
+                                <td class="px-6 py-4">
+                                    <span class="px-3 py-1 rounded-full text-xs font-bold <?= $isVisible ? 'bg-green-50 text-green-700' : 'bg-amber-50 text-amber-700' ?>">
+                                        <?= $isVisible ? 'Đang bán' : 'Đã ẩn / Ngừng bán' ?>
+                                    </span>
+                                </td>
+
                                 <td class="px-6 py-4 text-on-surface"><?= e($sku) ?></td>
 
                                 <td class="px-6 py-4">
@@ -299,9 +316,29 @@ if (!function_exists('productValue')) {
                                                 Sửa
                                             </a>
 
+                                            <?php if ($isVisible): ?>
+                                                <a
+                                                    href="<?= BASE_URL ?>index.php?url=admin/products/hide&id=<?= urlencode((string) $id) ?>"
+                                                    onclick="return confirm('Ẩn / ngừng bán sản phẩm này?')"
+                                                    class="inline-flex items-center gap-1 px-3 py-2 rounded-lg bg-amber-50 hover:bg-amber-100 text-amber-700 text-sm font-medium transition-colors"
+                                                >
+                                                    <span class="material-symbols-outlined text-[18px]">visibility_off</span>
+                                                    Ẩn
+                                                </a>
+                                            <?php else: ?>
+                                                <a
+                                                    href="<?= BASE_URL ?>index.php?url=admin/products/show&id=<?= urlencode((string) $id) ?>"
+                                                    onclick="return confirm('Mở bán sản phẩm này?')"
+                                                    class="inline-flex items-center gap-1 px-3 py-2 rounded-lg bg-green-50 hover:bg-green-100 text-green-700 text-sm font-medium transition-colors"
+                                                >
+                                                    <span class="material-symbols-outlined text-[18px]">visibility</span>
+                                                    Mở bán
+                                                </a>
+                                            <?php endif; ?>
+
                                             <a
                                                 href="<?= BASE_URL ?>index.php?url=admin/products/delete&id=<?= urlencode((string) $id) ?>"
-                                                onclick="return confirm('Ẩn sản phẩm này?')"
+                                                onclick="return confirm('Xóa vĩnh viễn sản phẩm này khỏi admin? Chỉ nên xóa sản phẩm chưa có đơn hàng.')"
                                                 class="inline-flex items-center gap-1 px-3 py-2 rounded-lg bg-red-50 hover:bg-red-100 text-red-700 text-sm font-medium transition-colors"
                                             >
                                                 <span class="material-symbols-outlined text-[18px]">delete</span>
@@ -330,7 +367,7 @@ if (!function_exists('productValue')) {
                         <?php endforeach; ?>
                     <?php else: ?>
                         <tr class="border-t border-outline-variant/10">
-                            <td colspan="8" class="px-6 py-16 text-center">
+                            <td colspan="9" class="px-6 py-16 text-center">
                                 <div class="max-w-md mx-auto">
                                     <div class="w-16 h-16 mx-auto mb-4 rounded-full bg-surface-container-high flex items-center justify-center text-outline">
                                         <span class="material-symbols-outlined text-3xl">inventory_2</span>

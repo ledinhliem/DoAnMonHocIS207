@@ -1,7 +1,5 @@
 <?php include 'app/views/layouts/header.php'; ?>
 
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/devicons/devicon@latest/devicon.min.css">
-
 <style>
     /* Ẩn con mắt mặc định của Edge */
     input::-ms-reveal,
@@ -78,23 +76,6 @@
                 </button>
             </form>
 
-            <div class="relative my-10">
-                <div class="absolute inset-0 flex items-center"><div class="w-full border-t border-outline-variant/30"></div></div>
-                <div class="relative flex justify-center text-xs uppercase tracking-widest">
-                    <span class="bg-surface-container-lowest px-4 text-on-surface-variant">Or continue with</span>
-                </div>
-            </div>
-            
-            <div class="grid grid-cols-2 gap-4">
-                <a href="index.php?url=auth/google" class="flex items-center justify-center gap-3 bg-white border border-outline-variant/30 py-3 rounded-lg hover:bg-surface-container transition-all no-underline text-on-surface shadow-sm">
-                    <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" width="18" height="18" alt="Google">
-                    <span class="text-sm font-semibold">Google</span>
-                </a>
-                <a href="index.php?url=auth/apple" class="flex items-center justify-center gap-3 bg-black py-3 rounded-lg hover:bg-gray-800 transition-all no-underline text-white shadow-sm">
-                    <i class="devicon-apple-original text-lg"></i>
-                    <span class="text-sm font-semibold">Apple</span>
-                </a>
-            </div>
         </section>
 
         <section class="hidden md:flex flex-col justify-between bg-primary-container text-white p-12 rounded-xl relative overflow-hidden">
@@ -107,20 +88,5 @@
         </section>
     </div>
 </main>
-
-<script>
-document.addEventListener('DOMContentLoaded', function() {
-    // Hiệu ứng nút Sign In khi gửi form
-    const loginForm = document.getElementById('loginForm');
-    if (loginForm) {
-        loginForm.addEventListener('submit', function() {
-            const btn = document.getElementById('submitBtn');
-            const txt = document.getElementById('btnText');
-            txt.textContent = 'Verifying...';
-            btn.classList.add('opacity-50', 'pointer-events-none');
-        });
-    }
-});
-</script>
 
 <?php include 'app/views/layouts/footer.php'; ?>

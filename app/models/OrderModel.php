@@ -74,13 +74,26 @@ class OrderModel extends Model
         }
 
         // Lấy thông tin mã từ DB
-        $stmt = $this->db->prepare("
-        SELECT MaCode, PhamTramGiam, SoLuong, NgayHetHan, MaDanhMuc
-        FROM magiamgia
-        WHERE MaCode = ? LIMIT 1
-    ");
-        $stmt->execute([$promoCode]);
-        $promo = $stmt->fetch(PDO::FETCH_ASSOC);
+        try {
+            $stmt = $this->db->prepare("
+                SELECT MaCode, PhamTramGiam, SoLuong, NgayHetHan, MaDanhMuc
+                FROM magiamgia
+                WHERE MaCode = ? LIMIT 1
+            ");
+            $stmt->execute([$promoCode]);
+            $promo = $stmt->fetch(PDO::FETCH_ASSOC);
+        } catch (Throwable $e) {
+            $stmt = $this->db->prepare("
+                SELECT MaCode, PhamTramGiam, SoLuong, NgayHetHan
+                FROM magiamgia
+                WHERE MaCode = ? LIMIT 1
+            ");
+            $stmt->execute([$promoCode]);
+            $promo = $stmt->fetch(PDO::FETCH_ASSOC);
+            if ($promo) {
+                $promo['MaDanhMuc'] = null;
+            }
+        }
 
         // Kiểm tra mã tồn tại, hết hạn, hết số lượng
         if (!$promo) {
@@ -109,9 +122,9 @@ class OrderModel extends Model
         } else {
             // Nếu có mã danh mục -> Mới check từng sản phẩm
             $checkCatStmt = $this->db->prepare("
-            SELECT s.MaDanhMuc 
-            FROM bienthesanpham b 
-            JOIN sanpham s ON b.MaSanPham = s.MaSanPham 
+            SELECT s.MaDanhMuc
+            FROM bienthesanpham b
+            JOIN sanpham s ON b.MaSanPham = s.MaSanPham
             WHERE b.MaBienThe = ?
         ");
 
@@ -419,11 +432,11 @@ class OrderModel extends Model
             LIMIT 1
         ");
         $stmt->execute([$userId]);
- 
+
         $row = $stmt->fetch(PDO::FETCH_ASSOC);
         return $row ?: null;
     }
- 
+
     /**
      * Đánh dấu đơn hàng đã được thông báo (DaThongBao = 1).
      * Chỉ cập nhật khi đơn thuộc về đúng userId để tránh IDOR.
@@ -439,7 +452,7 @@ class OrderModel extends Model
               AND  DaThongBao  = 0
         ");
         $stmt->execute([$orderId, $userId]);
- 
+
         return $stmt->rowCount() > 0;
     }
 
@@ -535,24 +548,30 @@ class OrderModel extends Model
     {
         return $deliveryMethod === 'express' ? '2' : '1';
     }
-<<<<<<< HEAD
-}
-=======
 
     public function getAvailablePromos()
     {
         try {
-            // Nối chuỗi để hiển thị rành mạch: "Giảm 15% (Chỉ Zentro Kitchen)"
-            $sql = "SELECT 
-                        m.MaCode AS MaGiamGia, 
-                        CONCAT('Giảm ', m.PhamTramGiam, '%', IF(m.MaDanhMuc IS NOT NULL, CONCAT(' (Chỉ ', d.TenDanhMuc, ')'), ' (Toàn Shop)')) AS MoTa, 
-                        m.NgayHetHan 
-                    FROM magiamgia m
-                    LEFT JOIN danhmuc d ON m.MaDanhMuc = d.MaDanhMuc
-                    WHERE m.NgayHetHan >= CURDATE() AND m.SoLuong > 0";
-
-            $stmt = $this->db->prepare($sql);
-            $stmt->execute();
+            try {
+                $sql = "SELECT
+                            m.MaCode AS MaGiamGia,
+                            CONCAT('Giảm ', m.PhamTramGiam, '%', IF(m.MaDanhMuc IS NOT NULL, CONCAT(' (Chỉ ', d.TenDanhMuc, ')'), ' (Toàn shop)')) AS MoTa,
+                            m.NgayHetHan
+                        FROM magiamgia m
+                        LEFT JOIN danhmuc d ON m.MaDanhMuc = d.MaDanhMuc
+                        WHERE m.NgayHetHan >= CURDATE() AND m.SoLuong > 0";
+                $stmt = $this->db->prepare($sql);
+                $stmt->execute();
+            } catch (Throwable $e) {
+                $sql = "SELECT
+                            MaCode AS MaGiamGia,
+                            CONCAT('Giảm ', PhamTramGiam, '% (Toàn shop)') AS MoTa,
+                            NgayHetHan
+                        FROM magiamgia
+                        WHERE NgayHetHan >= CURDATE() AND SoLuong > 0";
+                $stmt = $this->db->prepare($sql);
+                $stmt->execute();
+            }
 
             return $stmt->fetchAll(PDO::FETCH_ASSOC);
         } catch (Throwable $e) {
@@ -560,19 +579,14 @@ class OrderModel extends Model
         }
     }
 
-    // Thêm hàm này vào class OrderModel trong app/models/OrderModel.php
-   /**
-     * Tự động sinh link mã QR VietQR động (Task 5c)
-     */
-    public function generateVietQRUrl($totalAmount, $orderCode) {
-        $accountNo = "0769509303"; // Đổi thành STK thật của ông nếu cần
-        $accountName = "NGUY TRONG PHUC"; // Tên thật của shop
-        
-        // Gọi API của VietQR với định dạng compact2 (gọn đẹp)
-        return "https://img.vietqr.io/image/mbbank-" . $accountNo . "-compact2.png?" . 
-               "amount=" . (int)$totalAmount . 
-               "&addInfo=" . urlencode($orderCode) . 
+    public function generateVietQRUrl($totalAmount, $orderCode)
+    {
+        $accountNo = "0769509303";
+        $accountName = "NGUY TRONG PHUC";
+
+        return "https://img.vietqr.io/image/mbbank-" . $accountNo . "-compact2.png?" .
+               "amount=" . (int)$totalAmount .
+               "&addInfo=" . urlencode($orderCode) .
                "&accountName=" . urlencode($accountName);
     }
 }
->>>>>>> phuc-fix-task-5-10

@@ -59,9 +59,28 @@ class AdminController extends Controller
         $status = null;
         $message = '';
 
-        if ($url === 'admin/products/delete' && $id !== '') {
-            $this->adminModel->deleteProduct($id);
-            header('Location: index.php?url=admin/products');
+        if ($id !== '' && in_array($url, ['admin/products/hide', 'admin/products/show', 'admin/products/delete'], true)) {
+            $redirectStatus = 'success';
+            $redirectMessage = '';
+
+            if ($url === 'admin/products/hide') {
+                $redirectMessage = $this->adminModel->hideProduct($id)
+                    ? 'Đã ẩn / ngừng bán sản phẩm.'
+                    : 'Ẩn sản phẩm thất bại.';
+                $redirectStatus = str_contains($redirectMessage, 'thất bại') ? 'error' : 'success';
+            } elseif ($url === 'admin/products/show') {
+                $redirectMessage = $this->adminModel->showProduct($id)
+                    ? 'Đã mở bán sản phẩm.'
+                    : 'Không thể mở bán: sản phẩm cần ít nhất 1 ảnh và 1 biến thể còn tồn kho.';
+                $redirectStatus = str_starts_with($redirectMessage, 'Không thể') ? 'error' : 'success';
+            } else {
+                $redirectMessage = $this->adminModel->deleteProduct($id)
+                    ? 'Đã xóa sản phẩm khỏi admin.'
+                    : 'Không thể xóa sản phẩm đã có đơn hàng. Hãy dùng Ẩn / Ngừng bán.';
+                $redirectStatus = str_starts_with($redirectMessage, 'Không thể') ? 'error' : 'success';
+            }
+
+            header('Location: index.php?url=admin/products&status=' . $redirectStatus . '&message=' . urlencode($redirectMessage));
             exit;
         }
 

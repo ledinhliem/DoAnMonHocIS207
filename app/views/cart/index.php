@@ -39,14 +39,15 @@
                             $quantity = (int)($item['quantity'] ?? 1);
                             $stock = (int)($item['stock'] ?? 0);
                             $lineTotal = $price * $quantity;
+                            $maBienThe = $item['MaBienThe'] ?? $item['variant_id'] ?? $key;
                         ?>
 
                         <div class="bg-white rounded-2xl border border-[#E5E7D8] p-5 flex flex-col md:flex-row gap-5 items-center">
-                            
+
                             <div class="flex items-center justify-center pr-2 self-center md:self-auto">
-                                <input type="checkbox" 
-                                       value="<?= htmlspecialchars($key) ?>" 
-                                       checked 
+                                <input type="checkbox"
+                                       value="<?= htmlspecialchars($maBienThe) ?>"
+                                       checked
                                        class="cart-checkbox w-6 h-6 rounded border-[#D8DDCB] text-[#2F512A] focus:ring-[#2F512A] cursor-pointer"
                                        data-line-total="<?= $lineTotal ?>">
                             </div>
@@ -83,6 +84,7 @@
 
                                 <div class="flex items-center gap-3 mt-4">
                                     <form method="POST" action="?url=cart/update">
+                                        <input type="hidden" name="MaBienThe" value="<?= htmlspecialchars($maBienThe) ?>">
                                         <input type="hidden" name="SoLuong" value="<?= max(0, $quantity - 1) ?>">
                                         <button type="submit"
                                                 class="w-10 h-10 rounded-xl border border-[#D8DDCB] font-bold hover:bg-gray-100 transition">
@@ -95,6 +97,7 @@
                                     </span>
 
                                     <form method="POST" action="?url=cart/update">
+                                        <input type="hidden" name="MaBienThe" value="<?= htmlspecialchars($maBienThe) ?>">
                                         <input type="hidden" name="SoLuong" value="<?= $quantity + 1 ?>">
                                         <button type="submit"
                                                 class="w-10 h-10 rounded-xl border border-[#D8DDCB] font-bold hover:bg-gray-100 transition">
@@ -109,14 +112,10 @@
                                     <?= number_format($lineTotal, 0, ',', '.') ?>₫
                                 </p>
 
-<<<<<<< HEAD
-
-=======
                                 <a href="?url=cart/remove&MaBienThe=<?= urlencode($maBienThe) ?>"
                                    class="px-4 py-2 rounded-xl border border-red-300 text-red-600 font-semibold hover:bg-red-50 transition">
                                     Xóa
                                 </a>
->>>>>>> lan/fix-loi
                             </div>
                         </div>
                     <?php endforeach; ?>
@@ -135,7 +134,7 @@
                     </div>
 
                     <form id="checkout-form" method="POST" action="?url=checkout">
-                        <button type="submit" 
+                        <button type="submit"
                                 id="checkout-btn"
                                 class="block w-full text-center px-6 py-4 rounded-2xl bg-[#2F512A] text-white font-bold hover:opacity-90 transition">
                             Tiếp tục thanh toán
@@ -194,7 +193,7 @@ document.addEventListener('DOMContentLoaded', function () {
             oldInputs.forEach(input => input.remove());
 
             const checkedBoxes = document.querySelectorAll('.cart-checkbox:checked');
-            
+
             if (checkedBoxes.length === 0) {
                 e.preventDefault();
                 alert('Vui lòng chọn ít nhất một sản phẩm để tiến hành thanh toán.');

@@ -50,9 +50,11 @@
             <p class="text-on-surface-variant mb-8 leading-relaxed">Sau khi chuyển khoản xong, hãy tiếp tục để hệ thống xác nhận đơn hàng của bạn.</p>
 
             <div class="space-y-4">
-                <a href="<?= BASE_URL ?? '' ?>?url=order/feedback" class="block text-center bg-primary text-white px-6 py-4 rounded-xl font-bold hover:bg-[#1e361e] transition-colors hover:shadow-lg hover:-translate-y-0.5 duration-300">
-                    Tôi đã chuyển khoản
-                </a>
+                <form method="POST" action="<?= BASE_URL ?? '' ?>?url=order/transfer">
+                    <button type="submit" class="w-full text-center bg-primary text-white px-6 py-4 rounded-xl font-bold hover:bg-[#1e361e] transition-colors hover:shadow-lg hover:-translate-y-0.5 duration-300">
+                        Tôi đã chuyển khoản
+                    </button>
+                </form>
                 <a href="<?= BASE_URL ?? '' ?>?url=checkout" class="block text-center border-2 border-outline-variant/30 px-6 py-4 rounded-xl font-bold hover:bg-white transition-colors duration-300">
                     Quay lại thanh toán
                 </a>

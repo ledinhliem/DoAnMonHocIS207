@@ -42,6 +42,7 @@ document.addEventListener('DOMContentLoaded', function() {
             const email = authForm.querySelector('input[type="email"]');
             const password = authForm.querySelector('input[name="password"]');
             const confirmPass = authForm.querySelector('input[name="confirm_password"]');
+            const submitBtn = authForm.querySelector('button[type="submit"]');
 
             const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
@@ -62,10 +63,16 @@ document.addEventListener('DOMContentLoaded', function() {
 
             if (!isValid) {
                 e.preventDefault();
+                if (submitBtn) {
+                    submitBtn.classList.remove('opacity-50', 'pointer-events-none');
+                    const buttonText = submitBtn.querySelector('#btnText');
+                    if (buttonText) {
+                        buttonText.textContent = 'Sign In';
+                    }
+                }
                 alert("Lỗi nhập liệu:\n\n" + errorMsg);
             } else {
                 // Hiệu ứng loading cho nút bấm của Long
-                const submitBtn = authForm.querySelector('button[type="submit"]');
                 if (submitBtn) {
                     submitBtn.innerHTML = 'Verifying... <span class="animate-pulse">...</span>';
                     submitBtn.classList.add('opacity-50', 'pointer-events-none');

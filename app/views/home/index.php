@@ -26,8 +26,22 @@ $featuredEcoScore = (int)($featuredProduct['DiemXanh'] ?? 90);
 $featuredEcoTag = $featuredProduct['TacDongMoiTruong'] ?? 'Vật liệu thân thiện hơn với môi trường.';
 
 $featuredImage = '';
-if (!empty($featuredImages[0]['DuongDan'])) {
-    $featuredImage = product_image_url($featuredImages[0]['DuongDan']);
+if (!empty($featuredImages)) {
+    $preferredImage = '';
+    $fallbackImage = $featuredImages[0]['DuongDan'] ?? '';
+    $priorityPatterns = ['_Back', '_Front', '_Model'];
+
+    foreach ($priorityPatterns as $pattern) {
+        foreach ($featuredImages as $image) {
+            $path = $image['DuongDan'] ?? '';
+            if ($path !== '' && stripos($path, $pattern) !== false && stripos($path, 'Texture') === false) {
+                $preferredImage = $path;
+                break 2;
+            }
+        }
+    }
+
+    $featuredImage = product_image_url($preferredImage ?: $fallbackImage);
 }
 
 if (!$featuredImage) {
@@ -97,6 +111,7 @@ $kitchenCategory = $categoryMap['Zentro Kitchen'] ?? 'C001';
 
         <div class="relative z-10 max-w-7xl mx-auto px-8 w-full">
             <div
+                data-home-reveal="up"
                 class="max-w-2xl bg-surface/90 backdrop-blur-md p-10 md:p-16 rounded-xl border-l-8 border-primary shadow-xl">
                 <span
                     class="inline-block px-4 py-1 rounded-full bg-primary-fixed text-on-primary-fixed-variant text-xs font-bold uppercase tracking-widest mb-6">
@@ -131,22 +146,22 @@ $kitchenCategory = $categoryMap['Zentro Kitchen'] ?? 'C001';
         <div class="max-w-7xl mx-auto px-8">
             <div
                 class="flex flex-wrap justify-center md:justify-between items-center gap-8 opacity-60 grayscale hover:grayscale-0 transition-all duration-500">
-                <div class="flex items-center gap-3">
+                <div class="flex items-center gap-3" data-home-reveal="up" data-home-delay="0">
                     <span class="material-symbols-outlined text-3xl text-primary">eco</span>
                     <span class="font-headline font-bold text-sm tracking-widest uppercase">Chứng nhận B Corp</span>
                 </div>
 
-                <div class="flex items-center gap-3">
+                <div class="flex items-center gap-3" data-home-reveal="up" data-home-delay="80">
                     <span class="material-symbols-outlined text-3xl text-primary">recycling</span>
                     <span class="font-headline font-bold text-sm tracking-widest uppercase">100% có thể tái chế</span>
                 </div>
 
-                <div class="flex items-center gap-3">
+                <div class="flex items-center gap-3" data-home-reveal="up" data-home-delay="160">
                     <span class="material-symbols-outlined text-3xl text-primary">vaping_rooms</span>
                     <span class="font-headline font-bold text-sm tracking-widest uppercase">Trung hòa carbon</span>
                 </div>
 
-                <div class="flex items-center gap-3">
+                <div class="flex items-center gap-3" data-home-reveal="up" data-home-delay="240">
                     <span class="material-symbols-outlined text-3xl text-primary">verified_user</span>
                     <span class="font-headline font-bold text-sm tracking-widest uppercase">Thương mại công bằng</span>
                 </div>
@@ -156,7 +171,7 @@ $kitchenCategory = $categoryMap['Zentro Kitchen'] ?? 'C001';
 
     <!-- Giới thiệu sản phẩm + Thành tích -->
     <section class="py-24 max-w-7xl mx-auto px-8">
-        <div class="flex flex-col md:flex-row justify-between items-end mb-16 gap-6">
+        <div class="flex flex-col md:flex-row justify-between items-end mb-16 gap-6" data-home-reveal="up">
             <div class="max-w-xl">
                 <h2 class="font-headline text-4xl md:text-5xl font-extrabold text-on-background mb-4">
                     Bộ sưu tập sống xanh
@@ -177,6 +192,8 @@ $kitchenCategory = $categoryMap['Zentro Kitchen'] ?? 'C001';
         <div class="grid grid-cols-1 md:grid-cols-12 gap-8 h-auto md:h-[800px]">
             <!-- Decor -->
             <a href="<?= BASE_URL ?>?url=product&category=<?= urlencode($decorCategory) ?>"
+                data-home-reveal="up"
+                data-home-delay="0"
                 class="md:col-span-8 relative group overflow-hidden rounded-xl bg-surface-container-low shadow-sm transition-transform duration-500 hover:-translate-y-2 block">
                 <img class="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
                     data-alt="Artisanal ceramic tableware and organic linen napkins on a reclaimed oak dining table with soft natural side lighting"
@@ -197,6 +214,8 @@ $kitchenCategory = $categoryMap['Zentro Kitchen'] ?? 'C001';
 
             <!-- Care -->
             <a href="<?= BASE_URL ?>?url=product&category=<?= urlencode($careCategory) ?>"
+                data-home-reveal="up"
+                data-home-delay="100"
                 class="md:col-span-4 relative group overflow-hidden rounded-xl bg-surface-container-low shadow-sm transition-transform duration-500 hover:-translate-y-2 block">
                 <img class="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
                     data-alt="Selection of organic skincare products in amber glass bottles on a smooth stone surface with water droplets and green leaves"
@@ -214,6 +233,8 @@ $kitchenCategory = $categoryMap['Zentro Kitchen'] ?? 'C001';
 
             <!-- Fashion -->
             <a href="<?= BASE_URL ?>?url=product&category=<?= urlencode($fashionCategory) ?>"
+                data-home-reveal="up"
+                data-home-delay="0"
                 class="md:col-span-4 relative group overflow-hidden rounded-xl bg-surface-container-low shadow-sm transition-transform duration-500 hover:-translate-y-2 block">
                 <img class="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
                     data-alt="High-quality organic cotton t-shirts in earth tones neatly folded on a wooden shelf with a single green branch"
@@ -231,6 +252,8 @@ $kitchenCategory = $categoryMap['Zentro Kitchen'] ?? 'C001';
 
             <!-- Impact -->
             <a href="<?= BASE_URL ?>?url=sustainability"
+                data-home-reveal="up"
+                data-home-delay="100"
                 class="md:col-span-8 bg-surface-container-high p-12 rounded-xl flex flex-col justify-center border border-outline-variant/20 hover:-translate-y-2 transition-transform duration-500">
                 <div class="flex items-center gap-3 mb-6">
                     <div class="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center">
@@ -267,7 +290,7 @@ $kitchenCategory = $categoryMap['Zentro Kitchen'] ?? 'C001';
 <section class="bg-surface-container-low py-24">
     <div class="max-w-7xl mx-auto px-8">
         <div class="grid grid-cols-1 md:grid-cols-2 gap-16 items-center">
-            <div class="order-2 md:order-1">
+            <div class="order-2 md:order-1" data-home-reveal="left">
                 <div
                     class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-surface-tint/10 text-primary font-bold text-xs uppercase tracking-tighter mb-6">
                     <span class="material-symbols-outlined text-xs">auto_awesome</span>
@@ -324,7 +347,7 @@ $kitchenCategory = $categoryMap['Zentro Kitchen'] ?? 'C001';
                 </div>
             </div>
 
-            <div class="order-1 md:order-2 relative">
+            <div class="order-1 md:order-2 relative" data-home-reveal="right" data-home-delay="120">
                 <div
                     class="absolute -top-6 -right-6 w-32 h-32 bg-secondary-fixed rounded-full z-0 opacity-50 blur-2xl">
                 </div>
@@ -348,9 +371,12 @@ $kitchenCategory = $categoryMap['Zentro Kitchen'] ?? 'C001';
 </section>
 
     <!-- Newsletter -->
+    <div data-home-reveal="up">
     <?php $newsletterOuterClass = 'py-24 px-8 max-w-7xl mx-auto'; ?>
     <?php include __DIR__ . '/../components/newsletter_cta.php'; ?>
     <?php unset($newsletterOuterClass); ?>
+    </div>
 </main>
 
 <?php include __DIR__ . '/../layouts/footer.php'; ?>
+<script src="<?= BASE_URL ?>public/assets/js/home.js" defer></script>

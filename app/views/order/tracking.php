@@ -159,7 +159,6 @@
                             <?php
                                 $productName = $item['TenSanPham'] ?? 'Sản phẩm';
                                 $productId = $item['MaSanPham'] ?? '';
-                                $maBienThe = $item['MaBienThe'] ?? '';
                                 $variantText = trim(($item['KichThuoc'] ?? '') . ' ' . ($item['MauSac'] ?? ''));
                                 $quantity = (int)($item['SoLuong'] ?? 0);
                                 $price = (float)($item['DonGia'] ?? 0);
@@ -187,10 +186,6 @@
                                 <div class="flex-1">
                                     <p class="font-bold text-[#2F512A] text-lg">
                                         <?= htmlspecialchars($productName) ?>
-                                    </p>
-
-                                    <p class="text-sm text-gray-500">
-                                        Mã biến thể: <?= htmlspecialchars($maBienThe) ?>
                                     </p>
 
                                     <?php if (!empty($variantText)): ?>

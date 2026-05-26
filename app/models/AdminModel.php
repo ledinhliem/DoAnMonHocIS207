@@ -508,10 +508,69 @@ class AdminModel extends Model
         ]);
     }
 
-    public function deleteProduct(string $id): bool
+    public function hideProduct(string $id): bool
     {
         $stmt = $this->db->prepare('UPDATE sanpham SET TrangThai = 0 WHERE MaSanPham = ?');
         return $stmt->execute([$id]);
+    }
+
+    public function showProduct(string $id): bool
+    {
+        if (!$this->productCanBeVisible($id)) {
+            return false;
+        }
+
+        $stmt = $this->db->prepare('UPDATE sanpham SET TrangThai = 1 WHERE MaSanPham = ?');
+        return $stmt->execute([$id]);
+    }
+
+    public function productHasOrders(string $id): bool
+    {
+        $stmt = $this->db->prepare("
+            SELECT COUNT(*)
+            FROM chitietdonhang ct
+            INNER JOIN bienthesanpham bt ON bt.MaBienThe = ct.MaBienThe
+            WHERE bt.MaSanPham = ?
+        ");
+        $stmt->execute([$id]);
+
+        return (int)$stmt->fetchColumn() > 0;
+    }
+
+    public function deleteProduct(string $id): bool
+    {
+        if ($this->productHasOrders($id)) {
+            return false;
+        }
+
+        $this->db->beginTransaction();
+
+        try {
+            $stmt = $this->db->prepare('DELETE FROM yeuthich WHERE MaSanPham = ?');
+            $stmt->execute([$id]);
+
+            $stmt = $this->db->prepare('DELETE FROM sanpham_chungnhan WHERE MaSanPham = ?');
+            $stmt->execute([$id]);
+
+            $stmt = $this->db->prepare('DELETE FROM danhgia WHERE MaSanPham = ?');
+            $stmt->execute([$id]);
+
+            $stmt = $this->db->prepare('DELETE FROM hinhanhsanpham WHERE MaSanPham = ?');
+            $stmt->execute([$id]);
+
+            $stmt = $this->db->prepare('DELETE FROM bienthesanpham WHERE MaSanPham = ?');
+            $stmt->execute([$id]);
+
+            $stmt = $this->db->prepare('DELETE FROM sanpham WHERE MaSanPham = ?');
+            $stmt->execute([$id]);
+
+            $this->db->commit();
+
+            return $stmt->rowCount() > 0;
+        } catch (Throwable $e) {
+            $this->db->rollBack();
+            return false;
+        }
     }
 
     public function createCategory(array $data): bool

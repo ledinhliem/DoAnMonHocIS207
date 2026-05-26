@@ -30,12 +30,7 @@ $hasFullInfo = (!empty($checkoutData['full_name']) && !empty($checkoutData['phon
 
     <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
         <div class="lg:col-span-2 space-y-8">
-<<<<<<< HEAD
-            <form id="checkoutForm"
-                  method="POST"
-=======
-
-            <form method="POST" action="?url=order/apply-promo" id="promo-form" class="bg-white rounded-2xl border border-outline-variant/30 p-6 shadow-sm">
+<form method="POST" action="?url=order/apply-promo" id="promo-form" class="bg-white rounded-2xl border border-outline-variant/30 p-6 shadow-sm">
                 
                 <input type="hidden" name="promo_code" id="actual_promo_code" value="">
 
@@ -112,8 +107,8 @@ $hasFullInfo = (!empty($checkoutData['full_name']) && !empty($checkoutData['phon
                 </div>
             </form>
 
-            <form method="POST"
->>>>>>> phuc-fix-task-5-10
+            <form id="checkoutForm"
+                  method="POST"
                   action="?url=order/payment"
                   class="bg-white rounded-2xl border border-outline-variant/30 p-6 space-y-5 shadow-sm">
 
@@ -248,9 +243,6 @@ $hasFullInfo = (!empty($checkoutData['full_name']) && !empty($checkoutData['phon
                     <?php endif; ?>
                 </div>
 
-<<<<<<< HEAD
-<<<<<<< HEAD
-=======
                 <div class="flex flex-col sm:flex-row gap-4 pt-4 border-t border-outline-variant/30 items-center justify-between">
                     <a href="?url=cart"
                        class="text-on-surface-variant font-semibold hover:text-primary transition-colors order-2 sm:order-1">
@@ -262,55 +254,10 @@ $hasFullInfo = (!empty($checkoutData['full_name']) && !empty($checkoutData['phon
                         Tiếp tục thanh toán
                     </button>
                 </div>
->>>>>>> phuc-fix-task-5-10
             </form>
         </div>
 
-        <div class="bg-surface-container rounded-2xl p-6 h-fit shadow-sm">
-=======
-                <div class="flex gap-4 pt-2">
-                    <a href="?url=cart"
-                       class="px-5 py-3 rounded-xl border border-outline-variant font-semibold hover:bg-gray-50 transition-colors">
-                        Quay lại giỏ hàng
-                    </a>
-
-                    <button type="submit"
-                            class="flex-1 px-5 py-3 rounded-xl bg-primary text-white font-semibold hover:bg-primary/90 transition-colors text-center">
-                        Tiếp tục thanh toán
-                    </button>
-                </div>
-            </form>
-
-            <form method="POST"
-                  action="?url=order/apply-promo"
-                  class="bg-white rounded-2xl border border-outline-variant/30 p-6">
-
-                <h2 class="text-xl font-bold mb-4">Mã giảm giá</h2>
-
-                <div class="flex gap-3">
-                    <input type="text"
-                           name="promo_code"
-                           placeholder="VD: ZENTROGREEN, EARTHDAY26, SAVEPLANET"
-                           value="<?= htmlspecialchars($summary['promo']['code'] ?? '') ?>"
-                           class="flex-1 rounded-xl border border-outline-variant bg-white px-4 py-3">
-
-                    <button type="submit"
-                            class="px-5 py-3 rounded-xl bg-primary text-white font-semibold hover:bg-primary/90 transition-colors">
-                        Áp dụng
-                    </button>
-                </div>
-
-                <?php if (!empty($summary['promo']['code'])): ?>
-                    <p class="text-sm text-green-700 mt-3">
-                        Đang áp dụng mã:
-                        <strong><?= htmlspecialchars($summary['promo']['code']) ?></strong>
-                    </p>
-                <?php endif; ?>
-            </form>
-        </div>
-
-        <div class="bg-surface-container rounded-2xl p-6 h-fit sticky top-6">
->>>>>>> lan/fix-loi
+        <div class="bg-surface-container rounded-2xl p-6 h-fit sticky top-6 shadow-sm">
             <h2 class="text-xl font-bold mb-4">Tóm tắt đơn hàng</h2>
 
             <div class="space-y-3 mb-6">

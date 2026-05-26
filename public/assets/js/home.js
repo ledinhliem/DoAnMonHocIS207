@@ -1,38 +1,51 @@
-// Home page JavaScript
-document.addEventListener('DOMContentLoaded', function () {
-    // Add any home-specific functionality here
-    console.log('Home page loaded');
+document.addEventListener('DOMContentLoaded', () => {
+    const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    const revealEls = document.querySelectorAll('[data-home-reveal]');
 
-    // Handle banner CTA clicks
-    const bannerButtons = document.querySelectorAll('.banner-cta');
-    bannerButtons.forEach(button => {
-        button.addEventListener('click', function (e) {
-            e.preventDefault();
-            const url = this.getAttribute('data-url');
-            if (url) {
-                window.location.href = url;
-            }
+    if (!revealEls.length) {
+        return;
+    }
+
+    if (reduceMotion || !('IntersectionObserver' in window)) {
+        revealEls.forEach(el => {
+            el.style.opacity = '1';
+            el.style.transform = 'none';
         });
+        return;
+    }
+
+    const observer = new IntersectionObserver(entries => {
+        entries.forEach(entry => {
+            if (!entry.isIntersecting) {
+                return;
+            }
+
+            const delay = Number(entry.target.dataset.homeDelay || 0);
+            setTimeout(() => {
+                entry.target.style.opacity = '1';
+                entry.target.style.transform = 'translate3d(0, 0, 0)';
+            }, delay);
+
+            observer.unobserve(entry.target);
+        });
+    }, {
+        threshold: 0.12,
+        rootMargin: '0px 0px -40px 0px'
     });
 
-    // Handle product card clicks
-    const productCards = document.querySelectorAll('.product-card');
-    productCards.forEach(card => {
-        card.addEventListener('click', function (e) {
-            if (!e.target.closest('.add-to-cart-btn')) {
-                const productId = this.getAttribute('data-product-id');
-                if (productId) {
-                    window.location.href = `index.php?url=product/detail&id=${productId}`;
-                }
-            }
-        });
+    revealEls.forEach(el => {
+        const direction = el.dataset.homeReveal;
+        const offset = direction === 'left'
+            ? 'translate3d(-28px, 0, 0)'
+            : direction === 'right'
+                ? 'translate3d(28px, 0, 0)'
+                : 'translate3d(0, 24px, 0)';
+
+        el.style.opacity = '0';
+        el.style.transform = offset;
+        el.style.transition = 'opacity 0.65s ease, transform 0.65s cubic-bezier(0.22, 1, 0.36, 1)';
+        el.style.willChange = 'opacity, transform';
+
+        observer.observe(el);
     });
 });
-
-// Function to add product to cart
-function addToCart(productId) {
-    // Mock add to cart functionality
-    console.log('Adding product to cart:', productId);
-    // You can implement actual cart functionality here
-    alert('Product added to cart! (Mock functionality)');
-}

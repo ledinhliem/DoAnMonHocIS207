@@ -39,6 +39,8 @@ class Router
             'admin/products' => 'products',
             'admin/products/create' => 'products',
             'admin/products/edit' => 'products',
+            'admin/products/hide' => 'products',
+            'admin/products/show' => 'products',
             'admin/products/delete' => 'products',
 
             'admin/categories' => 'categories',

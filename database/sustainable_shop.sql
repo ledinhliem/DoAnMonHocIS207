@@ -504,11 +504,22 @@ INSERT INTO `magiamgia` (`MaCode`, `PhamTramGiam`, `SoLuong`, `NgayHetHan`) VALU
 --
 
 CREATE TABLE `newsletter_subscribers` (
-  `MaDangKy` int(11) NOT NULL,
-  `Email` varchar(150) NOT NULL,
-  `NgayDangKy` datetime DEFAULT current_timestamp(),
-  `TrangThai` tinyint(1) DEFAULT 1
+  `id` int(11) NOT NULL,
+  `email` varchar(255) NOT NULL,
+  `created_at` datetime DEFAULT current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+--
+-- Đang đổ dữ liệu cho bảng `newsletter_subscribers`
+--
+
+INSERT INTO `newsletter_subscribers` (`id`, `email`, `created_at`) VALUES
+(1, 'testnewsletter01@gmail.com', '2026-05-20 14:11:40'),
+(2, 'dinhliemdk@gmail.com', '2026-05-20 14:33:26'),
+(3, 'nguyenthanhlong281006@gmail.com', '2026-05-20 14:44:16'),
+(4, 'nguyenlong281006@gmail.com', '2026-05-20 14:44:36'),
+(5, 'cauvang1302@gmail.com', '2026-05-20 14:47:59'),
+(6, 'quangdk27806@gmail.com', '2026-05-20 15:15:15');
 
 -- --------------------------------------------------------
 
@@ -920,8 +931,8 @@ ALTER TABLE `magiamgia`
 -- Chỉ mục cho bảng `newsletter_subscribers`
 --
 ALTER TABLE `newsletter_subscribers`
-  ADD PRIMARY KEY (`MaDangKy`),
-  ADD UNIQUE KEY `Email` (`Email`);
+  ADD PRIMARY KEY (`id`),
+  ADD UNIQUE KEY `email` (`email`);
 
 --
 -- Chỉ mục cho bảng `nguoidung`
@@ -1005,7 +1016,7 @@ ALTER TABLE `yeuthich`
 -- AUTO_INCREMENT cho bảng `newsletter_subscribers`
 --
 ALTER TABLE `newsletter_subscribers`
-  MODIFY `MaDangKy` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
 
 --
 -- Các ràng buộc cho các bảng đã đổ
