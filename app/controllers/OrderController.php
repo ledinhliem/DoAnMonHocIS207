@@ -1,6 +1,8 @@
 <?php
 require_once __DIR__ . '/../models/CartModel.php';
 require_once __DIR__ . '/../models/OrderModel.php';
+use SePay\SePayClient;
+use SePay\Builders\CheckoutBuilder;
 
 class OrderController extends Controller
 {
@@ -103,7 +105,7 @@ class OrderController extends Controller
                 'summary' => $this->getCheckoutSummary(),
                 'payment_method' => $paymentMethod,
             ];
-            
+
             // Gộp thêm dữ liệu phụ (như 4 số cuối thẻ)
             $orderData = array_merge($orderData, $extraData);
 
@@ -152,11 +154,15 @@ class OrderController extends Controller
             'payment_method' => 'card',
         ];
 
+        // Lấy danh sách Voucher từ DB để View render "Ví Voucher"
+        $availablePromos = $this->orderModel->getAvailablePromos();
+
         $this->view('order/checkout', [
             'title' => 'Thanh toán',
             'items' => $items,
             'summary' => $this->getCheckoutSummary(),
             'checkoutData' => $checkoutData,
+            'availablePromos' => $availablePromos,
             'errors' => $_SESSION['checkout_errors'] ?? [],
             'success' => $_SESSION['success'] ?? '',
             'error' => $_SESSION['error'] ?? '',
@@ -165,6 +171,7 @@ class OrderController extends Controller
         unset($_SESSION['checkout_errors'], $_SESSION['success'], $_SESSION['error']);
     }
 
+    // --- 2. HÀM ÁP MÃ GIẢM GIÁ: Đã fix Voucher thông minh và Hủy mã ---
     public function applyPromo()
     {
         $this->requireLogin();
@@ -174,9 +181,20 @@ class OrderController extends Controller
             exit;
         }
 
+        $promoCode = trim($_POST['promo_code'] ?? '');
+
+        if ($promoCode === '') {
+            unset($_SESSION['promo']);
+            $_SESSION['success'] = 'Đã hủy áp dụng mã giảm giá.';
+            unset($_SESSION['error']);
+            header('Location: ?url=checkout');
+            exit;
+        }
+
+        // Truyền $this->cartModel->getItems() để check Danh Mục
         $result = $this->orderModel->calculateDiscount(
-            $this->cartModel->getSubtotal(),
-            $_POST['promo_code'] ?? ''
+            $this->cartModel->getItems(),
+            $promoCode
         );
 
         if ($result['valid']) {
@@ -281,24 +299,87 @@ class OrderController extends Controller
         $this->completeOrder('Card', ['card_last4' => $last4]);
     }
 
+    // --- 3. HÀM TRANSFER (Chuyển hướng qua cổng SePay bằng SDK chuẩn) ---
     public function transfer()
     {
         $this->requireLogin();
 
-        if (empty($this->cartModel->getItems())) {
+        $items = $this->cartModel->getItems();
+        if (empty($items)) {
             $_SESSION['error'] = 'Giỏ hàng đang trống.';
             header('Location: ?url=cart');
             exit;
         }
 
-        if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-            $this->completeOrder('Transfer');
-        }
+        $summary = $this->getCheckoutSummary();
+        $totalAmount = (int)($summary['total'] ?? 0);
+        
+        // Tạo mã đơn hàng tự động ngẫu nhiên (Ví dụ: ZN123456)
+        $orderCode = 'ZN' . rand(100000, 999999);
 
-        $this->view('order/transfer', [
-            'title' => 'Chuyển khoản',
-            'summary' => $this->getCheckoutSummary(),
-        ]);
+        // 1. Khởi tạo SePay Client (Cần lấy 2 tham số này trên my.sepay.vn)
+        $merchantId = "SP-TEST-NP568B75"; 
+        $secretKey = "spsk_test_vQMfPZNoii1x3Vg5hFpU5MDvUkXtZ34g";
+        
+        $sepayClient = new SePayClient(
+            $merchantId, 
+            $secretKey,
+            SePayClient::ENVIRONMENT_SANDBOX // Đang dùng Sandbox (môi trường thử nghiệm)
+        );
+
+        // 2. Sử dụng CheckoutBuilder đúng cú pháp của SePay SDK
+        $checkoutData = CheckoutBuilder::make()
+            ->currency('VND')
+            ->orderAmount($totalAmount)
+            ->operation('PURCHASE')
+            ->orderDescription('Thanh toan don hang ' . $orderCode) // Viết không dấu cho an toàn
+            ->orderInvoiceNumber($orderCode)
+            ->successUrl(BASE_URL . '?url=order/success') // Link trả về khi thanh toán thành công
+            ->cancelUrl(BASE_URL . '?url=checkout')       // Link trả về nếu khách bấm hủy
+            ->build();
+
+        try {
+            // SDK sinh ra form HTML chứa mã hóa
+            $formHtml = $sepayClient->checkout()->generateFormHtml($checkoutData);
+            
+            // Xây dựng màn hình chờ "ảo ma" và dùng Javascript tự động submit form
+            echo '<!DOCTYPE html>
+            <html lang="vi">
+            <head>
+                <meta charset="UTF-8">
+                <title>Đang chuyển hướng thanh toán...</title>
+                <meta name="viewport" content="width=device-width, initial-scale=1.0">
+                <style>
+                    body { font-family: "Segoe UI", Arial, sans-serif; text-align: center; margin-top: 15vh; background-color: #f8f9fa; color: #333; }
+                    .loader { border: 4px solid #e2e8f0; border-top: 4px solid #2b4c2b; border-radius: 50%; width: 50px; height: 50px; animation: spin 1s linear infinite; margin: 0 auto 20px; }
+                    @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+                    h2 { font-size: 24px; margin-bottom: 10px; color: #1e361e; }
+                    p { font-size: 16px; color: #666; }
+                </style>
+            </head>
+            <body>
+                <div class="loader"></div>
+                <h2>Đang kết nối cổng thanh toán bảo mật SePay...</h2>
+                <p>Vui lòng không đóng trình duyệt trong lúc này.</p>
+                
+                <div style="display: none;">
+                    ' . $formHtml . '
+                </div>
+                
+                <script>
+                    window.onload = function() {
+                        document.forms[0].submit();
+                    };
+                </script>
+            </body>
+            </html>';
+            exit;
+
+        } catch (Exception $e) {
+            $_SESSION['error'] = 'Lỗi kết nối cổng thanh toán: ' . $e->getMessage();
+            header('Location: ?url=checkout');
+            exit;
+        }
     }
 
     public function success()
@@ -318,14 +399,14 @@ class OrderController extends Controller
         unset($_SESSION['success'], $_SESSION['latest_order_id']);
     }
 
-    public function history() 
+    public function history()
     {
         if (!isset($_SESSION['user_id'])) {
             header('Location: ?url=login');
             exit;
         }
 
-        $orders = $this->orderModel->getOrdersByUserId($_SESSION['user_id']); 
+        $orders = $this->orderModel->getOrdersByUserId($_SESSION['user_id']);
 
         $this->view('order/history', [
             'title' => 'Lịch sử đơn hàng',
