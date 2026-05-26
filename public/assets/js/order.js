@@ -40,7 +40,11 @@ document.addEventListener('DOMContentLoaded', function () {
         const shippingRadio = document.querySelector('input[name="shipping_method"]:checked');
         const shippingSelect = document.querySelector('select[name="delivery_method"]');
 
-        if (shippingRadio) {
+        const hasFreeShipping = shippingEl && shippingEl.dataset.freeShipping === '1';
+
+        if (hasFreeShipping) {
+            shipping = 0;
+        } else if (shippingRadio) {
             shipping = parseFloat(shippingRadio.dataset.cost || '0');
         } else if (shippingSelect) {
             const opt = shippingSelect.options[shippingSelect.selectedIndex];

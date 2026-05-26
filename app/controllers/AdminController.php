@@ -856,41 +856,80 @@ class AdminController extends Controller
             exit;
         }
 
+        if ($actionFromUrl === 'flash-delete' && $idFromUrl) {
+            $ok = $this->adminModel->deleteFlashSale($idFromUrl);
+            header('Location: index.php?url=admin/promo&status=' . ($ok ? 'success' : 'error') . '&message=' . urlencode($ok ? 'Đã xóa flash sale thành công!' : 'Xóa flash sale thất bại!'));
+            exit;
+        }
+
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $action = $_POST['action'] ?? '';
-            $promoId = $_POST['promo_id'] ?? '';
-            $code = strtoupper(trim($_POST['code'] ?? ''));
-            $percent = (int)($_POST['percent'] ?? 0);
-            $quantity = (int)($_POST['quantity'] ?? 0);
-            $expiredDate = $_POST['expired_date'] ?? '';
 
-            if (!$this->isValidPromoData($code, $percent, $quantity, $expiredDate, $message)) {
-                $status = 'error';
-            } elseif ($this->adminModel->promoCodeExists($code, $action === 'update_promo' ? $promoId : null)) {
-                $status = 'error';
-                $message = 'Mã giảm giá này đã tồn tại!';
-            } else {
-                $data = [
-                    'MaCode' => $code,
-                    'PhamTramGiam' => $percent,
-                    'SoLuong' => $quantity,
-                    'NgayHetHan' => $expiredDate
-                ];
+            if ($action === 'update_game_rewards') {
+                $ok = $this->adminModel->updateGameRewards($_POST['rewards'] ?? []);
+                header('Location: index.php?url=admin/promo&status=' . ($ok ? 'success' : 'error') . '&message=' . urlencode($ok ? 'Đã cập nhật vòng quay thành công!' : 'Cập nhật vòng quay thất bại!'));
+                exit;
+            }
 
-                if ($action === 'create_promo') {
-                    $ok = $this->adminModel->createPromo($data);
-                    header('Location: index.php?url=admin/promo&status=' . ($ok ? 'success' : 'error') . '&message=' . urlencode($ok ? 'Đã tạo mã giảm giá thành công!' : 'Tạo mã giảm giá thất bại!'));
+            if ($action === 'create_flash_sale') {
+                $productId = trim($_POST['product_id'] ?? '');
+                $salePrice = (float)($_POST['sale_price'] ?? 0);
+                $stockLimit = (int)($_POST['stock_limit'] ?? 0);
+                $startTime = str_replace('T', ' ', $_POST['start_time'] ?? '');
+                $endTime = str_replace('T', ' ', $_POST['end_time'] ?? '');
+
+                if ($productId === '' || $salePrice <= 0 || $stockLimit <= 0 || $startTime === '' || $endTime === '' || $endTime <= $startTime) {
+                    $status = 'error';
+                    $message = 'Dữ liệu flash sale chưa hợp lệ!';
+                } else {
+                    $ok = $this->adminModel->createFlashSale([
+                        'product_id' => $productId,
+                        'sale_price' => $salePrice,
+                        'stock_limit' => $stockLimit,
+                        'start_time' => $startTime,
+                        'end_time' => $endTime,
+                        'status' => !empty($_POST['status']) ? 1 : 0,
+                    ]);
+                    header('Location: index.php?url=admin/promo&status=' . ($ok ? 'success' : 'error') . '&message=' . urlencode($ok ? 'Đã tạo flash sale thành công!' : 'Tạo flash sale thất bại!'));
                     exit;
                 }
+            }
 
-                if ($action === 'update_promo') {
-                    if ($promoId === '') {
-                        $status = 'error';
-                        $message = 'Không tìm thấy ID mã giảm giá cần sửa!';
-                    } else {
-                        $ok = $this->adminModel->updatePromo($promoId, $data);
-                        header('Location: index.php?url=admin/promo&status=' . ($ok ? 'success' : 'error') . '&message=' . urlencode($ok ? 'Đã cập nhật mã giảm giá thành công!' : 'Cập nhật mã giảm giá thất bại!'));
+            if ($action === 'create_promo' || $action === 'update_promo') {
+                $promoId = $_POST['promo_id'] ?? '';
+                $code = strtoupper(trim($_POST['code'] ?? ''));
+                $percent = (int)($_POST['percent'] ?? 0);
+                $quantity = (int)($_POST['quantity'] ?? 0);
+                $expiredDate = $_POST['expired_date'] ?? '';
+
+                if (!$this->isValidPromoData($code, $percent, $quantity, $expiredDate, $message)) {
+                    $status = 'error';
+                } elseif ($this->adminModel->promoCodeExists($code, $action === 'update_promo' ? $promoId : null)) {
+                    $status = 'error';
+                    $message = 'Mã giảm giá này đã tồn tại!';
+                } else {
+                    $data = [
+                        'MaCode' => $code,
+                        'PhamTramGiam' => $percent,
+                        'SoLuong' => $quantity,
+                        'NgayHetHan' => $expiredDate
+                    ];
+
+                    if ($action === 'create_promo') {
+                        $ok = $this->adminModel->createPromo($data);
+                        header('Location: index.php?url=admin/promo&status=' . ($ok ? 'success' : 'error') . '&message=' . urlencode($ok ? 'Đã tạo mã giảm giá thành công!' : 'Tạo mã giảm giá thất bại!'));
                         exit;
+                    }
+
+                    if ($action === 'update_promo') {
+                        if ($promoId === '') {
+                            $status = 'error';
+                            $message = 'Không tìm thấy ID mã giảm giá cần sửa!';
+                        } else {
+                            $ok = $this->adminModel->updatePromo($promoId, $data);
+                            header('Location: index.php?url=admin/promo&status=' . ($ok ? 'success' : 'error') . '&message=' . urlencode($ok ? 'Đã cập nhật mã giảm giá thành công!' : 'Cập nhật mã giảm giá thất bại!'));
+                            exit;
+                        }
                     }
                 }
             }
@@ -907,7 +946,10 @@ class AdminController extends Controller
             'status' => $status,
             'message' => $message,
             'promos' => $this->adminModel->getAllPromos(),
-            'editingPromo' => $editingPromo
+            'editingPromo' => $editingPromo,
+            'gameRewards' => $this->adminModel->getGameRewards(),
+            'flashSales' => $this->adminModel->getFlashSales(),
+            'flashProducts' => $this->adminModel->getProductsForFlashSale()
         ]);
     }
 

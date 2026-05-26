@@ -215,7 +215,16 @@ document.addEventListener("DOMContentLoaded", function () {
     if (!variant) return;
 
     if (priceEl) {
-      priceEl.textContent = Number(variant.GiaTien).toLocaleString("vi-VN") + " ₫";
+      const salePrice = Number(variant.GiaSale || 0);
+      const originalPrice = Number(variant.GiaTien || 0);
+
+      if (variant.is_flash_sale && salePrice > 0 && salePrice < originalPrice) {
+        priceEl.innerHTML =
+          `<span class="block text-base text-outline line-through">${originalPrice.toLocaleString("vi-VN")} ₫</span>` +
+          `<span class="text-red-600">${salePrice.toLocaleString("vi-VN")} ₫</span>`;
+      } else {
+        priceEl.textContent = originalPrice.toLocaleString("vi-VN") + " ₫";
+      }
     }
 
     if (variantIdEl) {

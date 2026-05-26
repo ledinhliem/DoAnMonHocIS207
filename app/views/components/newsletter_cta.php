@@ -6,6 +6,7 @@ $newsletterPlaceholder = $newsletterPlaceholder ?? 'Email của bạn...';
 $newsletterButtonText = $newsletterButtonText ?? 'Tham Gia Ngay';
 $newsletterOuterClass = trim($newsletterOuterClass ?? '');
 $newsletterRedirect = $_SERVER['REQUEST_URI'] ?? '?url=';
+$newsletterRedirect = strtok($newsletterRedirect, '#') . '#newsletter';
 $newsletterSuccess = $_SESSION['newsletter_success'] ?? '';
 $newsletterError = $_SESSION['newsletter_error'] ?? '';
 unset($_SESSION['newsletter_success'], $_SESSION['newsletter_error']);
@@ -20,7 +21,7 @@ if (!function_exists('renderNewsletterCta')) {
         string $success = '',
         string $error = ''
     ): void { ?>
-        <section data-newsletter class="rounded-xl overflow-hidden bg-primary p-12 md:p-24 text-center text-white relative">
+        <section id="newsletter" data-newsletter class="rounded-xl overflow-hidden bg-primary p-12 md:p-24 text-center text-white relative">
             <div class="relative z-10 max-w-2xl mx-auto">
                 <h2 class="text-4xl md:text-6xl font-bold font-headline mb-8">
                     <?= htmlspecialchars($title) ?>

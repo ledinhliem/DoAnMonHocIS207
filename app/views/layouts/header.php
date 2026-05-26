@@ -114,10 +114,6 @@ $navItemClass = static function (bool $active, string $mode = 'desktop'): string
         </nav>
 
         <div class="flex items-center justify-end gap-4 sm:gap-6">
-            <a href="index.php?url=product/search" class="material-symbols-outlined text-primary hover:scale-110 transition-transform" aria-label="Tìm kiếm">
-                search
-            </a>
-
             <?php if (isset($_SESSION['user_id'])): ?>
                 <a href="index.php?url=profile" class="flex items-center gap-2 group" aria-label="Tài khoản">
                     <span class="material-symbols-outlined text-primary group-hover:scale-110 transition-transform">

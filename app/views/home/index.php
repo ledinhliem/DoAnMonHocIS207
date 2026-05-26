@@ -78,6 +78,10 @@ if ($minPrice === null) {
 $featuredDetailUrl = $featuredId
     ? BASE_URL . '?url=product/detail&id=' . urlencode($featuredId)
     : BASE_URL . '?url=product';
+
+$featuredFlashSale = $featuredProduct['flash_sale'] ?? null;
+$featuredSalePrice = (float)($featuredProduct['sale_price'] ?? 0);
+$featuredIsFlashSale = !empty($featuredFlashSale) && $featuredSalePrice > 0;
 ?>
 
 <?php
@@ -165,6 +169,44 @@ $kitchenCategory = $categoryMap['Zentro Kitchen'] ?? 'C001';
                     <span class="material-symbols-outlined text-3xl text-primary">verified_user</span>
                     <span class="font-headline font-bold text-sm tracking-widest uppercase">Thương mại công bằng</span>
                 </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="py-12 max-w-7xl mx-auto px-8">
+        <div class="bg-white border border-outline-variant/20 rounded-2xl p-8 flex flex-col lg:flex-row items-start lg:items-center justify-between gap-6 shadow-sm">
+            <div>
+                <p class="text-xs font-bold uppercase tracking-widest text-[#8B5E34] mb-2">Vòng quay xanh</p>
+                <h2 class="text-3xl font-headline font-black text-primary mb-3">Chơi mỗi ngày, nhận voucher mua sắm</h2>
+                <p class="text-on-surface-variant max-w-2xl">Phần thưởng gồm giảm 5%, giảm 10%, miễn phí ship hoặc một lời chúc may mắn cho lần sau.</p>
+
+                <?php if (!empty($_SESSION['success'])): ?>
+                    <p class="mt-4 text-green-700 font-semibold"><?= htmlspecialchars($_SESSION['success']) ?></p>
+                    <?php unset($_SESSION['success']); ?>
+                <?php endif; ?>
+                <?php if (!empty($_SESSION['error'])): ?>
+                    <p class="mt-4 text-red-700 font-semibold"><?= htmlspecialchars($_SESSION['error']) ?></p>
+                    <?php unset($_SESSION['error']); ?>
+                <?php endif; ?>
+            </div>
+
+            <div class="w-full lg:w-auto">
+                <?php if (empty($_SESSION['user_id'])): ?>
+                    <a href="<?= BASE_URL ?>?url=login" class="block text-center px-8 py-4 rounded-xl bg-primary text-white font-bold">Đăng nhập để chơi</a>
+                <?php elseif (!empty($todayPlay)): ?>
+                    <div class="px-6 py-4 rounded-xl bg-surface-container text-primary font-bold text-center">
+                        Hôm nay bạn đã chơi rồi
+                        <?php if (!empty($todayPlay['voucher_code'])): ?>
+                            <br><span class="text-sm">Voucher: <?= htmlspecialchars($todayPlay['voucher_code']) ?></span>
+                        <?php endif; ?>
+                    </div>
+                <?php else: ?>
+                    <button type="button"
+                            data-game-open
+                            class="w-full px-8 py-4 rounded-xl bg-primary text-white font-bold hover:opacity-90 transition">
+                        Mở vòng quay
+                    </button>
+                <?php endif; ?>
             </div>
         </div>
     </section>
@@ -341,9 +383,26 @@ $kitchenCategory = $categoryMap['Zentro Kitchen'] ?? 'C001';
                         Xem chi tiết sản phẩm
                     </a>
 
-                    <div class="text-2xl font-headline font-bold text-primary">
-                        <?= htmlspecialchars($featuredPriceText) ?>
-                    </div>
+                    <?php if ($featuredIsFlashSale): ?>
+                        <div>
+                            <div class="inline-flex items-center gap-2 rounded-full bg-red-600 px-3 py-1 text-xs font-black text-white mb-2">
+                                FLASH SALE
+                            </div>
+                            <div class="text-sm text-on-surface-variant line-through">
+                                <?= htmlspecialchars($featuredPriceText) ?>
+                            </div>
+                            <div class="text-2xl font-headline font-bold text-red-600">
+                                <?= number_format($featuredSalePrice, 0, ',', '.') ?>đ
+                            </div>
+                            <p class="mt-1 text-sm font-bold text-red-600">
+                                Còn <?= (int)($featuredFlashSale['remaining'] ?? 0) ?> suất sale
+                            </p>
+                        </div>
+                    <?php else: ?>
+                        <div class="text-2xl font-headline font-bold text-primary">
+                            <?= htmlspecialchars($featuredPriceText) ?>
+                        </div>
+                    <?php endif; ?>
                 </div>
             </div>
 
@@ -364,6 +423,12 @@ $kitchenCategory = $categoryMap['Zentro Kitchen'] ?? 'C001';
                             <?= $featuredEcoScore ?>/100
                         </span>
                     </div>
+
+                    <?php if ($featuredIsFlashSale): ?>
+                        <div class="absolute top-5 right-5 bg-red-600 text-white px-4 py-2 rounded-full text-xs font-black tracking-wider shadow-sm">
+                            FLASH SALE
+                        </div>
+                    <?php endif; ?>
                 </a>
             </div>
         </div>

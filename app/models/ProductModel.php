@@ -1,7 +1,16 @@
 <?php
+require_once __DIR__ . '/FlashSaleModel.php';
 
 class ProductModel extends Model
 {
+    private ?FlashSaleModel $flashSaleModel = null;
+
+    public function __construct()
+    {
+        parent::__construct();
+        $this->flashSaleModel = new FlashSaleModel();
+    }
+
     public function getAll(array $filters = []): array
     {
         [$where, $params] = $this->buildProductFilters($filters);
@@ -62,6 +71,8 @@ class ProductModel extends Model
             $product['image'] = $this->formatImageUrl($product['image'] ?? '');
         }
 
+        $this->attachFlashSales($products);
+
         return $products;
     }
 
@@ -85,6 +96,12 @@ class ProductModel extends Model
         ");
         $stmt->execute([$id]);
         $product = $stmt->fetch(PDO::FETCH_ASSOC);
+
+        if ($product) {
+            $singleProduct = [$product];
+            $this->attachFlashSales($singleProduct);
+            $product = $singleProduct[0];
+        }
 
         return $product ?: null;
     }
@@ -116,7 +133,22 @@ class ProductModel extends Model
         ");
         $stmt->execute([$productId]);
 
-        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+        $variants = $stmt->fetchAll(PDO::FETCH_ASSOC);
+        foreach ($variants as &$variant) {
+            $sale = $this->flashSaleModel?->getActiveSaleForVariant(
+                (string)($variant['MaSanPham'] ?? ''),
+                (string)($variant['MaBienThe'] ?? '')
+            );
+
+            if ($sale) {
+                $variant['flash_sale'] = $sale;
+                $variant['is_flash_sale'] = true;
+                $variant['GiaGoc'] = (float)($variant['GiaTien'] ?? 0);
+                $variant['GiaSale'] = (float)$sale['sale_price'];
+            }
+        }
+
+        return $variants;
     }
 
     public function getReviews(string $productId): array
@@ -275,6 +307,7 @@ class ProductModel extends Model
         foreach ($suggestions as &$item) {
             $item['image'] = $this->formatImageUrl($item['image'] ?? '');
         }
+        $this->attachFlashSales($suggestions);
         return $suggestions;
     }
 
@@ -334,6 +367,31 @@ class ProductModel extends Model
     private function formatImageUrl(string $path): string
     {
         return product_image_url($path);
+    }
+
+    private function attachFlashSales(array &$products): void
+    {
+        if (empty($products)) {
+            return;
+        }
+
+        $productIds = array_map(
+            fn($product) => $product['MaSanPham'] ?? $product['id'] ?? '',
+            $products
+        );
+        $sales = $this->flashSaleModel?->getActiveSalesForProducts($productIds) ?? [];
+
+        foreach ($products as &$product) {
+            $productId = $product['MaSanPham'] ?? $product['id'] ?? '';
+            if ($productId !== '' && isset($sales[$productId])) {
+                $sale = $sales[$productId];
+                $product['flash_sale'] = $sale;
+                $product['is_flash_sale'] = true;
+                $product['original_price'] = (float)($product['GiaTien'] ?? $product['price'] ?? 0);
+                $product['sale_price'] = (float)$sale['sale_price'];
+                $product['GiaSale'] = (float)$sale['sale_price'];
+            }
+        }
     }
 
     private function buildProductFilters(array $filters): array

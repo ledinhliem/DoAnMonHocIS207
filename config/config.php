@@ -25,6 +25,14 @@ if (!defined('SMTP_PASSWORD')) {
     define('SMTP_PASSWORD', '');
 }
 
+if (!defined('SEPAY_MERCHANT_ID')) {
+    define('SEPAY_MERCHANT_ID', '');
+}
+
+if (!defined('SEPAY_SECRET_KEY')) {
+    define('SEPAY_SECRET_KEY', '');
+}
+
 define('SMTP_FROM_EMAIL', 'zentroshop359@gmail.com');
 define('SMTP_FROM_NAME', 'Zentro');
 

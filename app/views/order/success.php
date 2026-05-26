@@ -3,11 +3,13 @@
 <main class="max-w-4xl mx-auto px-8 py-16">
     <div class="bg-white rounded-3xl border border-outline-variant/30 p-10 text-center">
         <div class="w-20 h-20 rounded-full bg-green-100 mx-auto flex items-center justify-center mb-6">
-            <span class="material-symbols-outlined text-green-700 text-4xl">check</span>
+            <span class="material-symbols-outlined text-green-700 text-4xl">
+                <?= !empty($order) ? 'check' : 'info' ?>
+            </span>
         </div>
 
         <h1 class="text-4xl font-black font-headline text-primary mb-4">
-            Đặt hàng thành công
+            <?= !empty($order) ? 'Đặt hàng thành công' : 'Chưa có đơn hàng được xác nhận' ?>
         </h1>
 
         <?php if (!empty($success)): ?>
@@ -50,7 +52,7 @@
             </div>
         <?php else: ?>
             <p class="text-on-surface-variant mb-8">
-                Không tìm thấy thông tin đơn hàng mới nhất.
+                Không tìm thấy thông tin đơn hàng mới nhất. Nếu bạn vừa thanh toán qua cổng thanh toán, vui lòng chờ hệ thống xác nhận giao dịch.
             </p>
         <?php endif; ?>
 

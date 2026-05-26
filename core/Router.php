@@ -14,7 +14,7 @@ class Router
             return;
         }
 
-        if (preg_match('#^admin/promo/(create|edit/.+|delete/.+)$#', $url)) {
+        if (preg_match('#^admin/promo/(create|edit/.+|delete/.+|flash-delete/.+)$#', $url)) {
             require_once __DIR__ . '/../app/controllers/AdminController.php';
             $controller = new AdminController();
             $controller->promo();
@@ -72,6 +72,7 @@ class Router
             'admin/promo/create' => 'promo',
             'admin/promo/edit' => 'promo',
             'admin/promo/delete' => 'promo',
+            'admin/promo/flash-delete' => 'promo',
 
             'admin/settings' => 'dashboard',
         ];
@@ -240,6 +241,24 @@ class Router
                 require_once __DIR__ . '/../app/controllers/CartController.php';
                 $controller = new CartController();
                 $controller->remove();
+                break;
+
+            case 'game/play':
+                require_once __DIR__ . '/../app/controllers/GameController.php';
+                $controller = new GameController();
+                $controller->play();
+                break;
+
+            case 'game/spin':
+                require_once __DIR__ . '/../app/controllers/GameController.php';
+                $controller = new GameController();
+                $controller->spin();
+                break;
+
+            case 'game/rewards':
+                require_once __DIR__ . '/../app/controllers/GameController.php';
+                $controller = new GameController();
+                $controller->rewards();
                 break;
 
             case 'checkout':

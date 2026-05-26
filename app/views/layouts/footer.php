@@ -151,6 +151,13 @@
 </footer>
 
 
+<?php if (!empty($_SESSION['game_result_popup'])): ?>
+    <script type="application/json" id="game-result-popup-data">
+        <?= json_encode($_SESSION['game_result_popup'], JSON_UNESCAPED_UNICODE | JSON_HEX_TAG | JSON_HEX_APOS | JSON_HEX_QUOT | JSON_HEX_AMP) ?>
+    </script>
+    <?php unset($_SESSION['game_result_popup']); ?>
+<?php endif; ?>
+
 <script src="public/assets/js/auth.js"></script>
 <script src="public/assets/js/order-notification.js"></script>
-
+<script src="public/assets/js/gamification.js"></script>

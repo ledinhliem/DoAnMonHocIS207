@@ -1,10 +1,14 @@
 <?php
+require_once __DIR__ . '/FlashSaleModel.php';
 
 class CartModel extends Model
 {
+    private ?FlashSaleModel $flashSaleModel = null;
+
     public function __construct()
     {
         parent::__construct();
+        $this->flashSaleModel = new FlashSaleModel();
 
         if (!isset($_SESSION['cart'])) {
             $_SESSION['cart'] = [];
@@ -58,12 +62,24 @@ class CartModel extends Model
             ];
         }
 
+        $originalPrice = (float)$variant['GiaTien'];
+        $price = $originalPrice;
+        $flashSale = $this->flashSaleModel?->getActiveSaleForVariant($variant['MaSanPham'], $variant['MaBienThe']);
+
+        if ($flashSale && $flashSale['sale_price'] > 0 && $flashSale['sale_price'] < $originalPrice) {
+            $price = (float)$flashSale['sale_price'];
+        }
+
         $_SESSION['cart'][$maBienThe] = [
             'MaSanPham' => $variant['MaSanPham'],
             'MaBienThe' => $variant['MaBienThe'],
             'name' => $variant['TenSanPham'],
             'variant' => trim(($variant['KichThuoc'] ?? '') . ' ' . ($variant['MauSac'] ?? '')),
-            'price' => (float)$variant['GiaTien'],
+            'price' => $price,
+            'original_price' => $originalPrice,
+            'is_flash_sale' => !empty($flashSale),
+            'flash_sale_id' => $flashSale['id'] ?? null,
+            'flash_sale_end' => $flashSale['end_time'] ?? null,
             'stock' => $stock,
             'image' => !empty($variant['HinhAnh'])
                 ? BASE_URL . 'public/images/Products/' . basename($variant['HinhAnh'])

@@ -1,10 +1,17 @@
 <?php
+require_once __DIR__ . '/FlashSaleModel.php';
+require_once __DIR__ . '/VoucherModel.php';
 
 class OrderModel extends Model
 {
+    private ?FlashSaleModel $flashSaleModel = null;
+    private ?VoucherModel $voucherModel = null;
+
     public function __construct()
     {
         parent::__construct();
+        $this->flashSaleModel = new FlashSaleModel();
+        $this->voucherModel = new VoucherModel();
     }
 
     public function getOrdersByUserId($userId)
@@ -106,6 +113,17 @@ class OrderModel extends Model
             return ['valid' => false, 'message' => 'Mã đã hết hạn.', 'discount' => 0, 'code' => $promoCode];
         }
 
+        if ($promoCode === 'FREESHIP') {
+            return [
+                'valid' => true,
+                'message' => 'Áp dụng mã miễn phí vận chuyển thành công.',
+                'discount' => 0,
+                'code' => $promoCode,
+                'percent' => 0,
+                'free_shipping' => true,
+            ];
+        }
+
         $maDanhMucYeuCau = $promo['MaDanhMuc']; // Đây là giá trị lấy từ DB (NULL hoặc C001, C003...)
         $subtotalApDung = 0;
         $hasValidProduct = false;
@@ -155,6 +173,7 @@ class OrderModel extends Model
             'discount' => $discount,
             'code' => $promoCode,
             'percent' => $percent,
+            'free_shipping' => false,
         ];
     }
 
@@ -369,6 +388,14 @@ class OrderModel extends Model
                 if ($updateStock->rowCount() !== 1) {
                     throw new RuntimeException('Ton kho khong du cho bien the ' . $maBienThe . '.');
                 }
+
+                $flashSaleId = (int)($item['flash_sale_id'] ?? 0);
+                if ($flashSaleId > 0) {
+                    $updatedFlashSale = $this->flashSaleModel?->incrementSoldCount($flashSaleId, $quantity) ?? false;
+                    if (!$updatedFlashSale) {
+                        throw new RuntimeException('Flash sale da het han hoac khong du suat cho bien the ' . $maBienThe . '.');
+                    }
+                }
             }
 
             if ($promoCode) {
@@ -378,6 +405,7 @@ class OrderModel extends Model
                     WHERE MaCode = ? AND SoLuong > 0
                 ");
                 $promoStmt->execute([$promoCode]);
+                $this->voucherModel?->markUsed((string)($_SESSION['user_id'] ?? ''), (string)$promoCode);
             }
 
             $this->db->commit();

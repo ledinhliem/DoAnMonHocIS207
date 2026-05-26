@@ -26,6 +26,9 @@ $priceDisplay = ($minPrice === $maxPrice)
     : number_format($minPrice, 0, ',', '.') . ' – ' . number_format($maxPrice, 0, ',', '.') . ' ₫';
 
 $defaultVariant = $variants[0] ?? null;
+$defaultSale = $defaultVariant['flash_sale'] ?? ($product['flash_sale'] ?? null);
+$isFlashSale = !empty($defaultSale);
+$salePrice = (float)($defaultVariant['GiaSale'] ?? $product['sale_price'] ?? 0);
 
 // ── Average rating ───────────────────────────────────────────────────────────
 $avgRating = 0;
@@ -145,8 +148,20 @@ if (!empty($reviews)) {
 
       <!-- Price display (updates via JS when variant selected) -->
       <p id="display-price" class="text-2xl md:text-3xl font-bold text-on-surface">
-        <?= $priceDisplay ?>
+        <?php if ($isFlashSale && $salePrice > 0): ?>
+          <span class="block text-base text-outline line-through"><?= $priceDisplay ?></span>
+          <span class="text-red-600"><?= number_format($salePrice, 0, ',', '.') ?> ₫</span>
+        <?php else: ?>
+          <?= $priceDisplay ?>
+        <?php endif; ?>
       </p>
+
+      <?php if ($isFlashSale): ?>
+        <div class="rounded-xl border border-red-200 bg-red-50 px-5 py-4 text-red-700 font-bold">
+          FLASH SALE còn <?= (int)($defaultSale['remaining'] ?? 0) ?> suất ·
+          sale
+        </div>
+      <?php endif; ?>
 
       <!-- ── VARIANT SELECTION FORM ──────────────────────────────────── -->
       <form id="cart-form" action="<?= BASE_URL ?>?url=cart/add" method="POST" class="space-y-6">
@@ -392,5 +407,6 @@ window.hasColors = <?= json_encode(!empty($colors)) ?>;
 window.hasSizes  = <?= json_encode(!empty($sizes)) ?>;
 </script>
 <script src="<?= BASE_URL ?>public/assets/js/product.js"></script>
+<script src="<?= BASE_URL ?>public/assets/js/flash-sale.js"></script>
 
 <?php include __DIR__ . '/../layouts/footer.php'; ?>

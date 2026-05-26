@@ -202,10 +202,9 @@ private function getProductsByIdsFromStore(array $ids): array
             exit;
         }
 
-        $mailSent = false;
+        $mailSent = $this->sendNewsletterConfirmation($email);
 
         if ($result['status'] === 'created') {
-            $mailSent = $this->sendNewsletterConfirmation($email);
             $this->sendNewsletterAdminNotice($email);
         }
 
@@ -214,6 +213,12 @@ private function getProductsByIdsFromStore(array $ids): array
             : ($mailSent
                 ? 'Đăng ký thành công. Vui lòng kiểm tra email xác nhận.'
                 : 'Đăng ký thành công. Email đã được lưu, nhưng máy chủ local chưa gửi được email xác nhận.');
+
+        if ($result['status'] === 'exists') {
+            $message = $mailSent
+                ? 'Email này đã có trong danh sách. Zentro đã gửi lại email xác nhận cho bạn.'
+                : 'Email này đã có trong danh sách, nhưng máy chủ local chưa gửi lại được email xác nhận.';
+        }
 
         $_SESSION['success'] = $message;
         $_SESSION['newsletter_success'] = $message;

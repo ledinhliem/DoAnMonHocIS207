@@ -1,12 +1,16 @@
 <?php
 
 require_once __DIR__ . '/../models/ProductModel.php';
+require_once __DIR__ . '/../models/GameModel.php';
+require_once __DIR__ . '/../models/VoucherModel.php';
 
 class HomeController extends Controller
 {
     public function index()
     {
         $productModel = new ProductModel();
+        $gameModel = new GameModel();
+        $voucherModel = new VoucherModel();
 
         // Lấy danh mục để các link ở Home lọc đúng danh mục sản phẩm
         $categories = $productModel->getCategories();
@@ -23,6 +27,12 @@ class HomeController extends Controller
 
         $featuredImages = [];
         $featuredVariants = [];
+        $todayPlay = !empty($_SESSION['user_id'])
+            ? $gameModel->getTodayPlay((string)$_SESSION['user_id'])
+            : null;
+        $userVouchers = !empty($_SESSION['user_id'])
+            ? $voucherModel->getUserVouchers((string)$_SESSION['user_id'])
+            : [];
 
         if ($featuredProduct && !empty($featuredProduct['MaSanPham'])) {
             $featuredImages = $productModel->getImages($featuredProduct['MaSanPham']);
@@ -35,6 +45,8 @@ class HomeController extends Controller
             'featuredProduct' => $featuredProduct,
             'featuredImages' => $featuredImages,
             'featuredVariants' => $featuredVariants,
+            'todayPlay' => $todayPlay,
+            'userVouchers' => $userVouchers,
         ]);
     }
 }

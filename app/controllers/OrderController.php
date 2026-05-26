@@ -2,6 +2,7 @@
 require_once __DIR__ . '/../models/CartModel.php';
 require_once __DIR__ . '/../models/OrderModel.php';
 require_once __DIR__ . '/../models/UserModel.php';
+require_once __DIR__ . '/../models/VoucherModel.php';
 use SePay\SePayClient;
 use SePay\Builders\CheckoutBuilder;
 
@@ -10,12 +11,14 @@ class OrderController extends Controller
     private $cartModel;
     private $orderModel;
     private $userModel;
+    private $voucherModel;
 
     public function __construct()
     {
         $this->cartModel = new CartModel();
         $this->orderModel = new OrderModel();
         $this->userModel = new UserModel();
+        $this->voucherModel = new VoucherModel();
     }
 
     private function requireLogin()
@@ -121,6 +124,9 @@ class OrderController extends Controller
         $discount = $_SESSION['promo']['discount'] ?? 0;
         $deliveryMethod = $_SESSION['checkout_data']['delivery_method'] ?? 'standard';
         $shipping = $this->orderModel->getShippingFee($deliveryMethod);
+        if (!empty($_SESSION['promo']['free_shipping'])) {
+            $shipping = 0;
+        }
         $total = max(0, $subtotal - $discount + $shipping);
 
         return [
@@ -187,62 +193,78 @@ class OrderController extends Controller
     }
 
     public function checkout()
-    {
-        $this->requireLogin();
+{
+    $this->requireLogin();
 
-        // 🌟 HỨNG DANH SÁCH TÍCH CHỌN SẢN PHẨM TỪ GIỎ HÀNG GỬI SANG QUA POST
-        if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['selected_items'])) {
-            $_SESSION['selected_cart_keys'] = $_POST['selected_items'];
-        }
+    // Hứng danh sách sản phẩm được chọn từ giỏ hàng.
+    // Sau khi nhận POST thì redirect sang GET để tránh lỗi Confirm Form Resubmission.
+    if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['selected_items'])) {
+        $_SESSION['selected_cart_keys'] = $_POST['selected_items'];
 
-        $items = $this->getFilteredCartItems();
-
-        if (empty($items)) {
-            $_SESSION['error'] = 'Vui lòng chọn ít nhất một sản phẩm để thanh toán.';
-            header('Location: ?url=cart');
-            exit;
-        }
-
-        //Lấy thông tin user từ dtb
-        $userId = $_SESSION['user_id'];
-        $user = $this->userModel->getUserInfo($userId);
-
-        $fullAddress = '';
-        if (!empty($user['SoNha_Duong'])) {
-            $addressParts = array_filter([
-                $user['SoNha_Duong'] ?? '',
-                $user['PhuongXa'] ?? '',
-                $user['QuanHuyen'] ?? '',
-                $user['TinhThanh'] ?? ''
-            ]);
-            $fullAddress = implode(', ', $addressParts);
-        }
-
-        $checkoutData = $_SESSION['checkout_data'] ?? [
-            'full_name' => $user['HoTen'] ?? '',
-            'email' => $user['Email'] ?? '',
-            'phone' => $user['SoDienThoai'] ?? '',
-            'address' => $fullAddress,
-            'delivery_method' => 'standard',
-            'payment_method' => 'card',
-        ];
-
-        // Lấy danh sách Voucher từ DB để View render "Ví Voucher"
-        $availablePromos = $this->orderModel->getAvailablePromos();
-
-        $this->view('order/checkout', [
-            'title' => 'Thanh toán',
-            'items' => $items,
-            'summary' => $this->getCheckoutSummary($items),
-            'checkoutData' => $checkoutData,
-            'availablePromos' => $availablePromos,
-            'errors' => $_SESSION['checkout_errors'] ?? [],
-            'success' => $_SESSION['success'] ?? '',
-            'error' => $_SESSION['error'] ?? '',
-        ]);
-
-        unset($_SESSION['checkout_errors'], $_SESSION['success'], $_SESSION['error']);
+        header('Location: ?url=order/checkout');
+        exit;
     }
+
+    $items = $this->getFilteredCartItems();
+
+    if (empty($items)) {
+        $_SESSION['error'] = 'Vui lòng chọn ít nhất một sản phẩm để thanh toán.';
+        header('Location: ?url=cart');
+        exit;
+    }
+
+    // Lấy thông tin user từ database
+    $userId = $_SESSION['user_id'];
+    $user = $this->userModel->getUserInfo($userId);
+
+    $fullAddress = '';
+    if (!empty($user['SoNha_Duong'])) {
+        $addressParts = array_filter([
+            $user['SoNha_Duong'] ?? '',
+            $user['PhuongXa'] ?? '',
+            $user['QuanHuyen'] ?? '',
+            $user['TinhThanh'] ?? ''
+        ]);
+        $fullAddress = implode(', ', $addressParts);
+    }
+
+    $checkoutData = $_SESSION['checkout_data'] ?? [
+        'full_name' => $user['HoTen'] ?? '',
+        'email' => $user['Email'] ?? '',
+        'phone' => $user['SoDienThoai'] ?? '',
+        'address' => $fullAddress,
+        'delivery_method' => 'standard',
+        'payment_method' => 'card',
+    ];
+
+    // Lấy danh sách Voucher từ DB để View render "Ví Voucher"
+    $availablePromos = $this->orderModel->getAvailablePromos();
+    $userVouchers = $this->voucherModel->getUserVouchers((string)($_SESSION['user_id'] ?? ''));
+    $gameOnlyCodes = ['GAME5', 'GAME10', 'FREESHIP'];
+    $availablePromos = array_values(array_filter($availablePromos, function ($promo) use ($gameOnlyCodes) {
+        return !in_array((string)($promo['MaGiamGia'] ?? ''), $gameOnlyCodes, true);
+    }));
+
+    if (!empty($userVouchers)) {
+        $availablePromos = array_merge($userVouchers, $availablePromos);
+    }
+
+    $availablePromos = $this->uniquePromosByCode($availablePromos);
+
+    $this->view('order/checkout', [
+        'title' => 'Thanh toán',
+        'items' => $items,
+        'summary' => $this->getCheckoutSummary($items),
+        'checkoutData' => $checkoutData,
+        'availablePromos' => $availablePromos,
+        'userVouchers' => $userVouchers,
+        'errors' => $_SESSION['checkout_errors'] ?? [],
+        'success' => $_SESSION['success'] ?? '',
+        'error' => $_SESSION['error'] ?? '',
+    ]);
+
+    unset($_SESSION['checkout_errors'], $_SESSION['success'], $_SESSION['error']);
+}
 
     // --- 2. HÀM ÁP MÃ GIẢM GIÁ: Đã fix Voucher thông minh và Hủy mã ---
     public function applyPromo()
@@ -266,6 +288,14 @@ class OrderController extends Controller
 
         // Truyền $this->cartModel->getItems() để check Danh Mục
         $items = $this->getFilteredCartItems();
+        if ($this->isGameOnlyPromo($promoCode) && !$this->userOwnsVoucher($promoCode)) {
+            unset($_SESSION['promo']);
+            $_SESSION['error'] = 'Mã này chỉ dùng khi bạn trúng từ vòng quay xanh.';
+            unset($_SESSION['success']);
+            header('Location: ?url=checkout');
+            exit;
+        }
+
         $result = $this->orderModel->calculateDiscount(
             $items,
             $promoCode
@@ -283,6 +313,43 @@ class OrderController extends Controller
 
         header('Location: ?url=checkout');
         exit;
+    }
+
+    private function isGameOnlyPromo(string $code): bool
+    {
+        return in_array(strtoupper(trim($code)), ['GAME5', 'GAME10', 'FREESHIP'], true);
+    }
+
+    private function userOwnsVoucher(string $code): bool
+    {
+        $code = strtoupper(trim($code));
+        $userVouchers = $this->voucherModel->getUserVouchers((string)($_SESSION['user_id'] ?? ''));
+
+        foreach ($userVouchers as $voucher) {
+            if (($voucher['MaGiamGia'] ?? '') === $code) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    private function uniquePromosByCode(array $promos): array
+    {
+        $seen = [];
+        $unique = [];
+
+        foreach ($promos as $promo) {
+            $code = (string)($promo['MaGiamGia'] ?? '');
+            if ($code === '' || isset($seen[$code])) {
+                continue;
+            }
+
+            $seen[$code] = true;
+            $unique[] = $promo;
+        }
+
+        return $unique;
     }
 
     public function payment()
@@ -397,7 +464,14 @@ class OrderController extends Controller
             $this->completeOrder('Transfer', ['transfer_code' => $orderCode]);
         }
 
-        if (!class_exists(SePayClient::class) || !class_exists(CheckoutBuilder::class)) {
+        if (
+            !class_exists(SePayClient::class) ||
+            !class_exists(CheckoutBuilder::class) ||
+            !defined('SEPAY_MERCHANT_ID') ||
+            !defined('SEPAY_SECRET_KEY') ||
+            SEPAY_MERCHANT_ID === '' ||
+            SEPAY_SECRET_KEY === ''
+        ) {
             $this->view('order/transfer', [
                 'title' => 'Chuyển khoản',
                 'summary' => $summary,
@@ -409,8 +483,8 @@ class OrderController extends Controller
         }
 
         // 1. Khởi tạo SePay Client (Cần lấy 2 tham số này trên my.sepay.vn)
-        $merchantId = "SP-LIVE-NP29465A";
-        $secretKey = "spsk_live_pkMy2rEhLV7wpNwVXiBMiSSsrZUHmkra";
+        $merchantId = SEPAY_MERCHANT_ID;
+        $secretKey = SEPAY_SECRET_KEY;
         
         $sepayClient = new SePayClient(
             $merchantId, 
@@ -475,12 +549,6 @@ class OrderController extends Controller
 
     public function success()
     {
-        if (!empty($_SESSION['pending_transfer_order_code']) && !empty($this->getFilteredCartItems())) {
-            $this->completeOrder('Transfer', [
-                'transfer_code' => $_SESSION['pending_transfer_order_code']
-            ]);
-        }
-
         $orderId = $_SESSION['latest_order_id'] ?? '';
         $userId = $_SESSION['user_id'] ?? null;
         $order = ($orderId !== '' && $userId)

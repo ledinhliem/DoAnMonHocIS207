@@ -1018,6 +1018,112 @@ class AdminModel extends Model
         return $stmt->fetch(PDO::FETCH_ASSOC);
     }
 
+    public function getGameRewards()
+    {
+        try {
+            $stmt = $this->db->prepare("
+                SELECT id, reward_key, label, voucher_code, weight, sort_order, status
+                FROM game_rewards
+                ORDER BY sort_order ASC, id ASC
+            ");
+            $stmt->execute();
+            return $stmt->fetchAll(PDO::FETCH_ASSOC);
+        } catch (Throwable $e) {
+            return [];
+        }
+    }
+
+    public function updateGameRewards(array $rewards): bool
+    {
+        try {
+            $this->db->beginTransaction();
+            $stmt = $this->db->prepare("
+                UPDATE game_rewards
+                SET label = ?, voucher_code = ?, weight = ?, status = ?
+                WHERE id = ?
+            ");
+
+            foreach ($rewards as $reward) {
+                $stmt->execute([
+                    trim((string)($reward['label'] ?? '')),
+                    trim((string)($reward['voucher_code'] ?? '')) ?: null,
+                    max(1, (int)($reward['weight'] ?? 1)),
+                    !empty($reward['status']) ? 1 : 0,
+                    (int)($reward['id'] ?? 0),
+                ]);
+            }
+
+            return $this->db->commit();
+        } catch (Throwable $e) {
+            if ($this->db->inTransaction()) {
+                $this->db->rollBack();
+            }
+            return false;
+        }
+    }
+
+    public function getFlashSales()
+    {
+        try {
+            $stmt = $this->db->prepare("
+                SELECT fs.*, sp.TenSanPham
+                FROM flash_sales fs
+                LEFT JOIN sanpham sp ON sp.MaSanPham = fs.product_id
+                ORDER BY fs.created_at DESC, fs.id DESC
+            ");
+            $stmt->execute();
+            return $stmt->fetchAll(PDO::FETCH_ASSOC);
+        } catch (Throwable $e) {
+            return [];
+        }
+    }
+
+    public function getProductsForFlashSale()
+    {
+        try {
+            $stmt = $this->db->prepare("
+                SELECT MaSanPham, TenSanPham
+                FROM sanpham
+                ORDER BY TenSanPham ASC
+            ");
+            $stmt->execute();
+            return $stmt->fetchAll(PDO::FETCH_ASSOC);
+        } catch (Throwable $e) {
+            return [];
+        }
+    }
+
+    public function createFlashSale(array $data): bool
+    {
+        try {
+            $stmt = $this->db->prepare("
+                INSERT INTO flash_sales
+                (product_id, variant_id, sale_price, start_time, end_time, stock_limit, sold_count, status)
+                VALUES (?, NULL, ?, ?, ?, ?, 0, ?)
+            ");
+            return $stmt->execute([
+                $data['product_id'],
+                $data['sale_price'],
+                $data['start_time'],
+                $data['end_time'],
+                $data['stock_limit'],
+                $data['status'],
+            ]);
+        } catch (Throwable $e) {
+            return false;
+        }
+    }
+
+    public function deleteFlashSale($id): bool
+    {
+        try {
+            $stmt = $this->db->prepare("DELETE FROM flash_sales WHERE id = ?");
+            return $stmt->execute([(int)$id]);
+        } catch (Throwable $e) {
+            return false;
+        }
+    }
+
     /* =========================================================
        HELPERS
        ========================================================= */

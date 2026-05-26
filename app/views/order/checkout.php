@@ -55,6 +55,12 @@ $hasFullInfo = (!empty($checkoutData['full_name']) && !empty($checkoutData['phon
                     </div>
                 <?php endif; ?>
 
+                <?php if (empty($availablePromos)): ?>
+                    <div class="mb-5 p-4 bg-yellow-50 rounded-xl border border-yellow-200 text-yellow-800">
+                        Chưa có voucher phù hợp. Bạn có thể quay lại giỏ hàng hoặc trang chủ để chơi game nhận mã.
+                    </div>
+                <?php endif; ?>
+
                 <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                     <?php 
                     $appliedCode = $summary['promo']['code'] ?? '';
@@ -62,6 +68,9 @@ $hasFullInfo = (!empty($checkoutData['full_name']) && !empty($checkoutData['phon
                         foreach($availablePromos as $p): 
                             $code = $p['MaGiamGia'] ?? '';
                             $desc = $p['MoTa'] ?? 'Mã giảm giá áp dụng';
+                            if ($code === 'FREESHIP') {
+                                $desc = 'Miễn phí vận chuyển';
+                            }
                             $exp = isset($p['NgayHetHan']) ? date('d/m/Y', strtotime($p['NgayHetHan'])) : '';
                             $isApplied = ($appliedCode === $code);
                     ?>
@@ -266,6 +275,7 @@ $hasFullInfo = (!empty($checkoutData['full_name']) && !empty($checkoutData['phon
                         $name = $item['name'] ?? 'Sản phẩm';
                         $variant = $item['variant'] ?? '';
                         $price = (float)($item['price'] ?? 0);
+                        $isFlashSale = !empty($item['is_flash_sale']);
                         $quantity = (int)($item['quantity'] ?? 1);
                     ?>
 
@@ -300,7 +310,7 @@ $hasFullInfo = (!empty($checkoutData['full_name']) && !empty($checkoutData['phon
 
                 <div class="flex justify-between">
                     <span>Phí vận chuyển</span>
-                    <span data-checkout-shipping><?= number_format($summary['shipping'] ?? 0, 0, ',', '.') ?>₫</span>
+                    <span data-checkout-shipping data-free-shipping="<?= !empty($summary['promo']['free_shipping']) ? '1' : '0' ?>"><?= number_format($summary['shipping'] ?? 0, 0, ',', '.') ?>₫</span>
                 </div>
 
                 <div class="flex justify-between font-bold text-primary text-xl pt-4 border-t border-outline-variant/30 mt-2">

@@ -1125,6 +1125,89 @@ ALTER TABLE `yeuthich`
   ADD CONSTRAINT `yeuthich_ibfk_2` FOREIGN KEY (`MaSanPham`) REFERENCES `sanpham` (`MaSanPham`) ON DELETE CASCADE;
 COMMIT;
 
+-- --------------------------------------------------------
+-- Marketing features: Gamification vouchers + Flash Sale
+-- Import section này sau khi cập nhật code để bật tính năng demo.
+
+CREATE TABLE IF NOT EXISTS `game_plays` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `user_id` varchar(20) NOT NULL,
+  `play_date` date NOT NULL,
+  `reward_type` varchar(30) NOT NULL,
+  `voucher_code` varchar(20) DEFAULT NULL,
+  `played_at` datetime DEFAULT current_timestamp(),
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `uniq_user_play_date` (`user_id`, `play_date`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+CREATE TABLE IF NOT EXISTS `user_vouchers` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `user_id` varchar(20) NOT NULL,
+  `voucher_code` varchar(20) NOT NULL,
+  `source` varchar(30) DEFAULT 'game',
+  `status` varchar(20) DEFAULT 'unused',
+  `created_at` datetime DEFAULT current_timestamp(),
+  `used_at` datetime DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `uniq_user_voucher` (`user_id`, `voucher_code`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+CREATE TABLE IF NOT EXISTS `flash_sales` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `product_id` varchar(20) NOT NULL,
+  `variant_id` varchar(20) DEFAULT NULL,
+  `sale_price` decimal(15,2) NOT NULL,
+  `start_time` datetime NOT NULL,
+  `end_time` datetime NOT NULL,
+  `stock_limit` int(11) NOT NULL DEFAULT 0,
+  `sold_count` int(11) NOT NULL DEFAULT 0,
+  `status` tinyint(1) NOT NULL DEFAULT 1,
+  `created_at` datetime DEFAULT current_timestamp(),
+  PRIMARY KEY (`id`),
+  KEY `idx_flash_product` (`product_id`),
+  KEY `idx_flash_variant` (`variant_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+CREATE TABLE IF NOT EXISTS `game_rewards` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `reward_key` varchar(40) NOT NULL,
+  `label` varchar(100) NOT NULL,
+  `voucher_code` varchar(20) DEFAULT NULL,
+  `weight` int(11) NOT NULL DEFAULT 1,
+  `sort_order` int(11) NOT NULL DEFAULT 0,
+  `status` tinyint(1) NOT NULL DEFAULT 1,
+  `updated_at` datetime DEFAULT current_timestamp() ON UPDATE current_timestamp(),
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `uniq_reward_key` (`reward_key`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+INSERT IGNORE INTO `magiamgia` (`MaCode`, `PhamTramGiam`, `SoLuong`, `NgayHetHan`) VALUES
+('GAME5', 5, 100, '2026-12-31'),
+('GAME10', 10, 100, '2026-12-31'),
+('FREESHIP', 0, 100, '2026-12-31');
+
+INSERT IGNORE INTO `game_rewards`
+(`reward_key`, `label`, `voucher_code`, `weight`, `sort_order`, `status`) VALUES
+('none_1', 'Hụt nhẹ rồi nè 🍃', NULL, 12, 1, 1),
+('percent_5_a', 'Mai săn deal tiếp nha 🌱', NULL, 8, 2, 1),
+('none_2', 'Lộc xanh 5% 🎁', 'GAME5', 22, 3, 1),
+('percent_10_a', 'Deal nhỏ xinh 5% ✨', 'GAME5', 18, 4, 1),
+('free_ship_a', 'Quà xanh hôm nay 🍀', 'GAME5', 15, 5, 1),
+('none_3', 'Mã yêu thương 5% 💚', 'GAME5', 10, 6, 1),
+('percent_5_b', 'Ship 0đ bất ngờ 🚚', 'FREESHIP', 5, 7, 1),
+('none_4', 'Deal ngon 10% 🔥', 'GAME10', 5, 8, 1),
+('percent_10_b', 'Jackpot xanh 10% 🏆', 'GAME10', 3, 9, 1),
+('free_ship_b', 'Freeship may mắn 🎉', 'FREESHIP', 2, 10, 1);
+
+INSERT IGNORE INTO `flash_sales`
+(`id`, `product_id`, `variant_id`, `sale_price`, `start_time`, `end_time`, `stock_limit`, `sold_count`, `status`) VALUES
+(1, 'P020', NULL, 1290000.00, '2026-05-01 00:00:00', '2026-12-31 23:59:59', 20, 0, 1),
+(2, 'P006', NULL, 269000.00, '2026-05-01 00:00:00', '2026-12-31 23:59:59', 30, 0, 1),
+(3, 'P001', NULL, 99000.00, '2026-05-01 00:00:00', '2026-12-31 23:59:59', 40, 0, 1),
+(4, 'P005', NULL, 699000.00, '2026-05-01 00:00:00', '2026-12-31 23:59:59', 15, 0, 1),
+(5, 'P021', NULL, 199000.00, '2026-05-01 00:00:00', '2026-12-31 23:59:59', 35, 0, 1),
+(6, 'P025', NULL, 249000.00, '2026-05-01 00:00:00', '2026-12-31 23:59:59', 25, 0, 1);
+
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
 /*!40101 SET CHARACTER_SET_RESULTS=@OLD_CHARACTER_SET_RESULTS */;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;

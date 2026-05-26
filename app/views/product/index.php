@@ -254,6 +254,9 @@ function product_page_url(int $page, array $filters): string
                             $name = $product['TenSanPham'] ?? $product['name'] ?? 'Sản phẩm';
                             $category = $product['TenDanhMuc'] ?? '';
                             $price = (float)($product['GiaTien'] ?? $product['price'] ?? 0);
+                            $isFlashSale = !empty($product['is_flash_sale']);
+                            $salePrice = (float)($product['sale_price'] ?? 0);
+                            $flashSale = $product['flash_sale'] ?? [];
                             $ecoTag = $product['eco_tag'] ?? 'ĐIỂM XANH CAO';
                             $stock = (int)($product['TongTon'] ?? 0);
                             ?>
@@ -277,6 +280,12 @@ function product_page_url(int $page, array $filters): string
                                     <?php if (!empty($product['is_bestseller'])): ?>
                                         <span class="absolute top-5 left-5 rounded-full bg-[#FFD9A8] px-4 py-2 text-xs font-bold tracking-wider z-10">
                                             BÁN CHẠY
+                                        </span>
+                                    <?php endif; ?>
+
+                                    <?php if ($isFlashSale): ?>
+                                        <span class="absolute top-5 right-5 rounded-full bg-red-600 text-white px-4 py-2 text-xs font-black tracking-wider z-10">
+                                            FLASH SALE
                                         </span>
                                     <?php endif; ?>
 
@@ -318,9 +327,17 @@ function product_page_url(int $page, array $filters): string
                                     </a>
 
                                     <div class="flex items-center justify-between gap-4 mb-4">
+                                        <?php if ($isFlashSale && $salePrice > 0): ?>
+                                            <div>
+                                                <p class="text-sm text-gray-400 line-through"><?= number_format($price, 0, ',', '.') ?>₫</p>
+                                                <p class="text-xl font-black text-red-600"><?= number_format($salePrice, 0, ',', '.') ?>₫</p>
+                                            </div>
+                                        <?php else: ?>
                                         <p class="text-xl font-bold text-[#8B5E34]">
                                             <?= number_format($price, 0, ',', '.') ?>₫
                                         </p>
+
+                                        <?php endif; ?>
 
                                         <p class="text-sm text-gray-500">
                                             Còn: <?= $stock ?>
@@ -331,6 +348,13 @@ function product_page_url(int $page, array $filters): string
                                         <span>●</span>
                                         <?= htmlspecialchars($ecoTag) ?>
                                     </p>
+
+                                    <?php if ($isFlashSale): ?>
+                                        <p class="mt-3 text-xs font-bold text-red-600">
+                                            Còn <?= (int)($flashSale['remaining'] ?? 0) ?> suất ·
+                                            sale
+                                        </p>
+                                    <?php endif; ?>
                                 </div>
                             </article>
                         <?php endforeach; ?>
@@ -389,4 +413,5 @@ if (priceRange && priceDisplay) {
     priceRange.addEventListener('input', updatePrice);
 }
 </script>
+<script src="<?= BASE_URL ?>public/assets/js/flash-sale.js"></script>
 <?php include __DIR__ . '/../layouts/footer.php'; ?>

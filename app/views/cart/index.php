@@ -36,6 +36,8 @@
                             $variant = $item['variant'] ?? '';
                             $image = $item['image'] ?? '';
                             $price = (float)($item['price'] ?? 0);
+                            $originalPrice = (float)($item['original_price'] ?? $price);
+                            $isFlashSale = !empty($item['is_flash_sale']);
                             $quantity = (int)($item['quantity'] ?? 1);
                             $stock = (int)($item['stock'] ?? 0);
                             $lineTotal = $price * $quantity;
@@ -77,6 +79,13 @@
                                 <p class="text-gray-600 mt-1">
                                     Giá: <?= number_format($price, 0, ',', '.') ?>₫
                                 </p>
+
+                                <?php if ($isFlashSale && $originalPrice > $price): ?>
+                                    <p class="text-sm text-gray-500 mt-1">
+                                        Giá gốc: <span class="line-through"><?= number_format($originalPrice, 0, ',', '.') ?>₫</span>
+                                    </p>
+                                    <p class="text-red-600 font-bold mt-1">FLASH SALE</p>
+                                <?php endif; ?>
 
                                 <p class="text-gray-600 mt-1">
                                     Tồn kho: <?= $stock ?>
