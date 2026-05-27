@@ -103,32 +103,23 @@ class OrderModel extends Model
         }
 
         // Lấy thông tin mã từ DB
-        try {
-            $stmt = $this->db->prepare("
-                SELECT MaCode, PhamTramGiam, SoLuong, NgayHetHan, MaDanhMuc,
-                       COALESCE(TrangThai, 1) AS TrangThai,
-                       COALESCE(min_order_value, 0) AS min_order_value,
-                       COALESCE(max_discount_value, 0) AS max_discount_value
-                FROM magiamgia
-                WHERE MaCode = ? LIMIT 1
-            ");
-            $stmt->execute([$promoCode]);
-            $promo = $stmt->fetch(PDO::FETCH_ASSOC);
-        } catch (Throwable $e) {
-            $stmt = $this->db->prepare("
-                SELECT MaCode, PhamTramGiam, SoLuong, NgayHetHan
-                FROM magiamgia
-                WHERE MaCode = ? LIMIT 1
-            ");
-            $stmt->execute([$promoCode]);
-            $promo = $stmt->fetch(PDO::FETCH_ASSOC);
-            if ($promo) {
-                $promo['MaDanhMuc'] = null;
-                $promo['TrangThai'] = 1;
-                $promo['min_order_value'] = 0;
-                $promo['max_discount_value'] = 0;
-            }
-        }
+        $categorySelect = $this->hasColumn('magiamgia', 'MaDanhMuc')
+            ? 'MaDanhMuc'
+            : 'NULL AS MaDanhMuc';
+        $statusSelect = $this->hasColumn('magiamgia', 'TrangThai')
+            ? 'COALESCE(TrangThai, 1) AS TrangThai'
+            : '1 AS TrangThai';
+
+        $stmt = $this->db->prepare("
+            SELECT MaCode, PhamTramGiam, SoLuong, NgayHetHan, {$categorySelect},
+                   {$statusSelect},
+                   COALESCE(min_order_value, 0) AS min_order_value,
+                   COALESCE(max_discount_value, 0) AS max_discount_value
+            FROM magiamgia
+            WHERE MaCode = ? LIMIT 1
+        ");
+        $stmt->execute([$promoCode]);
+        $promo = $stmt->fetch(PDO::FETCH_ASSOC);
 
         // Kiểm tra mã tồn tại, hết hạn, hết số lượng
         if (!$promo) {
@@ -652,7 +643,7 @@ class OrderModel extends Model
                 'GIAM26' => 'Giảm 26% cho đơn từ 1.000.000đ, tối đa 200.000đ',
             ];
 
-            try {
+            if ($this->hasColumn('magiamgia', 'MaDanhMuc')) {
                 $sql = "SELECT
                             m.MaCode AS MaGiamGia,
                             CONCAT('Giảm ', m.PhamTramGiam, '%', IF(m.MaDanhMuc IS NOT NULL, CONCAT(' (Chỉ ', d.TenDanhMuc, ')'), ' (Toàn shop)')) AS MoTa,
@@ -666,17 +657,17 @@ class OrderModel extends Model
                         WHERE m.NgayHetHan >= CURDATE() AND m.SoLuong > 0 AND COALESCE(m.TrangThai, 1) = 1";
                 $stmt = $this->db->prepare($sql);
                 $stmt->execute();
-            } catch (Throwable $e) {
+            } else {
                 $sql = "SELECT
                             MaCode AS MaGiamGia,
                             CONCAT('Giảm ', PhamTramGiam, '% (Toàn shop)') AS MoTa,
                             PhamTramGiam,
                             NgayHetHan,
-                            1 AS TrangThai,
-                            0 AS min_order_value,
-                            0 AS max_discount_value
+                            COALESCE(TrangThai, 1) AS TrangThai,
+                            COALESCE(min_order_value, 0) AS min_order_value,
+                            COALESCE(max_discount_value, 0) AS max_discount_value
                         FROM magiamgia
-                        WHERE NgayHetHan >= CURDATE() AND SoLuong > 0";
+                        WHERE NgayHetHan >= CURDATE() AND SoLuong > 0 AND COALESCE(TrangThai, 1) = 1";
                 $stmt = $this->db->prepare($sql);
                 $stmt->execute();
             }
@@ -716,5 +707,13 @@ class OrderModel extends Model
                "amount=" . (int)$totalAmount .
                "&addInfo=" . urlencode($orderCode) .
                "&accountName=" . urlencode($accountName);
+    }
+
+
+    private function hasColumn(string $table, string $column): bool
+    {
+        $stmt = $this->db->prepare('SHOW COLUMNS FROM ' . $table . ' LIKE ?');
+        $stmt->execute([$column]);
+        return (bool)$stmt->fetch(PDO::FETCH_ASSOC);
     }
 }
