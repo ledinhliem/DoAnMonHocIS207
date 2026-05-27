@@ -188,6 +188,7 @@ class OrderController extends Controller
                 $_SESSION['payment_errors'],
                 $_SESSION['checkout_data'],
                 $_SESSION['pending_transfer_order_code'],
+                $_SESSION['pending_transfer_token'],
                 $_SESSION['selected_cart_keys'] // Xóa lịch sử ghi nhớ tích chọn sản phẩm
             );
 
@@ -246,7 +247,7 @@ class OrderController extends Controller
         'phone' => $user['SoDienThoai'] ?? '',
         'address' => $fullAddress,
         'delivery_method' => 'standard',
-        'payment_method' => 'card',
+        'payment_method' => 'cod',
     ];
 
     // Lấy danh sách Voucher từ DB để View render "Ví Voucher"
@@ -382,7 +383,7 @@ class OrderController extends Controller
                 'phone' => trim($_POST['phone'] ?? ''),
                 'address' => trim($_POST['address'] ?? ''),
                 'delivery_method' => trim($_POST['delivery_method'] ?? 'standard'),
-                'payment_method' => trim($_POST['payment_method'] ?? 'card'),
+                'payment_method' => trim($_POST['payment_method'] ?? 'cod'),
             ];
 
             $_SESSION['checkout_data'] = $checkoutData;
@@ -401,56 +402,26 @@ class OrderController extends Controller
                 header('Location: ?url=order/transfer');
                 exit;
             } else {
-                // card: redirect sang trang nhập thông tin thẻ
-                header('Location: ?url=order/payment');
+                $_SESSION['checkout_errors'] = [
+                    'payment_method' => 'Phuong thuc thanh toan khong hop le.'
+                ];
+                header('Location: ?url=checkout');
                 exit;
             }
         }
 
-        $this->view('order/payment', [
-            'title' => 'Thanh toán thẻ',
-            'summary' => $this->getCheckoutSummary($items),
-            'checkoutData' => $_SESSION['checkout_data'] ?? [],
-            'errors' => $_SESSION['payment_errors'] ?? [],
-            'old' => $_SESSION['payment_old'] ?? [],
-        ]);
+        header('Location: ?url=checkout');
+        exit;
 
-        unset($_SESSION['payment_errors'], $_SESSION['payment_old']);
     }
 
     public function processPayment()
     {
         $this->requireLogin();
 
-        if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
-            header('Location: ?url=order/payment');
-            exit;
-        }
-
-        if (empty($this->getFilteredCartItems())) {
-            $_SESSION['error'] = 'Không có sản phẩm nào để thanh toán.';
-            header('Location: ?url=product');
-            exit;
-        }
-
-        $paymentData = [
-            'card_name' => trim($_POST['card_name'] ?? ''),
-            'card_number' => trim($_POST['card_number'] ?? ''),
-            'card_expiry' => trim($_POST['card_expiry'] ?? ''),
-            'card_cvv' => trim($_POST['card_cvv'] ?? ''),
-        ];
-
-        $_SESSION['payment_old'] = $paymentData;
-        $errors = $this->orderModel->validateCardPayment($paymentData);
-
-        if (!empty($errors)) {
-            $_SESSION['payment_errors'] = $errors;
-            header('Location: ?url=order/payment');
-            exit;
-        }
-
-        $last4 = substr(preg_replace('/\D/', '', $paymentData['card_number']), -4);
-        $this->completeOrder('Card', ['card_last4' => $last4]);
+        $_SESSION['error'] = 'Phuong thuc thanh toan the tin dung da duoc tat.';
+        header('Location: ?url=checkout');
+        exit;
     }
 
     // --- 3. HÀM TRANSFER (Chuyển hướng qua cổng SePay bằng SDK chuẩn) ---
@@ -471,6 +442,8 @@ class OrderController extends Controller
         // Tạo và giữ mã thanh toán trong session để khi SePay trả về còn hoàn tất được đơn.
         $orderCode = $_SESSION['pending_transfer_order_code'] ?? ('ZN' . rand(100000, 999999));
         $_SESSION['pending_transfer_order_code'] = $orderCode;
+        $paymentToken = $_SESSION['pending_transfer_token'] ?? bin2hex(random_bytes(16));
+        $_SESSION['pending_transfer_token'] = $paymentToken;
 
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $this->completeOrder('Transfer', ['transfer_code' => $orderCode]);
@@ -511,7 +484,7 @@ class OrderController extends Controller
             ->operation('PURCHASE')
             ->orderDescription('Thanh toan don hang ' . $orderCode) // Viết không dấu cho an toàn
             ->orderInvoiceNumber($orderCode)
-            ->successUrl(BASE_URL . '?url=order/success') // Link trả về khi thanh toán thành công
+            ->successUrl(BASE_URL . '?url=order/success&payment_token=' . urlencode($paymentToken)) // Link trả về khi thanh toán thành công
             ->cancelUrl(BASE_URL . '?url=checkout')       // Link trả về nếu khách bấm hủy
             ->build();
 
@@ -561,9 +534,16 @@ class OrderController extends Controller
 
     public function success()
     {
-        if (!empty($_SESSION['checkout_data']) && !empty($this->getFilteredCartItems()) && empty($_SESSION['latest_order_id'])) {
+        $pendingPaymentMethod = $_SESSION['checkout_data']['payment_method'] ?? '';
+        $expectedToken = $_SESSION['pending_transfer_token'] ?? '';
+        $actualToken = $_GET['payment_token'] ?? '';
+        $isVerifiedTransferReturn = $pendingPaymentMethod === 'transfer'
+            && $expectedToken !== ''
+            && hash_equals((string)$expectedToken, (string)$actualToken);
+
+        if ($isVerifiedTransferReturn && !empty($this->getFilteredCartItems()) && empty($_SESSION['latest_order_id'])) {
             $this->completeOrder(
-                $_SESSION['checkout_data']['payment_method'] ?? 'Pending',
+                'Transfer',
                 ['transfer_code' => $_SESSION['pending_transfer_order_code'] ?? null]
             );
         }
@@ -572,7 +552,13 @@ class OrderController extends Controller
         $userId = $_SESSION['user_id'] ?? null;
         $order = ($orderId !== '' && $userId)
             ? $this->orderModel->getOrderById($orderId, $userId)
-            : $this->orderModel->getLatestOrder();
+            : null;
+
+        if (!$order) {
+            $_SESSION['error'] = 'Khong tim thay don hang vua thanh toan. Vui long quay lai gio hang hoac lich su don hang.';
+            header('Location: ?url=checkout');
+            exit;
+        }
 
         $this->view('order/success', [
             'title' => 'Đặt hàng thành công',

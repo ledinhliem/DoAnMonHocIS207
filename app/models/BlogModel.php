@@ -21,6 +21,7 @@ class BlogModel
                     NgayDang AS created_at,
                     MaNguoiDung AS user_id
                 FROM baiviet
+                WHERE COALESCE(TrangThai, 1) = 1
                 ORDER BY NgayDang DESC, MaBaiViet DESC";
 
         $stmt = $this->db->prepare($sql);
@@ -47,7 +48,7 @@ class BlogModel
                     NgayDang AS created_at,
                     MaNguoiDung AS user_id
                 FROM baiviet
-                WHERE MaBaiViet = :id
+                WHERE MaBaiViet = :id AND COALESCE(TrangThai, 1) = 1
                 LIMIT 1";
 
         $stmt = $this->db->prepare($sql);

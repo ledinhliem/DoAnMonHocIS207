@@ -2,6 +2,8 @@
 <?php 
 $base = defined('BASE_URL') ? BASE_URL : 'index.php'; 
 $u = $user ?? ($data['user'] ?? []);
+$u = is_array($u) ? $u : [];
+$joinedDate = !empty($u['NgayTao']) ? date('d/m/Y', strtotime($u['NgayTao'])) : 'Chưa cập nhật';
 
 // Nối chuỗi địa chỉ từ DB
 $diaChiDayDu = 'Bạn chưa cập nhật địa chỉ giao hàng.';
@@ -79,7 +81,7 @@ if (!empty($u['SoNha_Duong'])) {
           </div>
           <div class="p-8 rounded-xl bg-surface-container-lowest border border-outline-variant/10">
             <label class="text-on-surface-variant text-xs font-semibold uppercase tracking-widest block mb-1">Ngày tham gia</label>
-            <p class="text-lg font-medium text-on-surface"><?php echo date('d/m/Y', strtotime($u['NgayTao'])); ?></p>
+            <p class="text-lg font-medium text-on-surface"><?php echo htmlspecialchars($joinedDate); ?></p>
           </div>
         </div>
       </div>

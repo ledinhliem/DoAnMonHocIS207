@@ -21,6 +21,7 @@ $postId = $editingPost['MaBaiViet'] ?? '';
 $postTitle = $editingPost['TieuDe'] ?? '';
 $postContent = $editingPost['NoiDung'] ?? '';
 $postImage = $editingPost['HinhAnhBia'] ?? '';
+$postStatus = (int)($editingPost['TrangThai'] ?? 1);
 
 $totalPosts = count($posts);
 ?>
@@ -105,6 +106,9 @@ $totalPosts = count($posts);
                         accept=".jpg,.jpeg,.png,.webp"
                         class="w-full rounded-xl border border-outline-variant/30 bg-white px-4 py-3"
                     >
+                    <p class="mt-2 text-xs text-on-surface-variant">
+                        Gợi ý kích thước ảnh bìa: 1400x550px.
+                    </p>
 
                     <?php if ($postImage !== ''): ?>
                         <div class="mt-4">
@@ -113,6 +117,11 @@ $totalPosts = count($posts);
                         </div>
                     <?php endif; ?>
                 </div>
+
+                <label class="flex items-center gap-3 rounded-xl border border-outline-variant/30 bg-white px-4 py-3">
+                    <input type="checkbox" name="post_status" value="1" <?= $postStatus === 1 ? 'checked' : '' ?>>
+                    <span class="font-bold text-primary">Hiển thị bài viết trên trang user</span>
+                </label>
 
                 <div class="flex gap-3">
                     <button
@@ -183,6 +192,7 @@ $totalPosts = count($posts);
                             $image = $post['HinhAnhBia'] ?? '';
                             $date = $post['NgayDang'] ?? '';
                             $author = $post['TenTacGia'] ?? 'Admin';
+                            $isPublished = (int)($post['TrangThai'] ?? 1) === 1;
                             ?>
                             <article class="p-6 flex flex-col md:flex-row gap-5 hover:bg-surface-container-low transition-colors">
                                 <div class="w-full md:w-32 h-28 flex-shrink-0">
@@ -202,7 +212,7 @@ $totalPosts = count($posts);
                                 <div class="flex-1 min-w-0">
                                     <div class="flex items-center gap-3 flex-wrap mb-2">
                                         <span class="text-[10px] font-bold uppercase tracking-widest bg-primary/10 text-primary px-3 py-1 rounded-full">
-                                            Blog
+                                            <?= $isPublished ? 'Đang hiển thị' : 'Đang ẩn' ?>
                                         </span>
                                         <span class="text-xs text-on-surface-variant">
                                             <?= e($date) ?>

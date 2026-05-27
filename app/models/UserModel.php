@@ -1,5 +1,10 @@
 <?php
 class UserModel extends Model {
+    private string $lastError = '';
+
+    public function getLastError(): string {
+        return $this->lastError;
+    }
     
     public function getUserByEmail($email) {
         $sql = "SELECT * FROM nguoidung WHERE Email = ?";
@@ -43,7 +48,15 @@ class UserModel extends Model {
         return $stmt->fetch(PDO::FETCH_ASSOC);
     }
 
+    public function getUserByName(string $name) {
+        $sql = "SELECT * FROM nguoidung WHERE HoTen = ? ORDER BY NgayTao DESC LIMIT 1";
+        $stmt = $this->db->prepare($sql);
+        $stmt->execute([trim($name)]);
+        return $stmt->fetch(PDO::FETCH_ASSOC);
+    }
+
     public function updateProfile($data) {
+        $this->lastError = '';
         $userId = $data['id'] ?? '';
         $fullName = trim($data['HoTen'] ?? '');
         $phone = trim($data['SoDienThoai'] ?? '');
@@ -53,6 +66,7 @@ class UserModel extends Model {
         $province = trim($data['TinhThanh'] ?? '');
 
         if ($userId === '' || $fullName === '') {
+            $this->lastError = 'Thiếu mã người dùng hoặc họ tên.';
             return false;
         }
 
@@ -65,6 +79,9 @@ class UserModel extends Model {
                 WHERE MaNguoiDung = ?
             ");
             $stmt->execute([$fullName, $phone, $userId]);
+            if ($stmt->rowCount() === 0 && !$this->getUserById($userId)) {
+                throw new RuntimeException('Không tìm thấy tài khoản cần cập nhật.');
+            }
 
             $existingStmt = $this->db->prepare("
                 SELECT MaDiaChi
@@ -107,6 +124,7 @@ class UserModel extends Model {
                 $this->db->rollBack();
             }
 
+            $this->lastError = $e->getMessage();
             return false;
         }
     }

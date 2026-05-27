@@ -235,10 +235,7 @@ $hasFullInfo = (!empty($checkoutData['full_name']) && !empty($checkoutData['phon
                     <label class="block text-sm font-semibold mb-2">Phương thức thanh toán</label>
                     <select name="payment_method"
                             class="w-full rounded-xl border border-outline-variant bg-white px-4 py-3">
-                        <option value="card" <?= (($checkoutData['payment_method'] ?? 'card') === 'card') ? 'selected' : '' ?>>
-                            Thanh toán bằng thẻ tín dụng
-                        </option>
-                        <option value="cod" <?= (($checkoutData['payment_method'] ?? '') === 'cod') ? 'selected' : '' ?>>
+                        <option value="cod" <?= (($checkoutData['payment_method'] ?? 'cod') === 'cod') ? 'selected' : '' ?>>
                             Thanh toán khi nhận hàng
                         </option>
                         <option value="transfer" <?= (($checkoutData['payment_method'] ?? '') === 'transfer') ? 'selected' : '' ?>>

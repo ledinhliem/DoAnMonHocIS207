@@ -166,12 +166,13 @@ if (!empty($reviews)) {
       <?php endif; ?>
 
       <!-- ── VARIANT SELECTION FORM ──────────────────────────────────── -->
-      <form id="cart-form" action="<?= BASE_URL ?>?url=cart/add" method="POST" class="space-y-6">
+      <form id="cart-form" action="?url=cart/add" data-cart-add-url="?url=cart/add" method="POST" class="space-y-6">
         <input type="hidden" name="MaSanPham"   value="<?= htmlspecialchars($product['MaSanPham']) ?>">
         <input type="hidden" name="MaBienThe"   id="selected-variant-id" value="<?= htmlspecialchars($defaultVariant['MaBienThe'] ?? '') ?>">
+        <input type="hidden" name="variant_id"  id="selected-variant-id-alias" value="<?= htmlspecialchars($defaultVariant['MaBienThe'] ?? '') ?>">
 
         <?php foreach ($variantGroups as $label => $options): ?>
-        <div>
+        <div data-variant-group="<?= htmlspecialchars($label) ?>">
           <span class="block text-sm font-label font-bold text-on-surface mb-3 uppercase tracking-wider">
             <?= htmlspecialchars($label) ?>:
             <span class="selected-variant-label text-primary normal-case font-semibold" data-label="<?= htmlspecialchars($label) ?>"></span>
@@ -213,6 +214,13 @@ if (!empty($reviews)) {
         </div>
 
         <!-- CTA Buttons -->
+        <button type="submit" name="action" value="buy_now" id="btn-buy-now"
+          class="w-full bg-[#8B5E34] text-white font-bold py-4 px-6 rounded-xl
+                 hover:opacity-90 active:scale-95 transition-all text-base tracking-wide">
+          <span class="material-symbols-outlined align-middle mr-1 text-lg">bolt</span>
+          Mua ngay
+        </button>
+
         <div class="flex gap-3 flex-col sm:flex-row">
           <button type="submit" id="btn-add-cart"
             class="flex-1 bg-primary text-on-primary font-bold py-4 px-6 rounded-xl
@@ -220,7 +228,7 @@ if (!empty($reviews)) {
             <span class="material-symbols-outlined align-middle mr-1 text-lg">add_shopping_cart</span>
             Thêm vào giỏ hàng
           </button>
-          <a href="<?= BASE_URL ?>?url=cart"
+          <a href="?url=cart"
             class="flex-1 border-2 border-outline-variant text-primary font-bold py-4 px-6 rounded-xl
                    hover:border-primary active:scale-95 transition-all text-base text-center flex items-center justify-center gap-1">
             <span class="material-symbols-outlined text-lg">shopping_cart</span>
@@ -358,6 +366,16 @@ if (!empty($reviews)) {
                 <p class="text-on-surface-variant text-sm leading-relaxed">
                   <?= nl2br(htmlspecialchars($review['NoiDung'])) ?>
                 </p>
+                <?php if (trim((string)($review['PhanHoiAdmin'] ?? '')) !== ''): ?>
+                  <div class="mt-4 rounded-xl bg-surface-container-low border border-outline-variant/20 px-4 py-3">
+                    <p class="text-xs font-bold uppercase tracking-widest text-primary mb-1">
+                      Phản hồi từ Zentro
+                    </p>
+                    <p class="text-sm text-on-surface-variant leading-relaxed">
+                      <?= nl2br(htmlspecialchars($review['PhanHoiAdmin'])) ?>
+                    </p>
+                  </div>
+                <?php endif; ?>
               </div>
             <?php endforeach; ?>
           </div>

@@ -34,11 +34,6 @@ $navItemClass = function (string $page) use ($activePage): string {
             <span class="font-medium text-sm">Danh mục</span>
         </a>
 
-        <a class="<?= $navItemClass('inventory') ?>" href="<?= BASE_URL ?>index.php?url=admin/inventory">
-            <span class="material-symbols-outlined">inventory_2</span>
-            <span class="font-medium text-sm">Kho hàng</span>
-        </a>
-
         <a class="<?= $navItemClass('orders') ?>" href="<?= BASE_URL ?>index.php?url=admin/orders">
             <span class="material-symbols-outlined">shopping_basket</span>
             <span class="font-medium text-sm">Đơn hàng</span>
@@ -83,3 +78,4 @@ $navItemClass = function (string $page) use ($activePage): string {
         </a>
     </div>
 </aside>
+

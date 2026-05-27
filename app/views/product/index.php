@@ -42,7 +42,7 @@ function product_page_url(int $page, array $filters): string
 
             <!-- FILTER SIDEBAR -->
             <aside class="lg:col-span-1">
-                <form method="GET" action="">
+                <form method="GET" action="" id="product-filter-form">
                     <input type="hidden" name="url" value="product">
 
                     <div class="bg-[#FAFAF2] rounded-2xl p-4 sticky top-28">
@@ -61,6 +61,30 @@ function product_page_url(int $page, array $filters): string
                                 search
                             </span>
                         </div>
+
+                        <hr class="my-8 border-[#E0E3D5]">
+
+                        <h2 class="text-2xl font-bold text-[#2F512A] mb-6">
+                            Tác động môi trường
+                        </h2>
+
+                        <label class="flex items-center gap-3 mb-4 cursor-pointer">
+                            <input type="radio"
+                                   name="impact"
+                                   value=""
+                                   <?= empty($filters['impact']) ? 'checked' : '' ?>>
+                            <span>Tất cả tác động</span>
+                        </label>
+
+                        <?php foreach (($impacts ?? []) as $impactId => $impactName): ?>
+                            <label class="flex items-center gap-3 mb-4 cursor-pointer">
+                                <input type="radio"
+                                       name="impact"
+                                       value="<?= htmlspecialchars($impactId) ?>"
+                                       <?= (($filters['impact'] ?? '') === $impactId) ? 'checked' : '' ?>>
+                                <span><?= htmlspecialchars($impactName) ?></span>
+                            </label>
+                        <?php endforeach; ?>
 
                         <hr class="my-8 border-[#E0E3D5]">
 
@@ -112,34 +136,6 @@ function product_page_url(int $page, array $filters): string
            class="w-full accent-[#2F512A] cursor-pointer">
 </div>
 
-                        <hr class="my-8 border-[#E0E3D5]">
-
-                        <h2 class="text-2xl font-bold text-[#2F512A] mb-6">
-                            Tác động môi trường
-                        </h2>
-
-<label class="flex items-center gap-3 mb-4 cursor-pointer">
-    <input type="radio"
-           name="impact"
-           value=""
-           <?= empty($filters['impact']) ? 'checked' : '' ?>>
-    <span>Tất cả tác động</span>
-</label>
-
-<?php foreach (($impacts ?? []) as $impactId => $impactName): ?>
-    <label class="flex items-center gap-3 mb-4 cursor-pointer">
-        <input type="radio"
-               name="impact"
-               value="<?= htmlspecialchars($impactId) ?>"
-               <?= (($filters['impact'] ?? '') === $impactId) ? 'checked' : '' ?>>
-        <span><?= htmlspecialchars($impactName) ?></span>
-    </label>
-<?php endforeach; ?>
-
-                        <button type="submit"
-                                class="w-full rounded-xl bg-[#2F512A] text-white font-bold py-3 hover:bg-[#244020] transition">
-                            Lọc sản phẩm
-                        </button>
                     </div>
                 </form>
             </aside>
@@ -395,6 +391,7 @@ function product_page_url(int $page, array $filters): string
 <script>
 const priceRange = document.getElementById('priceRange');
 const priceDisplay = document.getElementById('priceDisplay');
+const filterForm = document.getElementById('product-filter-form');
 
 if (priceRange && priceDisplay) {
     function updatePrice() {
@@ -411,6 +408,32 @@ if (priceRange && priceDisplay) {
     updatePrice();
 
     priceRange.addEventListener('input', updatePrice);
+}
+
+if (filterForm) {
+    let filterTimer = null;
+    const keywordInput = filterForm.querySelector('input[name="keyword"]');
+
+    filterForm.querySelectorAll('input[type="radio"]').forEach(function (input) {
+        input.addEventListener('change', function () {
+            filterForm.submit();
+        });
+    });
+
+    if (priceRange) {
+        priceRange.addEventListener('change', function () {
+            filterForm.submit();
+        });
+    }
+
+    if (keywordInput) {
+        keywordInput.addEventListener('input', function () {
+            clearTimeout(filterTimer);
+            filterTimer = setTimeout(function () {
+                filterForm.submit();
+            }, 600);
+        });
+    }
 }
 </script>
 <script src="<?= BASE_URL ?>public/assets/js/flash-sale.js"></script>

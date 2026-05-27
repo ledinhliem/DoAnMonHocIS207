@@ -44,9 +44,9 @@ class AdminModel extends Model
 
             $stmt = $this->db->prepare("
                 SELECT
-                    COALESCE(SUM(CASE WHEN TrangThai <> :cancelledStatus THEN ThanhTienCuoi ELSE 0 END), 0) AS totalRevenue,
-                    COALESCE(SUM(CASE WHEN TrangThai <> :cancelledStatus AND NgayDat BETWEEN :todayStart AND :todayEnd THEN ThanhTienCuoi ELSE 0 END), 0) AS todayRevenue,
-                    COALESCE(SUM(CASE WHEN TrangThai <> :cancelledStatus AND NgayDat >= :monthStart THEN ThanhTienCuoi ELSE 0 END), 0) AS monthRevenue,
+                    COALESCE(SUM(CASE WHEN TrangThai = :completedStatus THEN ThanhTienCuoi ELSE 0 END), 0) AS totalRevenue,
+                    COALESCE(SUM(CASE WHEN TrangThai = :completedStatus AND NgayDat BETWEEN :todayStart AND :todayEnd THEN ThanhTienCuoi ELSE 0 END), 0) AS todayRevenue,
+                    COALESCE(SUM(CASE WHEN TrangThai = :completedStatus AND NgayDat >= :monthStart THEN ThanhTienCuoi ELSE 0 END), 0) AS monthRevenue,
                     COUNT(*) AS totalOrders,
                     SUM(CASE WHEN TrangThai = '0' THEN 1 ELSE 0 END) AS newOrders,
                     SUM(CASE WHEN TrangThai = '1' THEN 1 ELSE 0 END) AS preparingOrders,
@@ -56,6 +56,7 @@ class AdminModel extends Model
                 FROM donhang
             ");
             $stmt->bindValue(':cancelledStatus', self::CANCELLED_ORDER_STATUS);
+            $stmt->bindValue(':completedStatus', '3');
             $stmt->bindValue(':todayStart', $todayStart);
             $stmt->bindValue(':todayEnd', $todayEnd);
             $stmt->bindValue(':monthStart', $monthStart);
@@ -112,7 +113,7 @@ class AdminModel extends Model
         }
 
         if ($this->tableExists('baiviet')) {
-            $stats['publishedPosts'] = (int)$this->db->query("SELECT COUNT(*) FROM baiviet")->fetchColumn();
+            $stats['publishedPosts'] = (int)$this->db->query("SELECT COUNT(*) FROM baiviet WHERE COALESCE(TrangThai, 1) = 1")->fetchColumn();
         }
 
         if ($this->tableExists('danhgia')) {
@@ -152,7 +153,7 @@ class AdminModel extends Model
         $stmt = $this->db->prepare("
             SELECT DATE(NgayDat) AS order_date, COALESCE(SUM(ThanhTienCuoi), 0) AS revenue
             FROM donhang
-            WHERE TrangThai <> :cancelledStatus
+            WHERE TrangThai = :completedStatus
               AND DATE(NgayDat) BETWEEN :startDate AND :endDate
             GROUP BY DATE(NgayDat)
             ORDER BY order_date ASC
@@ -160,7 +161,7 @@ class AdminModel extends Model
         $stmt->execute([
             ':startDate' => $startDate,
             ':endDate' => $endDate,
-            ':cancelledStatus' => self::CANCELLED_ORDER_STATUS
+            ':completedStatus' => '3'
         ]);
 
         foreach ($stmt->fetchAll(PDO::FETCH_ASSOC) as $row) {
@@ -335,7 +336,7 @@ class AdminModel extends Model
             ? "LEFT JOIN donhang dh ON dh.MaDonHang = ct.MaDonHang"
             : '';
         $orderWhere = $this->tableExists('donhang')
-            ? "WHERE dh.TrangThai <> '" . self::CANCELLED_ORDER_STATUS . "'"
+            ? "WHERE dh.TrangThai = '3'"
             : '';
         $productJoin = $this->tableExists('sanpham')
             ? 'LEFT JOIN sanpham sp ON sp.MaSanPham = bt.MaSanPham'
@@ -912,7 +913,7 @@ class AdminModel extends Model
         }
 
         if (str_contains($name, 'kitchen')) {
-            return ['Quy cách', 'Kích thước', 'Màu sắc'];
+            return ['Dung tích', 'Kích thước', 'Màu sắc'];
         }
 
         if (str_contains($name, 'decor')) {
@@ -1834,6 +1835,7 @@ class AdminModel extends Model
     {
         $stmt = $this->db->prepare("
             SELECT bv.MaBaiViet, bv.TieuDe, bv.NoiDung, bv.HinhAnhBia, bv.NgayDang, bv.MaNguoiDung,
+                   COALESCE(bv.TrangThai, 1) AS TrangThai,
                    nd.HoTen AS TenTacGia
             FROM baiviet bv
             LEFT JOIN nguoidung nd ON bv.MaNguoiDung = nd.MaNguoiDung
@@ -1846,7 +1848,8 @@ class AdminModel extends Model
     public function getPostById($id)
     {
         $stmt = $this->db->prepare("
-            SELECT MaBaiViet, TieuDe, NoiDung, HinhAnhBia, NgayDang, MaNguoiDung
+            SELECT MaBaiViet, TieuDe, NoiDung, HinhAnhBia, NgayDang, MaNguoiDung,
+                   COALESCE(TrangThai, 1) AS TrangThai
             FROM baiviet
             WHERE MaBaiViet = ?
         ");
@@ -1858,20 +1861,20 @@ class AdminModel extends Model
     {
         $postId = $this->generatePostId();
         $stmt = $this->db->prepare("
-            INSERT INTO baiviet (MaBaiViet, TieuDe, NoiDung, HinhAnhBia, NgayDang, MaNguoiDung)
-            VALUES (?, ?, ?, ?, NOW(), ?)
+            INSERT INTO baiviet (MaBaiViet, TieuDe, NoiDung, HinhAnhBia, NgayDang, MaNguoiDung, TrangThai)
+            VALUES (?, ?, ?, ?, NOW(), ?, ?)
         ");
-        return $stmt->execute([$postId, $data['TieuDe'], $data['NoiDung'], $data['HinhAnhBia'], $data['MaNguoiDung']]);
+        return $stmt->execute([$postId, $data['TieuDe'], $data['NoiDung'], $data['HinhAnhBia'], $data['MaNguoiDung'], $data['TrangThai'] ?? 1]);
     }
 
     public function updatePost($id, $data)
     {
         $stmt = $this->db->prepare("
             UPDATE baiviet
-            SET TieuDe = ?, NoiDung = ?, HinhAnhBia = ?
+            SET TieuDe = ?, NoiDung = ?, HinhAnhBia = ?, TrangThai = ?
             WHERE MaBaiViet = ?
         ");
-        return $stmt->execute([$data['TieuDe'], $data['NoiDung'], $data['HinhAnhBia'], $id]);
+        return $stmt->execute([$data['TieuDe'], $data['NoiDung'], $data['HinhAnhBia'], $data['TrangThai'] ?? 1, $id]);
     }
 
     public function deletePost($id)
@@ -1883,7 +1886,10 @@ class AdminModel extends Model
     public function getAllPromos()
     {
         $stmt = $this->db->prepare("
-            SELECT MaCode AS MaGiamGia, MaCode, PhamTramGiam, SoLuong, NgayHetHan
+            SELECT MaCode AS MaGiamGia, MaCode, PhamTramGiam, SoLuong, NgayHetHan,
+                   COALESCE(TrangThai, 1) AS TrangThai,
+                   COALESCE(min_order_value, 0) AS min_order_value,
+                   COALESCE(max_discount_value, 0) AS max_discount_value
             FROM magiamgia
             ORDER BY NgayHetHan DESC, MaCode DESC
         ");
@@ -1894,7 +1900,10 @@ class AdminModel extends Model
     public function getPromoById($id)
     {
         $stmt = $this->db->prepare("
-            SELECT MaCode AS MaGiamGia, MaCode, PhamTramGiam, SoLuong, NgayHetHan
+            SELECT MaCode AS MaGiamGia, MaCode, PhamTramGiam, SoLuong, NgayHetHan,
+                   COALESCE(TrangThai, 1) AS TrangThai,
+                   COALESCE(min_order_value, 0) AS min_order_value,
+                   COALESCE(max_discount_value, 0) AS max_discount_value
             FROM magiamgia
             WHERE MaCode = ?
         ");
@@ -1905,20 +1914,38 @@ class AdminModel extends Model
     public function createPromo($data)
     {
         $stmt = $this->db->prepare("
-            INSERT INTO magiamgia (MaCode, PhamTramGiam, SoLuong, NgayHetHan)
-            VALUES (?, ?, ?, ?)
+            INSERT INTO magiamgia (MaCode, PhamTramGiam, SoLuong, NgayHetHan, min_order_value, max_discount_value, TrangThai)
+            VALUES (?, ?, ?, ?, ?, ?, ?)
         ");
-        return $stmt->execute([$data['MaCode'], $data['PhamTramGiam'], $data['SoLuong'], $data['NgayHetHan']]);
+        return $stmt->execute([
+            $data['MaCode'],
+            $data['PhamTramGiam'],
+            $data['SoLuong'],
+            $data['NgayHetHan'],
+            $data['min_order_value'] ?? 0,
+            $data['max_discount_value'] ?? 0,
+            $data['TrangThai'] ?? 1,
+        ]);
     }
 
     public function updatePromo($id, $data)
     {
         $stmt = $this->db->prepare("
             UPDATE magiamgia
-            SET MaCode = ?, PhamTramGiam = ?, SoLuong = ?, NgayHetHan = ?
+            SET MaCode = ?, PhamTramGiam = ?, SoLuong = ?, NgayHetHan = ?,
+                min_order_value = ?, max_discount_value = ?, TrangThai = ?
             WHERE MaCode = ?
         ");
-        return $stmt->execute([$data['MaCode'], $data['PhamTramGiam'], $data['SoLuong'], $data['NgayHetHan'], $id]);
+        return $stmt->execute([
+            $data['MaCode'],
+            $data['PhamTramGiam'],
+            $data['SoLuong'],
+            $data['NgayHetHan'],
+            $data['min_order_value'] ?? 0,
+            $data['max_discount_value'] ?? 0,
+            $data['TrangThai'] ?? 1,
+            $id,
+        ]);
     }
 
     public function deletePromo($id)

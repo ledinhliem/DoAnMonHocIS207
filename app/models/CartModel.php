@@ -115,9 +115,14 @@ class CartModel extends Model
         }
 
         $stmt = $this->db->prepare("
-            SELECT SoLuongTon
-            FROM bienthesanpham
-            WHERE MaBienThe = ?
+            SELECT bt.SoLuongTon
+            FROM bienthesanpham bt
+            JOIN sanpham sp ON sp.MaSanPham = bt.MaSanPham
+            LEFT JOIN danhmuc dm ON dm.MaDanhMuc = sp.MaDanhMuc
+            WHERE bt.MaBienThe = ?
+              AND sp.TrangThai = 1
+              AND COALESCE(dm.TrangThai, 1) = 1
+              " . ($this->hasColumn('bienthesanpham', 'TrangThai') ? 'AND bt.TrangThai = 1' : '') . "
             LIMIT 1
         ");
 
@@ -214,8 +219,12 @@ class CartModel extends Model
                 ) AS HinhAnh
             FROM bienthesanpham bt
             JOIN sanpham sp ON sp.MaSanPham = bt.MaSanPham
+            LEFT JOIN danhmuc dm ON dm.MaDanhMuc = sp.MaDanhMuc
             WHERE bt.MaSanPham = ?
             AND bt.MaBienThe = ?
+            AND sp.TrangThai = 1
+            AND COALESCE(dm.TrangThai, 1) = 1
+            " . ($this->hasColumn('bienthesanpham', 'TrangThai') ? 'AND bt.TrangThai = 1' : '') . "
             LIMIT 1
         ";
 
@@ -229,8 +238,14 @@ class CartModel extends Model
     {
         $stmt = $this->db->prepare("
             SELECT MaBienThe
-            FROM bienthesanpham
-            WHERE MaSanPham = ?
+            FROM bienthesanpham bt
+            JOIN sanpham sp ON sp.MaSanPham = bt.MaSanPham
+            LEFT JOIN danhmuc dm ON dm.MaDanhMuc = sp.MaDanhMuc
+            WHERE bt.MaSanPham = ?
+              AND sp.TrangThai = 1
+              AND COALESCE(dm.TrangThai, 1) = 1
+              " . ($this->hasColumn('bienthesanpham', 'TrangThai') ? 'AND bt.TrangThai = 1' : '') . "
+              AND bt.SoLuongTon > 0
             ORDER BY MaBienThe ASC
             LIMIT 1
         ");
@@ -238,5 +253,12 @@ class CartModel extends Model
         $stmt->execute([$maSanPham]);
 
         return $stmt->fetchColumn();
+    }
+
+    private function hasColumn(string $table, string $column): bool
+    {
+        $stmt = $this->db->prepare('SHOW COLUMNS FROM ' . $table . ' LIKE ?');
+        $stmt->execute([$column]);
+        return (bool)$stmt->fetch(PDO::FETCH_ASSOC);
     }
 }

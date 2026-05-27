@@ -47,7 +47,12 @@ class CartController extends Controller
             ?? $_POST['quantity']
             ?? 1;
 
+        $isBuyNow = ($_POST['action'] ?? '') === 'buy_now';
         $result = $this->cartModel->add($maSanPham, $maBienThe, $soLuong);
+        if ($isBuyNow && $result['success']) {
+            $_SESSION['selected_cart_keys'] = [$maBienThe];
+            $result['redirect_url'] = '?url=order/checkout';
+        }
 
         $_SESSION[$result['success'] ? 'success' : 'error'] = $result['message'];
 
@@ -57,6 +62,11 @@ class CartController extends Controller
         if ($wantsJson) {
             header('Content-Type: application/json; charset=utf-8');
             echo json_encode($result);
+            exit;
+        }
+
+        if ($isBuyNow && $result['success']) {
+            header('Location: ?url=order/checkout');
             exit;
         }
 

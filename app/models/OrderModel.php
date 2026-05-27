@@ -105,7 +105,10 @@ class OrderModel extends Model
         // Lấy thông tin mã từ DB
         try {
             $stmt = $this->db->prepare("
-                SELECT MaCode, PhamTramGiam, SoLuong, NgayHetHan, MaDanhMuc
+                SELECT MaCode, PhamTramGiam, SoLuong, NgayHetHan, MaDanhMuc,
+                       COALESCE(TrangThai, 1) AS TrangThai,
+                       COALESCE(min_order_value, 0) AS min_order_value,
+                       COALESCE(max_discount_value, 0) AS max_discount_value
                 FROM magiamgia
                 WHERE MaCode = ? LIMIT 1
             ");
@@ -121,6 +124,9 @@ class OrderModel extends Model
             $promo = $stmt->fetch(PDO::FETCH_ASSOC);
             if ($promo) {
                 $promo['MaDanhMuc'] = null;
+                $promo['TrangThai'] = 1;
+                $promo['min_order_value'] = 0;
+                $promo['max_discount_value'] = 0;
             }
         }
 
@@ -130,6 +136,9 @@ class OrderModel extends Model
         }
         if ((int)$promo['SoLuong'] <= 0) {
             return ['valid' => false, 'message' => 'Mã đã hết lượt dùng.', 'discount' => 0, 'code' => $promoCode];
+        }
+        if ((int)($promo['TrangThai'] ?? 1) !== 1) {
+            return ['valid' => false, 'message' => 'Mã giảm giá này đang tạm tắt.', 'discount' => 0, 'code' => $promoCode];
         }
         if (!empty($promo['NgayHetHan']) && strtotime($promo['NgayHetHan']) < strtotime(date('Y-m-d'))) {
             return ['valid' => false, 'message' => 'Mã đã hết hạn.', 'discount' => 0, 'code' => $promoCode];
@@ -187,23 +196,33 @@ class OrderModel extends Model
         }
 
         $rule = self::PROMO_RULES[$promoCode] ?? null;
-        $percent = (int)($rule['percent'] ?? $promo['PhamTramGiam']);
+        $percent = (int)($promo['PhamTramGiam'] ?? ($rule['percent'] ?? 0));
+        $minOrderValue = (float)($promo['min_order_value'] ?? 0);
+        $maxDiscountValue = (float)($promo['max_discount_value'] ?? 0);
 
-        if ($rule && $subtotalApDung < (float)$rule['min_subtotal']) {
+        if ($minOrderValue <= 0 && $rule) {
+            $minOrderValue = (float)($rule['min_subtotal'] ?? 0);
+        }
+
+        if ($maxDiscountValue <= 0 && $rule) {
+            $maxDiscountValue = (float)($rule['max_discount'] ?? 0);
+        }
+
+        if ($minOrderValue > 0 && $subtotalApDung < $minOrderValue) {
             return [
                 'valid' => false,
                 'message' => 'Đơn hàng chưa đủ điều kiện áp dụng mã giảm giá này.',
                 'discount' => 0,
                 'code' => $promoCode,
                 'percent' => $percent,
-                'min_subtotal' => (float)$rule['min_subtotal'],
-                'max_discount' => (float)$rule['max_discount'],
+                'min_subtotal' => $minOrderValue,
+                'max_discount' => $maxDiscountValue,
             ];
         }
 
         $discount = $subtotalApDung * ($percent / 100);
-        if ($rule) {
-            $discount = min($discount, (float)$rule['max_discount']);
+        if ($maxDiscountValue > 0) {
+            $discount = min($discount, $maxDiscountValue);
         }
         $discount = max(0, min($discount, $subtotalApDung));
 
@@ -213,8 +232,8 @@ class OrderModel extends Model
             'discount' => $discount,
             'code' => $promoCode,
             'percent' => $percent,
-            'min_subtotal' => $rule['min_subtotal'] ?? 0,
-            'max_discount' => $rule['max_discount'] ?? 0,
+            'min_subtotal' => $minOrderValue,
+            'max_discount' => $maxDiscountValue,
             'free_shipping' => false,
         ];
     }
@@ -243,8 +262,11 @@ class OrderModel extends Model
             $errors['delivery_method'] = 'Vui long chon phuong thuc giao hang.';
         }
 
-        if (trim($data['payment_method'] ?? '') === '') {
+        $paymentMethod = trim($data['payment_method'] ?? '');
+        if ($paymentMethod === '') {
             $errors['payment_method'] = 'Vui long chon phuong thuc thanh toan.';
+        } elseif (!in_array($paymentMethod, ['cod', 'transfer'], true)) {
+            $errors['payment_method'] = 'Phuong thuc thanh toan khong hop le.';
         }
 
         return $errors;
@@ -611,7 +633,7 @@ class OrderModel extends Model
         return match (strtolower((string)$paymentMethod)) {
             'cod' => '1',
             'transfer' => '2',
-            default => '3',
+            default => '1',
         };
     }
 
@@ -634,17 +656,25 @@ class OrderModel extends Model
                 $sql = "SELECT
                             m.MaCode AS MaGiamGia,
                             CONCAT('Giảm ', m.PhamTramGiam, '%', IF(m.MaDanhMuc IS NOT NULL, CONCAT(' (Chỉ ', d.TenDanhMuc, ')'), ' (Toàn shop)')) AS MoTa,
-                            m.NgayHetHan
+                            m.PhamTramGiam,
+                            m.NgayHetHan,
+                            COALESCE(m.TrangThai, 1) AS TrangThai,
+                            COALESCE(m.min_order_value, 0) AS min_order_value,
+                            COALESCE(m.max_discount_value, 0) AS max_discount_value
                         FROM magiamgia m
                         LEFT JOIN danhmuc d ON m.MaDanhMuc = d.MaDanhMuc
-                        WHERE m.NgayHetHan >= CURDATE() AND m.SoLuong > 0";
+                        WHERE m.NgayHetHan >= CURDATE() AND m.SoLuong > 0 AND COALESCE(m.TrangThai, 1) = 1";
                 $stmt = $this->db->prepare($sql);
                 $stmt->execute();
             } catch (Throwable $e) {
                 $sql = "SELECT
                             MaCode AS MaGiamGia,
                             CONCAT('Giảm ', PhamTramGiam, '% (Toàn shop)') AS MoTa,
-                            NgayHetHan
+                            PhamTramGiam,
+                            NgayHetHan,
+                            1 AS TrangThai,
+                            0 AS min_order_value,
+                            0 AS max_discount_value
                         FROM magiamgia
                         WHERE NgayHetHan >= CURDATE() AND SoLuong > 0";
                 $stmt = $this->db->prepare($sql);
@@ -654,7 +684,18 @@ class OrderModel extends Model
             $promos = $stmt->fetchAll(PDO::FETCH_ASSOC);
             foreach ($promos as &$promo) {
                 $code = strtoupper((string)($promo['MaGiamGia'] ?? ''));
-                if (isset($promoRuleDescriptions[$code])) {
+                $minOrderValue = (float)($promo['min_order_value'] ?? 0);
+                $maxDiscountValue = (float)($promo['max_discount_value'] ?? 0);
+                if ($minOrderValue > 0 || $maxDiscountValue > 0) {
+                    $conditions = [];
+                    if ($minOrderValue > 0) {
+                        $conditions[] = 'đơn từ ' . number_format($minOrderValue, 0, ',', '.') . 'đ';
+                    }
+                    if ($maxDiscountValue > 0) {
+                        $conditions[] = 'tối đa ' . number_format($maxDiscountValue, 0, ',', '.') . 'đ';
+                    }
+                    $promo['MoTa'] = 'Giảm ' . (int)($promo['PhamTramGiam'] ?? 0) . '% cho ' . implode(', ', $conditions);
+                } elseif (isset($promoRuleDescriptions[$code])) {
                     $promo['MoTa'] = $promoRuleDescriptions[$code];
                 }
             }

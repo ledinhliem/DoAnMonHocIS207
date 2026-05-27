@@ -199,9 +199,6 @@ foreach ($productVariants as $variant) {
                     <div class="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-3">
                         <div>
                             <h3 class="text-lg font-bold text-on-surface">Phân loại / Biến thể sản phẩm</h3>
-                            <p class="text-sm text-on-surface-variant mt-1">
-                                Chọn nhóm biến thể, nhập giá trị cách nhau bằng dấu phẩy rồi tạo bảng biến thể. Nhập 0 cho nhóm không áp dụng, giá trị 0 sẽ không hiển thị ở trang user.
-                            </p>
                         </div>
                         <button type="button" id="toggle-variant-builder" class="bg-surface-container-high text-on-surface px-4 py-2 rounded-lg font-bold hover:bg-surface-variant">
                             Chọn biến thể
@@ -219,7 +216,6 @@ foreach ($productVariants as $variant) {
                         <table class="w-full min-w-[900px]">
                             <thead class="bg-surface-container-low">
                                 <tr>
-                                    <th class="px-4 py-3 text-left text-xs font-black uppercase text-outline">SKU / Mã biến thể</th>
                                     <th class="px-4 py-3 text-left text-xs font-black uppercase text-outline">Tên biến thể</th>
                                     <th class="px-4 py-3 text-left text-xs font-black uppercase text-outline">Thuộc tính</th>
                                     <th class="px-4 py-3 text-left text-xs font-black uppercase text-outline">Giá</th>
@@ -253,7 +249,7 @@ foreach ($productVariants as $variant) {
                             type="number" 
                             min="0" 
                             max="100" 
-                            value="<?= e($product['DiemXanh'] ?? 10) ?>" 
+                            value="<?= e($product['DiemXanh'] ?? 100) ?>" 
                             class="w-full rounded-xl border border-outline px-4 py-3 bg-surface-container-lowest text-on-surface"
                         >
                     </div>
@@ -505,7 +501,7 @@ document.addEventListener('DOMContentLoaded', function () {
             fashionType.value = '';
             fashionSize.innerHTML = '<option value="">Chọn size</option>';
             if (categoryName.includes('kitchen')) {
-                variantSizeLabel.textContent = 'Quy cách / dung tích';
+                variantSizeLabel.textContent = 'Dung tích / kích thước';
                 variantLabelLabel.textContent = 'Phân loại / mùi / chất liệu';
                 variantSize.placeholder = 'VD: 30 cái/hộp, 500ml, bộ 3';
                 variantLabel.placeholder = 'VD: Lemon, Inox, bã cà phê';
@@ -520,7 +516,7 @@ document.addEventListener('DOMContentLoaded', function () {
                 variantSize.placeholder = 'VD: 200ml, 1000ml, 230g';
                 variantLabel.placeholder = 'VD: Da dầu, Lavender, Không mùi';
             } else {
-                variantSizeLabel.textContent = 'Quy cách / kích thước';
+                variantSizeLabel.textContent = 'Kích thước';
                 variantLabelLabel.textContent = 'Phân loại / màu / mùi';
                 variantSize.placeholder = 'VD: 500ml, 30 cái/hộp, 120 x 120 cm';
                 variantLabel.placeholder = 'VD: Lemon, Đen, Tre tự nhiên';
@@ -550,7 +546,7 @@ document.addEventListener('DOMContentLoaded', function () {
     const variantSuggestions = {
         fashion: ['Size', 'Màu sắc'],
         care: ['Dung tích', 'Mùi hương', 'Loại da', 'Loại/kiểu'],
-        kitchen: ['Quy cách', 'Dung tích', 'Kích thước', 'Màu sắc'],
+        kitchen: ['Dung tích', 'Kích thước', 'Màu sắc'],
         decor: ['Họa tiết', 'Chất liệu', 'Kích thước', 'Khối lượng', 'Mùi hương', 'Màu sắc'],
         default: ['Kích thước', 'Màu sắc', 'Loại/kiểu']
     };
@@ -561,28 +557,47 @@ document.addEventListener('DOMContentLoaded', function () {
     const variantEmptyNote = document.getElementById('variant-empty-note');
     const toggleVariantBuilder = document.getElementById('toggle-variant-builder');
     const generateVariantsButton = document.getElementById('generate-variants');
+    let currentVariantCategoryKey = getCurrentVariantCategoryKey();
+    let selectedAttributes = [];
 
-    function getCurrentVariantGroups() {
+    function getCurrentVariantCategoryKey() {
         const selectedOption = categorySelect?.options[categorySelect.selectedIndex];
         const name = (selectedOption?.dataset.categoryName || '').toLowerCase();
-        if (name.includes('fashion')) return variantSuggestions.fashion;
-        if (name.includes('care')) return variantSuggestions.care;
-        if (name.includes('kitchen')) return variantSuggestions.kitchen;
-        if (name.includes('decor')) return variantSuggestions.decor;
-        return variantSuggestions.default;
+        if (name.includes('fashion')) return 'fashion';
+        if (name.includes('care')) return 'care';
+        if (name.includes('kitchen')) return 'kitchen';
+        if (name.includes('decor')) return 'decor';
+        return 'default';
+    }
+
+    function getCurrentVariantGroups() {
+        return variantSuggestions[getCurrentVariantCategoryKey()] || variantSuggestions.default;
     }
 
     function renderVariantGroupOptions() {
         if (!variantOptionGroups) return;
         const groups = getCurrentVariantGroups();
+        selectedAttributes = selectedAttributes.filter(function (attribute) {
+            return groups.includes(attribute.attribute_name);
+        });
         variantOptionGroups.innerHTML = groups.map(function (group, index) {
+            const attribute = getSelectedAttribute(group);
+            const values = attribute?.values || [];
             return `
                 <div class="rounded-xl border border-outline/50 p-4 bg-white" data-variant-group-card>
                     <label class="flex items-center gap-2 font-semibold text-sm">
-                        <input type="checkbox" class="variant-group-check" data-group="${escapeHtml(group)}" ${index < 1 ? 'checked' : ''}>
+                        <input type="checkbox" class="variant-group-check" data-group="${escapeHtml(group)}" ${index < 1 || values.length ? 'checked' : ''}>
                         ${escapeHtml(group)}
                     </label>
-                    <input type="text" class="variant-group-values mt-3 w-full rounded-lg border border-outline px-3 py-2 text-sm" data-group="${escapeHtml(group)}" placeholder="VD: ${group === 'Size' ? 'S, M, L' : group === 'Màu sắc' ? 'Đen, Trắng' : '500ml, 700ml'}">
+                    <div class="mt-3 flex gap-2">
+                        <input type="text" class="variant-group-values w-full rounded-lg border border-outline px-3 py-2 text-sm" data-group="${escapeHtml(group)}">
+                        <button type="button" class="add-variant-value rounded-lg bg-surface-container-high px-3 py-2 text-sm font-bold text-on-surface hover:bg-surface-variant" data-group="${escapeHtml(group)}">
+                            Thêm
+                        </button>
+                    </div>
+                    <div class="variant-group-tags mt-3 flex flex-wrap gap-2" data-group-tags="${escapeHtml(group)}">
+                        ${renderVariantValueTags(group)}
+                    </div>
                 </div>
             `;
         }).join('');
@@ -593,6 +608,114 @@ document.addEventListener('DOMContentLoaded', function () {
                 if (checkbox && input.value.trim() !== '') {
                     checkbox.checked = true;
                 }
+            });
+            input.addEventListener('keydown', function (event) {
+                if (event.key === 'Enter' || event.key === ',') {
+                    event.preventDefault();
+                    addAttributeValues(input.dataset.group || '', input.value);
+                    input.value = '';
+                }
+            });
+            input.addEventListener('blur', function () {
+                if (input.value.trim() !== '') {
+                    addAttributeValues(input.dataset.group || '', input.value);
+                    input.value = '';
+                }
+            });
+        });
+
+        variantOptionGroups.querySelectorAll('.add-variant-value').forEach(function (button) {
+            button.addEventListener('click', function () {
+                const group = button.dataset.group || '';
+                const input = button.closest('[data-variant-group-card]')?.querySelector('.variant-group-values');
+                addAttributeValues(group, input?.value || '');
+                if (input) {
+                    input.value = '';
+                    input.focus();
+                }
+            });
+        });
+
+        variantOptionGroups.querySelectorAll('[data-remove-variant-value]').forEach(function (button) {
+            button.addEventListener('click', function () {
+                removeAttributeValue(button.dataset.group || '', button.dataset.value || '');
+            });
+        });
+    }
+
+    function getSelectedAttribute(groupName) {
+        return selectedAttributes.find(function (attribute) {
+            return attribute.attribute_name === groupName;
+        }) || null;
+    }
+
+    function ensureSelectedAttribute(groupName) {
+        let attribute = getSelectedAttribute(groupName);
+        if (!attribute) {
+            attribute = {
+                attribute_id: groupName,
+                attribute_name: groupName,
+                values: []
+            };
+            selectedAttributes.push(attribute);
+        }
+        return attribute;
+    }
+
+    function addAttributeValues(groupName, rawValue) {
+        const values = parseVariantValues(rawValue, groupName);
+        if (!groupName || !values.length) return;
+
+        const attribute = ensureSelectedAttribute(groupName);
+        values.forEach(function (value) {
+            if (!attribute.values.includes(value)) {
+                attribute.values.push(value);
+            }
+        });
+
+        const checkbox = variantOptionGroups?.querySelector(`.variant-group-check[data-group="${cssEscape(groupName)}"]`);
+        if (checkbox) {
+            checkbox.checked = true;
+        }
+        renderVariantGroupTags(groupName);
+    }
+
+    function removeAttributeValue(groupName, value) {
+        const attribute = getSelectedAttribute(groupName);
+        if (!attribute) return;
+
+        attribute.values = attribute.values.filter(function (item) {
+            return item !== value;
+        });
+        if (!attribute.values.length) {
+            selectedAttributes = selectedAttributes.filter(function (item) {
+                return item.attribute_name !== groupName;
+            });
+        }
+        renderVariantGroupTags(groupName);
+    }
+
+    function renderVariantValueTags(groupName) {
+        const attribute = getSelectedAttribute(groupName);
+        const values = attribute?.values || [];
+        return values.map(function (value) {
+            return `
+                <span class="inline-flex items-center gap-2 rounded-full bg-primary/10 px-3 py-1 text-xs font-bold text-primary">
+                    ${escapeHtml(value)}
+                    <button type="button" class="text-primary hover:text-red-700" data-remove-variant-value data-group="${escapeHtml(groupName)}" data-value="${escapeHtml(value)}">×</button>
+                </span>
+            `;
+        }).join('');
+    }
+
+    function renderVariantGroupTags(groupName) {
+        const tagWrap = variantOptionGroups?.querySelector(`[data-group-tags="${cssEscape(groupName)}"]`);
+        if (!tagWrap) return;
+
+        tagWrap.innerHTML = renderVariantValueTags(groupName);
+        tagWrap.querySelectorAll('[data-remove-variant-value]').forEach(function (button) {
+            button.addEventListener('click', function () {
+                removeAttributeValue(button.dataset.group || '', button.dataset.value || '');
             });
         });
     }
@@ -615,7 +738,12 @@ document.addEventListener('DOMContentLoaded', function () {
             const checkbox = card.querySelector('.variant-group-check');
             const input = card.querySelector('.variant-group-values');
             const groupName = checkbox?.dataset.group || '';
-            const values = parseVariantValues(input?.value || '', groupName);
+            if (input?.value.trim() !== '') {
+                addAttributeValues(groupName, input.value);
+                input.value = '';
+            }
+            const attribute = getSelectedAttribute(groupName);
+            const values = attribute?.values || [];
 
             if (values.length && checkbox) {
                 checkbox.checked = true;
@@ -648,24 +776,24 @@ document.addEventListener('DOMContentLoaded', function () {
         const existingVariants = getCurrentVariantRows().filter(function (variant) {
             return !isBlankDefaultVariant(variant);
         });
-        const existingKeys = new Set(existingVariants.map(function (variant) {
+        const seenKeys = new Set(existingVariants.map(function (variant) {
             return variantCombinationKey(variant.attributes || {}, variant.name || '');
         }));
-        const variantsToAppend = newVariants.filter(function (variant) {
+        const uniqueVariants = newVariants.filter(function (variant) {
             const key = variantCombinationKey(variant.attributes || {}, variant.name || '');
-            if (existingKeys.has(key)) {
+            if (seenKeys.has(key)) {
                 return false;
             }
-            existingKeys.add(key);
+            seenKeys.add(key);
             return true;
         });
 
-        if (!variantsToAppend.length) {
+        if (!uniqueVariants.length) {
             alert('Biến thể này đã có trong bảng.');
             return;
         }
 
-        renderVariantRows(existingVariants.concat(variantsToAppend));
+        renderVariantRows(existingVariants.concat(uniqueVariants));
     }
 
     function parseVariantValues(rawValue, groupName) {
@@ -686,7 +814,6 @@ document.addEventListener('DOMContentLoaded', function () {
     function resolveVariantSize(attributes) {
         return attributes['Size']
             || attributes['Dung tích']
-            || attributes['Quy cách']
             || attributes['Kích thước']
             || attributes['Khối lượng']
             || attributes['Loại/kiểu']
@@ -722,9 +849,7 @@ document.addEventListener('DOMContentLoaded', function () {
         tr.className = 'border-t border-outline/20';
         tr.innerHTML = `
             <td class="px-4 py-3">
-                <input name="variants[${index}][sku]" value="${escapeHtml(variant.sku || '')}" class="w-full rounded-lg border border-outline px-3 py-2 text-sm" placeholder="Bỏ trống để tự sinh">
-            </td>
-            <td class="px-4 py-3">
+                <input type="hidden" name="variants[${index}][sku]" value="${escapeHtml(variant.sku || '')}">
                 <input name="variants[${index}][name]" value="${escapeHtml(variant.name || '')}" class="w-full rounded-lg border border-outline px-3 py-2 text-sm" required>
             </td>
             <td class="px-4 py-3 text-sm text-on-surface-variant">
@@ -811,6 +936,32 @@ document.addEventListener('DOMContentLoaded', function () {
         }
     }
 
+    function getDefaultVariantRow() {
+        return {
+            sku: '',
+            name: 'Mặc định',
+            attributes: { 'Loại/kiểu': 'Mặc định' },
+            kich_thuoc: 'Mặc định',
+            mau_sac: '',
+            price: '',
+            stock: ''
+        };
+    }
+
+    function resetVariantsForCategoryChange() {
+        const nextVariantCategoryKey = getCurrentVariantCategoryKey();
+
+        if (nextVariantCategoryKey === currentVariantCategoryKey) {
+            renderVariantGroupOptions();
+            return;
+        }
+
+        currentVariantCategoryKey = nextVariantCategoryKey;
+        selectedAttributes = [];
+        renderVariantGroupOptions();
+        renderVariantRows([]);
+    }
+
     function escapeHtml(value) {
         return String(value ?? '').replace(/[&<>"']/g, function (char) {
             return ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#039;' })[char];
@@ -830,18 +981,10 @@ document.addEventListener('DOMContentLoaded', function () {
         generateVariantsButton.addEventListener('click', createVariantsFromBuilder);
     }
     if (categorySelect) {
-        categorySelect.addEventListener('change', renderVariantGroupOptions);
+        categorySelect.addEventListener('change', resetVariantsForCategoryChange);
     }
     renderVariantGroupOptions();
-    renderVariantRows(initialVariants.length ? initialVariants : [{
-        sku: '',
-        name: 'Mặc định',
-        attributes: { 'Loại/kiểu': 'Mặc định' },
-        kich_thuoc: 'Mặc định',
-        mau_sac: '',
-        price: '',
-        stock: ''
-    }]);
+    renderVariantRows(initialVariants.length ? initialVariants : [getDefaultVariantRow()]);
 
     document.querySelectorAll('[data-product-image-input]').forEach(function (input) {
         input.addEventListener('change', function () {

@@ -137,7 +137,7 @@ class AdminController extends Controller
                         'new_brand_name' => trim($_POST['new_brand_name'] ?? ''),
                         'TenVatLieu' => trim($_POST['TenVatLieu'] ?? ''),
                         'MoTa' => trim($_POST['MoTa'] ?? ''),
-                        'DiemXanh' => is_numeric($_POST['DiemXanh'] ?? null) ? (int)$_POST['DiemXanh'] : 10,
+                        'DiemXanh' => is_numeric($_POST['DiemXanh'] ?? null) ? (int)$_POST['DiemXanh'] : 100,
                         'NguonGoc' => trim($_POST['NguonGoc'] ?? ''),
                         'TacDongMoiTruong' => trim($_POST['TacDongMoiTruong'] ?? ''),
                         'CoTaiChe' => isset($_POST['CoTaiChe']) ? 1 : 0,
@@ -217,7 +217,7 @@ class AdminController extends Controller
                         'new_brand_name' => trim($_POST['new_brand_name'] ?? ''),
                         'TenVatLieu' => trim($_POST['TenVatLieu'] ?? ''),
                         'MoTa' => trim($_POST['MoTa'] ?? ''),
-                        'DiemXanh' => is_numeric($_POST['DiemXanh'] ?? null) ? (int)$_POST['DiemXanh'] : 10,
+                        'DiemXanh' => is_numeric($_POST['DiemXanh'] ?? null) ? (int)$_POST['DiemXanh'] : 100,
                         'NguonGoc' => trim($_POST['NguonGoc'] ?? ''),
                         'TacDongMoiTruong' => trim($_POST['TacDongMoiTruong'] ?? ''),
                         'CoTaiChe' => isset($_POST['CoTaiChe']) ? 1 : 0,
@@ -978,6 +978,7 @@ class AdminController extends Controller
             $title = trim($_POST['title'] ?? '');
             $content = trim($_POST['content'] ?? '');
             $currentImage = $_POST['current_image'] ?? '';
+            $postStatus = isset($_POST['post_status']) && $_POST['post_status'] === '1' ? 1 : 0;
 
             if ($title === '' || $content === '') {
                 $status = 'error';
@@ -993,7 +994,8 @@ class AdminController extends Controller
                         'TieuDe' => $title,
                         'NoiDung' => $content,
                         'HinhAnhBia' => $coverImage,
-                        'MaNguoiDung' => $_SESSION['user_id']
+                        'MaNguoiDung' => $_SESSION['user_id'],
+                        'TrangThai' => $postStatus,
                     ];
 
                     if ($action === 'create_post') {
@@ -1101,8 +1103,11 @@ class AdminController extends Controller
                 $percent = (int)($_POST['percent'] ?? 0);
                 $quantity = (int)($_POST['quantity'] ?? 0);
                 $expiredDate = $_POST['expired_date'] ?? '';
+                $minOrderValue = trim((string)($_POST['min_order_value'] ?? '0'));
+                $maxDiscountValue = trim((string)($_POST['max_discount_value'] ?? '0'));
+                $promoStatus = isset($_POST['promo_status']) && $_POST['promo_status'] === '1' ? 1 : 0;
 
-                if (!$this->isValidPromoData($code, $percent, $quantity, $expiredDate, $message)) {
+                if (!$this->isValidPromoData($code, $percent, $quantity, $expiredDate, $minOrderValue, $maxDiscountValue, $message)) {
                     $status = 'error';
                 } elseif ($this->adminModel->promoCodeExists($code, $action === 'update_promo' ? $promoId : null)) {
                     $status = 'error';
@@ -1112,7 +1117,10 @@ class AdminController extends Controller
                         'MaCode' => $code,
                         'PhamTramGiam' => $percent,
                         'SoLuong' => $quantity,
-                        'NgayHetHan' => $expiredDate
+                        'NgayHetHan' => $expiredDate,
+                        'min_order_value' => (float)$minOrderValue,
+                        'max_discount_value' => (float)$maxDiscountValue,
+                        'TrangThai' => $promoStatus,
                     ];
 
                     if ($action === 'create_promo') {
@@ -1272,7 +1280,7 @@ class AdminController extends Controller
 
     private function mapVariantSizeFromAttributes(array $attributes): string
     {
-        foreach (['Size', 'Dung tích', 'Khối lượng', 'Kích thước', 'Quy cách', 'Loại/kiểu'] as $label) {
+        foreach (['Size', 'Dung tích', 'Khối lượng', 'Kích thước', 'Loại/kiểu'] as $label) {
             if (!empty($attributes[$label]) && trim((string)$attributes[$label]) !== '0') {
                 return trim((string)$attributes[$label]);
             }
@@ -1558,7 +1566,7 @@ class AdminController extends Controller
         return $safeName;
     }
 
-    private function isValidPromoData($code, $percent, $quantity, $expiredDate, &$message)
+    private function isValidPromoData($code, $percent, $quantity, $expiredDate, $minOrderValue, $maxDiscountValue, &$message)
     {
         if ($code === '') {
             $message = 'Vui lòng nhập mã giảm giá!';
@@ -1582,6 +1590,16 @@ class AdminController extends Controller
 
         if ($expiredDate < date('Y-m-d')) {
             $message = 'Ngày hết hạn không được nhỏ hơn ngày hiện tại!';
+            return false;
+        }
+
+        if (!is_numeric($minOrderValue) || (float)$minOrderValue < 0) {
+            $message = 'Giá trị đơn hàng tối thiểu phải là số không âm!';
+            return false;
+        }
+
+        if (!is_numeric($maxDiscountValue) || (float)$maxDiscountValue < 0) {
+            $message = 'Giá giảm tối đa phải là số không âm!';
             return false;
         }
 

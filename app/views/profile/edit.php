@@ -1,6 +1,8 @@
 <?php include __DIR__ . '/../layouts/header.php'; ?>
 <?php
-$u = !empty($old) ? array_merge($user ?? [], $old) : ($user ?? []);
+$user = is_array($user ?? null) ? $user : [];
+$old = is_array($old ?? null) ? $old : [];
+$u = !empty($old) ? array_merge($user, $old) : $user;
 ?>
 
 <main class="max-w-4xl mx-auto px-6 md:px-12 py-12 md:py-20">

@@ -33,7 +33,8 @@ CREATE TABLE `baiviet` (
   `NoiDung` text NOT NULL,
   `HinhAnhBia` varchar(255) DEFAULT NULL,
   `NgayDang` datetime DEFAULT NULL,
-  `MaNguoiDung` varchar(20) DEFAULT NULL
+  `MaNguoiDung` varchar(20) DEFAULT NULL,
+  `TrangThai` tinyint(1) NOT NULL DEFAULT 1
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 --
@@ -496,20 +497,23 @@ CREATE TABLE `magiamgia` (
   `MaCode` varchar(20) NOT NULL,
   `PhamTramGiam` int(11) NOT NULL,
   `SoLuong` int(11) DEFAULT 100,
-  `NgayHetHan` date DEFAULT NULL
+  `NgayHetHan` date DEFAULT NULL,
+  `min_order_value` decimal(12,2) NOT NULL DEFAULT 0.00,
+  `max_discount_value` decimal(12,2) NOT NULL DEFAULT 0.00,
+  `TrangThai` tinyint(1) NOT NULL DEFAULT 1
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 --
 -- Đang đổ dữ liệu cho bảng `magiamgia`
 --
 
-INSERT INTO `magiamgia` (`MaCode`, `PhamTramGiam`, `SoLuong`, `NgayHetHan`) VALUES
-('DEALHUYDIET', 30, 30, '2026-04-30'),
-('EARTHDAY26', 26, 100, '2026-05-30'),
-('ECOKITCHEN', 15, 100, '2026-08-31'),
-('HEGREEN', 20, 50, '2026-07-31'),
-('SAVEPLANET', 20, 50, '2026-06-30'),
-('ZENTROGREEN', 10, 500, '2026-12-31');
+INSERT INTO `magiamgia` (`MaCode`, `PhamTramGiam`, `SoLuong`, `NgayHetHan`, `min_order_value`, `max_discount_value`) VALUES
+('DEALHUYDIET', 30, 30, '2026-04-30', 0.00, 0.00),
+('EARTHDAY26', 26, 100, '2026-05-30', 100000.00, 50000.00),
+('ECOKITCHEN', 15, 100, '2026-08-31', 0.00, 0.00),
+('HEGREEN', 20, 50, '2026-07-31', 0.00, 0.00),
+('SAVEPLANET', 20, 50, '2026-06-30', 120000.00, 30000.00),
+('ZENTROGREEN', 10, 500, '2026-12-31', 50000.00, 15000.00);
 
 -- --------------------------------------------------------
 
@@ -713,7 +717,7 @@ CREATE TABLE `sanpham` (
   `MaThuongHieu` varchar(20) DEFAULT NULL,
   `MaVatLieu` varchar(20) DEFAULT NULL,
   `MoTa` text DEFAULT NULL,
-  `DiemXanh` int(11) DEFAULT 10,
+  `DiemXanh` int(11) DEFAULT 100,
   `TrangThai` tinyint(1) DEFAULT 1,
   `NguonGoc` varchar(255) DEFAULT NULL,
   `TacDongMoiTruong` text DEFAULT NULL,
@@ -1195,14 +1199,14 @@ CREATE TABLE IF NOT EXISTS `game_rewards` (
   UNIQUE KEY `uniq_reward_key` (`reward_key`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
-INSERT IGNORE INTO `magiamgia` (`MaCode`, `PhamTramGiam`, `SoLuong`, `NgayHetHan`) VALUES
-('GIAM5', 5, 100, '2026-12-31'),
-('GIAM10', 10, 100, '2026-12-31'),
-('GIAM20', 20, 100, '2026-12-31'),
-('GIAM26', 26, 100, '2026-12-31'),
-('GAME5', 5, 100, '2026-12-31'),
-('GAME10', 10, 100, '2026-12-31'),
-('FREESHIP', 0, 100, '2026-12-31');
+INSERT IGNORE INTO `magiamgia` (`MaCode`, `PhamTramGiam`, `SoLuong`, `NgayHetHan`, `min_order_value`, `max_discount_value`) VALUES
+('GIAM5', 5, 100, '2026-12-31', 100000.00, 20000.00),
+('GIAM10', 10, 100, '2026-12-31', 300000.00, 50000.00),
+('GIAM20', 20, 100, '2026-12-31', 700000.00, 120000.00),
+('GIAM26', 26, 100, '2026-12-31', 1000000.00, 200000.00),
+('GAME5', 5, 100, '2026-12-31', 50000.00, 10000.00),
+('GAME10', 10, 100, '2026-12-31', 70000.00, 15000.00),
+('FREESHIP', 0, 100, '2026-12-31', 0.00, 0.00);
 
 INSERT IGNORE INTO `game_rewards`
 (`reward_key`, `label`, `voucher_code`, `weight`, `sort_order`, `status`) VALUES

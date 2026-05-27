@@ -15,6 +15,7 @@ class ProductModel extends Model
     {
         [$where, $params] = $this->buildProductFilters($filters);
         $imageAggregateSql = $this->productImageAggregateSql();
+        $variantWhereSql = $this->activeVariantWhereSql();
 
         $orderBy = match ($filters['sort'] ?? '') {
             'price_asc' => 'v.min_price ASC, sp.MaSanPham ASC',
@@ -52,6 +53,7 @@ class ProductModel extends Model
                     SUM(SoLuongTon) AS total_stock,
                     MIN(MaBienThe) AS default_variant
                 FROM bienthesanpham
+                {$variantWhereSql}
                 GROUP BY MaSanPham
             ) v ON v.MaSanPham = sp.MaSanPham
             LEFT JOIN ({$imageAggregateSql}) img ON img.MaSanPham = sp.MaSanPham
@@ -88,7 +90,7 @@ class ProductModel extends Model
             LEFT JOIN danhmuc dm ON dm.MaDanhMuc = sp.MaDanhMuc
             LEFT JOIN thuonghieu th ON th.MaThuongHieu = sp.MaThuongHieu
             LEFT JOIN vatlieu vl ON vl.MaVatLieu = sp.MaVatLieu
-            WHERE sp.MaSanPham = ? AND sp.TrangThai = 1
+            WHERE sp.MaSanPham = ? AND sp.TrangThai = 1 AND COALESCE(dm.TrangThai, 1) = 1
             LIMIT 1
         ");
         $stmt->execute([$id]);
@@ -169,7 +171,7 @@ class ProductModel extends Model
         foreach ($variants as $variant) {
             $attributes = $variant['attributes'] ?? $this->normalizeVariantAttributes($variant, $product);
             foreach ($attributes as $label => $value) {
-                $label = trim((string)$label);
+                $label = $this->normalizeVariantAttributeLabel((string)$label);
                 $value = trim((string)$value);
                 if ($label === '' || $value === '') {
                     continue;
@@ -182,7 +184,7 @@ class ProductModel extends Model
             }
         }
 
-        $preferredOrder = ['Size', 'Màu sắc', 'Dung tích', 'Mùi hương', 'Khối lượng', 'Họa tiết', 'Chất liệu', 'Quy cách', 'Loại da', 'Loại/kiểu', 'Kích thước'];
+        $preferredOrder = ['Size', 'Màu sắc', 'Dung tích', 'Mùi hương', 'Khối lượng', 'Họa tiết', 'Chất liệu', 'Loại da', 'Loại/kiểu', 'Kích thước'];
         uksort($groups, function ($a, $b) use ($preferredOrder) {
             $posA = array_search($a, $preferredOrder, true);
             $posB = array_search($b, $preferredOrder, true);
@@ -255,7 +257,7 @@ class ProductModel extends Model
                 return 'Họa tiết';
             }
             if (preg_match('/bộ\s*\d+|\d+\s*cái|hộp|combo|set/iu', $value) || preg_match('/kitchen/iu', $haystack)) {
-                return 'Quy cách';
+                return 'Kích thước';
             }
         }
 
@@ -267,7 +269,7 @@ class ProductModel extends Model
         $productId = $this->normalizeProductId($productId);
 
         $stmt = $this->db->prepare("
-            SELECT dg.MaDanhGia, dg.SoSao, dg.NoiDung, dg.NgayDanhGia, nd.HoTen
+            SELECT dg.MaDanhGia, dg.SoSao, dg.NoiDung, dg.NgayDanhGia, dg.PhanHoiAdmin, nd.HoTen
             FROM danhgia dg
             LEFT JOIN nguoidung nd ON nd.MaNguoiDung = dg.MaNguoiDung
             WHERE dg.MaSanPham = ? AND dg.TrangThai = 1
@@ -280,7 +282,8 @@ class ProductModel extends Model
 
     public function getCategories(): array
     {
-        $stmt = $this->db->query("SELECT MaDanhMuc, TenDanhMuc FROM danhmuc ORDER BY MaDanhMuc ASC");
+        $where = $this->hasColumn('danhmuc', 'TrangThai') ? 'WHERE TrangThai = 1' : '';
+        $stmt = $this->db->query("SELECT MaDanhMuc, TenDanhMuc FROM danhmuc {$where} ORDER BY MaDanhMuc ASC");
         $categories = [];
 
         foreach ($stmt->fetchAll(PDO::FETCH_ASSOC) as $row) {
@@ -333,6 +336,7 @@ class ProductModel extends Model
     public function getSuggestions(string $keyword, int $limit = 8): array
     {
         $imageAggregateSql = $this->productImageAggregateSql();
+        $variantWhereSql = $this->activeVariantWhereSql();
         // Lấy từ khóa từ keyword để tìm sản phẩm liên quan
         $keywords = array_filter(array_map('trim', explode(' ', strtolower($keyword))));
 
@@ -356,10 +360,11 @@ class ProductModel extends Model
                         SUM(SoLuongTon) AS total_stock,
                         MIN(MaBienThe) AS default_variant
                     FROM bienthesanpham
+                    {$variantWhereSql}
                     GROUP BY MaSanPham
                 ) v ON v.MaSanPham = sp.MaSanPham
                 LEFT JOIN ({$imageAggregateSql}) img ON img.MaSanPham = sp.MaSanPham
-                WHERE sp.TrangThai = 1
+                WHERE sp.TrangThai = 1 AND COALESCE(dm.TrangThai, 1) = 1
                 ORDER BY RAND()
                 LIMIT ?
             ";
@@ -395,10 +400,11 @@ class ProductModel extends Model
                         SUM(SoLuongTon) AS total_stock,
                         MIN(MaBienThe) AS default_variant
                     FROM bienthesanpham
+                    {$variantWhereSql}
                     GROUP BY MaSanPham
                 ) v ON v.MaSanPham = sp.MaSanPham
                 LEFT JOIN ({$imageAggregateSql}) img ON img.MaSanPham = sp.MaSanPham
-                WHERE sp.TrangThai = 1 AND ($whereClause)
+                WHERE sp.TrangThai = 1 AND COALESCE(dm.TrangThai, 1) = 1 AND ($whereClause)
                 ORDER BY RAND()
                 LIMIT ?
             ";
@@ -417,7 +423,15 @@ class ProductModel extends Model
 
     public function checkStock(string $variantId, int $qty): bool
     {
-        $stmt = $this->db->prepare("SELECT SoLuongTon FROM bienthesanpham WHERE MaBienThe = ? LIMIT 1");
+        $statusSql = $this->hasColumn('bienthesanpham', 'TrangThai') ? ' AND bt.TrangThai = 1' : '';
+        $stmt = $this->db->prepare("
+            SELECT bt.SoLuongTon
+            FROM bienthesanpham bt
+            JOIN sanpham sp ON sp.MaSanPham = bt.MaSanPham
+            LEFT JOIN danhmuc dm ON dm.MaDanhMuc = sp.MaDanhMuc
+            WHERE bt.MaBienThe = ? AND sp.TrangThai = 1 AND COALESCE(dm.TrangThai, 1) = 1{$statusSql}
+            LIMIT 1
+        ");
         $stmt->execute([$variantId]);
         $stock = $stmt->fetchColumn();
 
@@ -444,8 +458,10 @@ class ProductModel extends Model
                 img.DuongDan AS image
             FROM bienthesanpham bt
             JOIN sanpham sp ON sp.MaSanPham = bt.MaSanPham
+            LEFT JOIN danhmuc dm ON dm.MaDanhMuc = sp.MaDanhMuc
             LEFT JOIN ({$imageAggregateSql}) img ON img.MaSanPham = bt.MaSanPham
-            WHERE bt.MaBienThe = ?
+            WHERE bt.MaBienThe = ? AND sp.TrangThai = 1 AND COALESCE(dm.TrangThai, 1) = 1
+            " . ($this->hasColumn('bienthesanpham', 'TrangThai') ? 'AND bt.TrangThai = 1' : '') . "
             LIMIT 1
         ");
         $stmt->execute([$variantId]);
@@ -473,6 +489,11 @@ class ProductModel extends Model
         ";
     }
 
+    private function activeVariantWhereSql(): string
+    {
+        return $this->hasColumn('bienthesanpham', 'TrangThai') ? 'WHERE TrangThai = 1' : '';
+    }
+
     private function hasColumn(string $table, string $column): bool
     {
         $stmt = $this->db->prepare('SHOW COLUMNS FROM ' . $table . ' LIKE ?');
@@ -495,13 +516,19 @@ class ProductModel extends Model
     {
         $clean = [];
         foreach ($attributes as $label => $value) {
-            $label = trim((string)$label);
+            $label = $this->normalizeVariantAttributeLabel((string)$label);
             $value = trim((string)$value);
             if ($label !== '' && $value !== '' && $value !== '0') {
                 $clean[$label] = $value;
             }
         }
         return $clean;
+    }
+
+    private function normalizeVariantAttributeLabel(string $label): string
+    {
+        $label = trim($label);
+        return mb_strtolower($label, 'UTF-8') === 'quy cách' ? 'Kích thước' : $label;
     }
 
     private function buildVariantName(array $attributes): string
@@ -541,7 +568,7 @@ class ProductModel extends Model
 
     private function buildProductFilters(array $filters): array
     {
-        $where = ['sp.TrangThai = 1'];
+        $where = ['sp.TrangThai = 1', 'COALESCE(dm.TrangThai, 1) = 1'];
         $params = [];
 
         if (!empty($filters['keyword'])) {

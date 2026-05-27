@@ -94,6 +94,8 @@ document.addEventListener("DOMContentLoaded", function () {
     cartForm.addEventListener("submit", async function (e) {
       e.preventDefault(); // luôn chặn submit thật, validate + AJAX trong cùng 1 handler
 
+      const submitter = e.submitter || document.activeElement;
+      const isBuyNow = submitter?.value === "buy_now";
       const maBienThe = variantInput?.value?.trim();
 
       // Validate: phải chọn variant
@@ -105,23 +107,44 @@ document.addEventListener("DOMContentLoaded", function () {
         return;
       }
 
-      const btn = document.getElementById("btn-add-cart");
+      const btn = isBuyNow ? document.getElementById("btn-buy-now") : document.getElementById("btn-add-cart");
       const originalHtml = btn?.innerHTML;
       if (btn) { btn.innerHTML = "Đang thêm..."; btn.disabled = true; }
 
       try {
-        const res  = await fetch(cartForm.action, {
+        const formData = new FormData(cartForm);
+        if (isBuyNow) {
+          formData.set("action", "buy_now");
+        }
+
+        const actionUrl = cartForm.dataset.cartAddUrl || cartForm.getAttribute("action") || "?url=cart/add";
+        const res  = await fetch(actionUrl, {
           method: "POST",
-          body: new FormData(cartForm),
+          body: formData,
+          credentials: "same-origin",
           headers: {
             "Accept": "application/json",
             "X-Requested-With": "XMLHttpRequest"
           }
         });
-        const data = await res.json();
+        const rawText = await res.text();
+        let data = {};
+        try {
+          data = JSON.parse(rawText);
+        } catch {
+          throw new Error(rawText || "Server khong tra ve JSON hop le");
+        }
+        if (!res.ok) {
+          throw new Error(data.message || `HTTP ${res.status}`);
+        }
+        if (data.redirect_url) {
+          window.location.href = data.redirect_url;
+          return;
+        }
         showToast(data.message || "Đã thêm vào giỏ hàng!", data.success ? "success" : "error");
-      } catch {
-        showToast("Không thể thêm vào giỏ hàng. Vui lòng thử lại.", "error");
+      } catch (error) {
+        console.error("Add to cart failed:", error);
+        showToast(error?.message || "Khong the them vao gio hang. Vui long thu lai.", "error");
       } finally {
         if (btn) { btn.innerHTML = originalHtml; btn.disabled = false; }
       }
@@ -189,9 +212,13 @@ document.addEventListener("DOMContentLoaded", function () {
   const variants = window.productVariants || [];
 
   const variantGroups = {};
+  const variantGroupOrder = [];
   document.querySelectorAll(".variant-btn").forEach(btn => {
     const type = btn.dataset.type;
-    if (!variantGroups[type]) variantGroups[type] = [];
+    if (!variantGroups[type]) {
+      variantGroups[type] = [];
+      variantGroupOrder.push(type);
+    }
     variantGroups[type].push(btn);
   });
 
@@ -201,10 +228,138 @@ document.addEventListener("DOMContentLoaded", function () {
     return String(value ?? "").trim();
   }
 
+  function escapeCssValue(value) {
+    if (window.CSS && typeof window.CSS.escape === "function") {
+      return window.CSS.escape(value);
+    }
+
+    return String(value).replace(/["\\]/g, "\\$&");
+  }
+
+  function isNonApplicableValue(value) {
+    return normalizeText(value) === "0";
+  }
+
   function getVariantAttributes(variant) {
     return variant && typeof variant.attributes === "object" && variant.attributes !== null
       ? variant.attributes
       : {};
+  }
+
+  function getApplicableAttributes(variant) {
+    const attrs = getVariantAttributes(variant);
+    const applicable = {};
+
+    Object.entries(attrs).forEach(([type, value]) => {
+      const normalizedValue = normalizeText(value);
+      if (normalizedValue !== "" && !isNonApplicableValue(normalizedValue)) {
+        applicable[type] = normalizedValue;
+      }
+    });
+
+    return applicable;
+  }
+
+  function variantMatchesSelection(variant, selection) {
+    const attrs = getApplicableAttributes(variant);
+
+    return Object.entries(selection).every(([type, value]) => {
+      const selectedValue = normalizeText(value);
+      if (selectedValue === "") {
+        return true;
+      }
+
+      return normalizeText(attrs[type]) === selectedValue;
+    });
+  }
+
+  function setButtonSelected(btn, isSelected) {
+    btn.classList.toggle("border-primary", isSelected);
+    btn.classList.toggle("ring-2", isSelected);
+    btn.classList.toggle("ring-primary", isSelected);
+    btn.classList.toggle("text-primary", isSelected);
+    btn.classList.toggle("border-outline-variant", !isSelected);
+  }
+
+  function setSelectedLabel(type, value) {
+    document.querySelectorAll(".selected-variant-label").forEach(label => {
+      if (label.dataset.label === type) {
+        label.textContent = value || "";
+      }
+    });
+  }
+
+  function getSelectionBeforeGroup(groupIndex) {
+    const scopedSelection = {};
+
+    variantGroupOrder.slice(0, groupIndex).forEach(previousType => {
+      if (selected[previousType]) {
+        scopedSelection[previousType] = selected[previousType];
+      }
+    });
+
+    return scopedSelection;
+  }
+
+  function getAvailableValues(type, selection) {
+    const values = new Set();
+    variants.forEach(variant => {
+      if (!variantMatchesSelection(variant, selection)) {
+        return;
+      }
+
+      const attrs = getApplicableAttributes(variant);
+      const value = normalizeText(attrs[type]);
+      if (value !== "") {
+        values.add(value);
+      }
+    });
+
+    return values;
+  }
+
+  function updateVariantOptions() {
+    variantGroupOrder.forEach((type, groupIndex) => {
+      const availableValues = getAvailableValues(type, getSelectionBeforeGroup(groupIndex));
+      const groupWrap = document.querySelector(`[data-variant-group="${escapeCssValue(type)}"]`);
+      const shouldShowGroup = availableValues.size > 0;
+
+      if (groupWrap) {
+        groupWrap.classList.toggle("hidden", !shouldShowGroup);
+      }
+
+      if (!shouldShowGroup) {
+        delete selected[type];
+        setSelectedLabel(type, "");
+      }
+
+      variantGroups[type].forEach(btn => {
+        const isAvailable = availableValues.has(normalizeText(btn.dataset.value));
+        btn.disabled = !isAvailable;
+        btn.classList.toggle("opacity-40", !isAvailable);
+        btn.classList.toggle("cursor-not-allowed", !isAvailable);
+
+        if (!isAvailable && selected[type] === btn.dataset.value) {
+          delete selected[type];
+          setSelectedLabel(type, "");
+          setButtonSelected(btn, false);
+        }
+      });
+    });
+  }
+
+  function autoSelectRequiredOptions() {
+    variantGroupOrder.forEach(type => {
+      const groupWrap = document.querySelector(`[data-variant-group="${escapeCssValue(type)}"]`);
+      if (groupWrap?.classList.contains("hidden") || selected[type]) {
+        return;
+      }
+
+      const firstAvailable = variantGroups[type].find(btn => !btn.disabled);
+      if (firstAvailable) {
+        selectVariantOption(firstAvailable, false);
+      }
+    });
   }
 
   function findMatchingVariant() {
@@ -212,30 +367,14 @@ document.addEventListener("DOMContentLoaded", function () {
       .filter(([, value]) => normalizeText(value) !== "");
 
     if (selectedEntries.length === 0) {
-      return null;
+      return variants[0] || null;
     }
 
-    const matches = variants.filter(variant => {
-      const attrs = getVariantAttributes(variant);
-      const attrEntries = Object.entries(attrs)
-        .filter(([, value]) => normalizeText(value) !== "");
-
-      if (attrEntries.length === 0) {
-        return selectedEntries.every(([type, value]) => normalizeText(variant[type]) === normalizeText(value));
-      }
-
-      return attrEntries.every(([type, value]) => {
-        const selectedValue = normalizeText(selected[type]);
-        const attrValue = normalizeText(value);
-        const legacyValue = normalizeText(variant[type]);
-
-        return selectedValue !== "" && (attrValue === selectedValue || legacyValue === selectedValue);
-      });
-    });
+    const matches = variants.filter(variant => variantMatchesSelection(variant, selected));
 
     matches.sort((a, b) => {
-      const aCount = Object.keys(getVariantAttributes(a)).length;
-      const bCount = Object.keys(getVariantAttributes(b)).length;
+      const aCount = Object.keys(getApplicableAttributes(a)).length;
+      const bCount = Object.keys(getApplicableAttributes(b)).length;
       return bCount - aCount;
     });
 
@@ -269,6 +408,10 @@ document.addEventListener("DOMContentLoaded", function () {
     if (variantIdEl) {
       variantIdEl.value = variant.MaBienThe || "";
     }
+    const variantAliasEl = document.getElementById("selected-variant-id-alias");
+    if (variantAliasEl) {
+      variantAliasEl.value = variant.MaBienThe || "";
+    }
 
     if (qtyInput) {
       const stock = Number.parseInt(variant.SoLuongTon, 10) || 0;
@@ -286,39 +429,49 @@ document.addEventListener("DOMContentLoaded", function () {
     }
   }
 
+  function refreshMatchedVariant() {
+    const match = findMatchingVariant();
+    if (match) {
+      updateVariantInfo(match);
+    } else if (variantInput) {
+      variantInput.value = "";
+    }
+  }
+
+  function selectVariantOption(btn, shouldRefresh = true) {
+    const type = btn.dataset.type;
+
+    variantGroups[type].forEach(b => setButtonSelected(b, false));
+    setButtonSelected(btn, true);
+
+    selected[type] = btn.dataset.value;
+    setSelectedLabel(type, btn.dataset.value);
+
+    updateVariantOptions();
+
+    if (shouldRefresh) {
+      autoSelectRequiredOptions();
+      refreshMatchedVariant();
+    }
+  }
+
   document.querySelectorAll(".variant-btn").forEach(btn => {
     btn.addEventListener("click", function () {
-      const type = this.dataset.type;
-
-      variantGroups[type].forEach(b => {
-        b.classList.remove("border-primary", "ring-2", "ring-primary", "text-primary");
-        b.classList.add("border-outline-variant");
-      });
-
-      this.classList.add("border-primary", "ring-2", "ring-primary", "text-primary");
-      this.classList.remove("border-outline-variant");
-
-      selected[type] = this.dataset.value;
-      document.querySelectorAll(".selected-variant-label").forEach(label => {
-        if (label.dataset.label === type) {
-          label.textContent = this.dataset.value;
-        }
-      });
-
-      const match = findMatchingVariant();
-      if (match) {
-        updateVariantInfo(match);
+      if (this.disabled) {
+        return;
       }
+
+      selectVariantOption(this);
     });
   });
 
-  // Auto-select button ??u ti?n m?i group
-  Object.values(variantGroups).forEach(group => {
-    if (group.length > 0) group[0].click();
-  });
+  updateVariantOptions();
+  autoSelectRequiredOptions();
+  refreshMatchedVariant();
 
   const firstDirectVariant = document.querySelector(".variant-direct-btn");
   if (firstDirectVariant) {
     firstDirectVariant.click();
   }
 });
+

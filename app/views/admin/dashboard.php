@@ -171,9 +171,9 @@ $chartPayload = [
                     <span class="material-symbols-outlined text-xl">receipt_long</span>
                     Xem đơn hàng
                 </a>
-                <a href="index.php?url=admin/inventory" class="inline-flex items-center gap-2 rounded-xl bg-surface-container-high px-5 py-3 text-sm font-bold text-primary hover:bg-surface-container-highest transition">
-                    <span class="material-symbols-outlined text-xl">warehouse</span>
-                    Kiểm tra kho
+                <a href="index.php?url=admin/products" class="inline-flex items-center gap-2 rounded-xl bg-surface-container-high px-5 py-3 text-sm font-bold text-primary hover:bg-surface-container-highest transition">
+                    <span class="material-symbols-outlined text-xl">eco</span>
+                    Quản lý sản phẩm
                 </a>
             </div>
         </header>
@@ -281,7 +281,7 @@ $chartPayload = [
                         <h2 class="font-headline text-2xl font-black text-primary">Cảnh báo tồn kho thấp</h2>
                         <p class="text-sm text-on-surface-variant mt-1">5 biến thể có tồn kho thấp nhất.</p>
                     </div>
-                    <a href="index.php?url=admin/inventory&status=low_stock" class="text-primary font-bold text-sm hover:underline whitespace-nowrap">Đến kho</a>
+                    <a href="index.php?url=admin/products" class="text-primary font-bold text-sm hover:underline whitespace-nowrap">Đến sản phẩm</a>
                 </div>
                 <div class="overflow-x-auto">
                     <table class="w-full text-left min-w-[620px]">

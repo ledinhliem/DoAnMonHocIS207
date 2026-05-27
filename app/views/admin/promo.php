@@ -25,11 +25,22 @@ $code = $editingPromo['MaCode'] ?? '';
 $percent = $editingPromo['PhamTramGiam'] ?? '';
 $quantity = $editingPromo['SoLuong'] ?? '';
 $expiredDate = $editingPromo['NgayHetHan'] ?? '';
+$minOrderValue = $editingPromo['min_order_value'] ?? 0;
+$maxDiscountValue = $editingPromo['max_discount_value'] ?? 0;
+$promoStatus = (int)($editingPromo['TrangThai'] ?? 1);
+
+if (!function_exists('formatPromoMoney')) {
+    function formatPromoMoney($value): string
+    {
+        $amount = (float)$value;
+        return $amount > 0 ? number_format($amount, 0, ',', '.') . 'đ' : 'Không giới hạn';
+    }
+}
 
 $today = date('Y-m-d');
 $totalPromos = count($promos);
 $activePromos = count(array_filter($promos, function ($promo) use ($today) {
-    return !empty($promo['NgayHetHan']) && $promo['NgayHetHan'] >= $today && (int)$promo['SoLuong'] > 0;
+    return !empty($promo['NgayHetHan']) && $promo['NgayHetHan'] >= $today && (int)$promo['SoLuong'] > 0 && (int)($promo['TrangThai'] ?? 1) === 1;
 }));
 $expiredPromos = count(array_filter($promos, function ($promo) use ($today) {
     return !empty($promo['NgayHetHan']) && $promo['NgayHetHan'] < $today;
@@ -140,6 +151,44 @@ $expiredPromos = count(array_filter($promos, function ($promo) use ($today) {
                     </p>
                 </div>
 
+                <div>
+                    <label class="block text-xs font-bold uppercase tracking-widest text-primary mb-2">
+                        Giá trị đơn hàng tối thiểu
+                    </label>
+                    <input
+                        type="number"
+                        name="min_order_value"
+                        value="<?= e($minOrderValue) ?>"
+                        min="0"
+                        step="1000"
+                        placeholder="VD: 300000"
+                        class="w-full rounded-xl border border-outline-variant/30 bg-white px-4 py-3 focus:ring-2 focus:ring-primary/20 focus:outline-none"
+                    >
+                </div>
+
+                <div>
+                    <label class="block text-xs font-bold uppercase tracking-widest text-primary mb-2">
+                        Giá giảm tối đa
+                    </label>
+                    <input
+                        type="number"
+                        name="max_discount_value"
+                        value="<?= e($maxDiscountValue) ?>"
+                        min="0"
+                        step="1000"
+                        placeholder="VD: 50000"
+                        class="w-full rounded-xl border border-outline-variant/30 bg-white px-4 py-3 focus:ring-2 focus:ring-primary/20 focus:outline-none"
+                    >
+                    <p class="text-xs text-on-surface-variant mt-2">
+                        Nhập 0 nếu không muốn giới hạn số tiền giảm.
+                    </p>
+                </div>
+
+                <label class="flex items-center gap-3 rounded-xl border border-outline-variant/30 bg-white px-4 py-3">
+                    <input type="checkbox" name="promo_status" value="1" <?= $promoStatus === 1 ? 'checked' : '' ?>>
+                    <span class="font-bold text-primary">Cho phép user sử dụng mã này</span>
+                </label>
+
                 <div class="flex gap-3">
                     <button
                         type="submit"
@@ -202,6 +251,8 @@ $expiredPromos = count(array_filter($promos, function ($promo) use ($today) {
                                 <tr>
                                     <th class="px-6 py-4 text-xs font-bold uppercase tracking-widest text-primary">Mã</th>
                                     <th class="px-6 py-4 text-xs font-bold uppercase tracking-widest text-primary">Giảm</th>
+                                    <th class="px-6 py-4 text-xs font-bold uppercase tracking-widest text-primary whitespace-nowrap">Đơn tối thiểu</th>
+                                    <th class="px-6 py-4 text-xs font-bold uppercase tracking-widest text-primary whitespace-nowrap">Giảm tối đa</th>
                                     <th class="px-6 py-4 text-xs font-bold uppercase tracking-widest text-primary">Số lượng</th>
                                     <th class="px-6 py-4 text-xs font-bold uppercase tracking-widest text-primary">Ngày hết hạn</th>
                                     <th class="px-6 py-4 text-xs font-bold uppercase tracking-widest text-primary">Trạng thái</th>
@@ -216,10 +267,13 @@ $expiredPromos = count(array_filter($promos, function ($promo) use ($today) {
                                     $promoPercent = (int)($promo['PhamTramGiam'] ?? 0);
                                     $promoQuantity = (int)($promo['SoLuong'] ?? 0);
                                     $promoExpiredDate = $promo['NgayHetHan'] ?? '';
+                                    $promoMinOrder = (float)($promo['min_order_value'] ?? 0);
+                                    $promoMaxDiscount = (float)($promo['max_discount_value'] ?? 0);
+                                    $promoEnabled = (int)($promo['TrangThai'] ?? 1) === 1;
 
                                     $isExpired = $promoExpiredDate !== '' && $promoExpiredDate < $today;
                                     $isOutOfStock = $promoQuantity <= 0;
-                                    $isActive = !$isExpired && !$isOutOfStock;
+                                    $isActive = $promoEnabled && !$isExpired && !$isOutOfStock;
                                     ?>
                                     <tr class="hover:bg-surface-container-low transition-colors">
                                         <td class="px-6 py-5">
@@ -232,6 +286,12 @@ $expiredPromos = count(array_filter($promos, function ($promo) use ($today) {
                                                 <?= $promoPercent ?>%
                                             </span>
                                         </td>
+                                        <td class="px-6 py-5 text-on-surface-variant whitespace-nowrap">
+                                            <?= e(formatPromoMoney($promoMinOrder)) ?>
+                                        </td>
+                                        <td class="px-6 py-5 text-on-surface-variant whitespace-nowrap">
+                                            <?= e(formatPromoMoney($promoMaxDiscount)) ?>
+                                        </td>
                                         <td class="px-6 py-5 text-on-surface-variant">
                                             <?= $promoQuantity ?>
                                         </td>
@@ -239,7 +299,11 @@ $expiredPromos = count(array_filter($promos, function ($promo) use ($today) {
                                             <?= e($promoExpiredDate) ?>
                                         </td>
                                         <td class="px-6 py-5">
-                                            <?php if ($isActive): ?>
+                                            <?php if (!$promoEnabled): ?>
+                                                <span class="text-xs font-bold bg-gray-100 text-gray-700 px-3 py-1 rounded-full">
+                                                    Đang tắt
+                                                </span>
+                                            <?php elseif ($isActive): ?>
                                                 <span class="text-xs font-bold bg-green-100 text-green-700 px-3 py-1 rounded-full">
                                                     Còn hiệu lực
                                                 </span>

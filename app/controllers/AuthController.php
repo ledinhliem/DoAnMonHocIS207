@@ -24,6 +24,7 @@ class AuthController extends Controller {
                         } else {
                             $_SESSION['user_id'] = $user['MaNguoiDung'];
                             $_SESSION['user_name'] = $user['HoTen'];
+                            $_SESSION['user_email'] = $user['Email'];
                             $_SESSION['role'] = $user['MaQuyen']; 
 
                         // Chuyển hướng theo phân quyền
