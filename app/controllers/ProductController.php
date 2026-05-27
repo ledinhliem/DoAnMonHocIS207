@@ -78,9 +78,10 @@ class ProductController extends Controller
 
         $images = $this->model->getImages($id);
         $variants = $this->model->getVariants($id);
+        $variantGroups = $this->model->groupVariantOptions($variants, $product);
         $reviews = $this->model->getReviews($id);
 
-        $this->view('product/detail', compact('product', 'images', 'variants', 'reviews'));
+        $this->view('product/detail', compact('product', 'images', 'variants', 'variantGroups', 'reviews'));
     }
 
     // ─── SEARCH ──────────────────────────────────────────────────────────────

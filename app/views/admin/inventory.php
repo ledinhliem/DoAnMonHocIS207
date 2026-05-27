@@ -48,7 +48,7 @@ if (!function_exists('formatMoneyVND')) {
 // ─────────────────────────────────────────────────────────────────────────────
 
 $keyword = $_GET['keyword'] ?? '';
-$status  = $_GET['status'] ?? '';
+$selectedStatus = $filterStatus ?? ($_GET['status'] ?? '');
 
 // Nhận dữ liệu thật từ AdminController
 $inventoryList = [];
@@ -134,24 +134,24 @@ $totalSuppliers = count($supplierList);
             </p>
         </div>
         <div class="flex gap-4 flex-wrap">
-            <form method="GET" action="" class="flex gap-3 flex-wrap">
+            <form method="GET" action="<?= BASE_URL ?>index.php" class="flex gap-3 flex-wrap">
+                <input type="hidden" name="url" value="admin/inventory">
                 <div class="relative">
                     <span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-on-surface-variant">search</span>
                     <input
                         type="text"
                         name="keyword"
                         value="<?= e($keyword) ?>"
-                        placeholder="Tìm phiếu nhập hoặc nhà cung cấp..."
+                        placeholder="Tìm sản phẩm, màu sắc hoặc kích thước..."
                         class="bg-surface-container-high border-none rounded-xl pl-10 pr-4 py-3 focus:ring-1 focus:ring-primary/30 focus:bg-surface-container-lowest transition-all"
                     />
                 </div>
 
                 <select name="status" class="bg-surface-container-high border-none rounded-xl px-4 py-3 focus:ring-1 focus:ring-primary/30 focus:bg-surface-container-lowest transition-all">
                     <option value="">Tất cả trạng thái</option>
-                    <option value="verified" <?= $status === 'verified' ? 'selected' : '' ?>>Đã xác minh</option>
-                    <option value="pending" <?= $status === 'pending' ? 'selected' : '' ?>>Đang chờ</option>
-                    <option value="approved" <?= $status === 'approved' ? 'selected' : '' ?>>Đã duyệt</option>
-                    <option value="cancelled" <?= $status === 'cancelled' ? 'selected' : '' ?>>Đã hủy</option>
+                    <option value="in_stock" <?= $selectedStatus === 'in_stock' ? 'selected' : '' ?>>Còn hàng</option>
+                    <option value="low_stock" <?= $selectedStatus === 'low_stock' ? 'selected' : '' ?>>Sắp hết</option>
+                    <option value="out_of_stock" <?= $selectedStatus === 'out_of_stock' ? 'selected' : '' ?>>Hết hàng</option>
                 </select>
 
                 <button class="bg-surface-container-high px-6 py-3 rounded-xl font-bold text-primary flex items-center gap-2 hover:bg-surface-container-highest transition-colors" type="submit">
@@ -160,7 +160,7 @@ $totalSuppliers = count($supplierList);
                 </button>
             </form>
 
-            <a href="<?= BASE_URL ?>index.php?url=inventory/create"
+            <a href="#import-form"
                class="bg-secondary-container text-on-secondary-container px-6 py-3 rounded-xl font-bold flex items-center gap-2 hover:opacity-90 transition-all active:scale-95 shadow-sm">
                 <span class="material-symbols-outlined text-xl">add</span>
                 Thêm phiếu nhập
@@ -275,6 +275,61 @@ $totalSuppliers = count($supplierList);
 
     <section class="grid grid-cols-1 lg:grid-cols-3 gap-8 mb-12">
         <div class="lg:col-span-2 space-y-8">
+            <div id="import-form" class="bg-surface-container-low rounded-3xl p-8 border border-outline-variant/10 scroll-mt-8">
+                <h3 class="text-xl font-bold font-headline text-primary mb-6 flex items-center gap-2">
+                    <span class="material-symbols-outlined">add_box</span>
+                    Thêm phiếu nhập kho
+                </h3>
+
+                <form class="grid grid-cols-1 md:grid-cols-2 gap-6" method="POST" action="<?= BASE_URL ?>index.php?url=admin/inventory">
+                    <input type="hidden" name="action" value="add_import_receipt">
+
+                    <div class="space-y-2">
+                        <label class="text-xs font-bold text-on-surface-variant uppercase tracking-wider px-1">Sản phẩm / biến thể *</label>
+                        <select name="ma_bien_the" required class="w-full bg-surface-container-high border-none rounded-xl px-4 py-3 focus:ring-1 focus:ring-primary/30 focus:bg-surface-container-lowest transition-all">
+                            <option value="">Chọn biến thể</option>
+                            <?php foreach ($inventoryList as $item): ?>
+                                <?php
+                                    $variantId = inventoryValue($item, ['MaBienThe'], '');
+                                    $productName = inventoryValue($item, ['TenSanPham'], '');
+                                    $size = inventoryValue($item, ['KichThuoc'], '');
+                                    $color = inventoryValue($item, ['MauSac'], '');
+                                ?>
+                                <option value="<?= e($variantId) ?>">
+                                    <?= e($productName . ' - ' . $variantId . (($size || $color) ? ' (' . trim($size . ' ' . $color) . ')' : '')) ?>
+                                </option>
+                            <?php endforeach; ?>
+                        </select>
+                    </div>
+
+                    <div class="space-y-2">
+                        <label class="text-xs font-bold text-on-surface-variant uppercase tracking-wider px-1">Số lượng nhập *</label>
+                        <input type="number" name="quantity" min="1" required class="w-full bg-surface-container-high border-none rounded-xl px-4 py-3 focus:ring-1 focus:ring-primary/30 focus:bg-surface-container-lowest transition-all">
+                    </div>
+
+                    <div class="space-y-2">
+                        <label class="text-xs font-bold text-on-surface-variant uppercase tracking-wider px-1">Nhà cung cấp</label>
+                        <select name="supplier_id" class="w-full bg-surface-container-high border-none rounded-xl px-4 py-3 focus:ring-1 focus:ring-primary/30 focus:bg-surface-container-lowest transition-all">
+                            <option value="">Không chọn</option>
+                            <?php foreach ($supplierList as $supplier): ?>
+                                <option value="<?= e($supplier['MaNCC'] ?? '') ?>"><?= e($supplier['TenNCC'] ?? '') ?></option>
+                            <?php endforeach; ?>
+                        </select>
+                    </div>
+
+                    <div class="space-y-2">
+                        <label class="text-xs font-bold text-on-surface-variant uppercase tracking-wider px-1">Ghi chú</label>
+                        <input type="text" name="note" class="w-full bg-surface-container-high border-none rounded-xl px-4 py-3 focus:ring-1 focus:ring-primary/30 focus:bg-surface-container-lowest transition-all" placeholder="Ghi chú nội bộ nếu có">
+                    </div>
+
+                    <div class="md:col-span-2 pt-2">
+                        <button class="bg-primary text-on-primary px-8 py-4 rounded-xl font-bold shadow-md hover:scale-[1.02] active:scale-95 transition-all w-full md:w-auto" type="submit">
+                            Tạo phiếu nhập và tăng tồn kho
+                        </button>
+                    </div>
+                </form>
+            </div>
+
             <div class="bg-surface-container-lowest rounded-3xl p-8 shadow-sm">
                 <div class="flex justify-between items-center mb-6">
                     <h3 class="text-xl font-bold font-headline text-primary flex items-center gap-2">
@@ -292,6 +347,7 @@ $totalSuppliers = count($supplierList);
                                 <th class="pb-2 px-4">Ngày nhập</th>
                                 <th class="pb-2 px-4">Nhà cung cấp</th>
                                 <th class="pb-2 px-4">Tổng tiền nhập</th>
+                                <th class="pb-2 px-4">Trạng thái</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -301,18 +357,30 @@ $totalSuppliers = count($supplierList);
                                     $arrivalDate = inventoryValue($entry, ['NgayNhap'], '—');
                                     $supplier    = inventoryValue($entry, ['TenNCC'], '—');
                                     $value       = inventoryValue($entry, ['TongTienNhap'], 0);
+                                    $entryStatus = inventoryValue($entry, ['receipt_status', 'TrangThai', 'status'], 'verified');
+                                    $entryStatusLabels = [
+                                        'verified' => 'Đã xác minh',
+                                        'pending' => 'Đang chờ',
+                                        'approved' => 'Đã duyệt',
+                                        'cancelled' => 'Đã hủy',
+                                    ];
                                 ?>
                                     <tr class="bg-surface-container-low/50 hover:bg-surface-container-low transition-colors">
                                         <td class="py-4 px-4 rounded-l-2xl font-bold text-primary"><?= e($entryId) ?></td>
                                         <td class="py-4 px-4 text-sm"><?= e($arrivalDate) ?></td>
                                         <td class="py-4 px-4 font-medium"><?= e($supplier) ?></td>
-                                        <td class="py-4 px-4 font-bold rounded-r-2xl"><?= formatMoneyVND($value) ?></td>
+                                        <td class="py-4 px-4 font-bold"><?= formatMoneyVND($value) ?></td>
+                                        <td class="py-4 px-4 rounded-r-2xl">
+                                            <span class="<?= inventoryStatusBadge($entryStatus) ?>">
+                                                <?= e($entryStatusLabels[$entryStatus] ?? $entryStatus) ?>
+                                            </span>
+                                        </td>
                                     </tr>
                                 <?php endforeach; ?>
                             <?php else: ?>
                                 <tr>
-                                    <td colspan="4" class="py-10 px-4 text-center text-on-surface-variant">
-                                        Chưa có phiếu nhập kho nào.
+                                    <td colspan="5" class="py-10 px-4 text-center text-on-surface-variant">
+                                        Không có phiếu nhập kho phù hợp với bộ lọc hiện tại.
                                     </td>
                                 </tr>
                             <?php endif; ?>
@@ -321,7 +389,7 @@ $totalSuppliers = count($supplierList);
                 </div>
             </div>
 
-            <div class="bg-surface-container-low rounded-3xl p-8 border border-outline-variant/10">
+            <div id="supplier-form" class="bg-surface-container-low rounded-3xl p-8 border border-outline-variant/10 scroll-mt-8">
                 <h3 class="text-xl font-bold font-headline text-primary mb-6 flex items-center gap-2">
                     <span class="material-symbols-outlined">add_business</span>
                     Đăng ký nhà cung cấp mới
@@ -419,7 +487,7 @@ $totalSuppliers = count($supplierList);
                 <h4 class="text-lg font-bold font-headline mb-2">Cảnh báo kho hàng</h4>
                 <p class="text-sm text-on-primary/80 leading-relaxed">
                     <?= $pendingCount > 0
-                        ? e($pendingCount) . ' phiếu nhập đang chờ xác minh.'
+                        ? e($pendingCount) . ' biến thể đang sắp hết hàng.'
                         : 'Hiện chưa có cảnh báo tồn kho cần xử lý.' ?>
                 </p>
                 <button class="mt-6 px-4 py-2 bg-white/10 hover:bg-white/20 rounded-lg text-xs font-bold transition-all flex items-center gap-2">

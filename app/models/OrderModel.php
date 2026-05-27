@@ -6,6 +6,28 @@ class OrderModel extends Model
 {
     private ?FlashSaleModel $flashSaleModel = null;
     private ?VoucherModel $voucherModel = null;
+    private const PROMO_RULES = [
+        'GIAM5' => [
+            'percent' => 5,
+            'min_subtotal' => 100000,
+            'max_discount' => 20000,
+        ],
+        'GIAM10' => [
+            'percent' => 10,
+            'min_subtotal' => 300000,
+            'max_discount' => 50000,
+        ],
+        'GIAM20' => [
+            'percent' => 20,
+            'min_subtotal' => 700000,
+            'max_discount' => 120000,
+        ],
+        'GIAM26' => [
+            'percent' => 26,
+            'min_subtotal' => 1000000,
+            'max_discount' => 200000,
+        ],
+    ];
 
     public function __construct()
     {
@@ -104,7 +126,7 @@ class OrderModel extends Model
 
         // Kiểm tra mã tồn tại, hết hạn, hết số lượng
         if (!$promo) {
-            return ['valid' => false, 'message' => 'Mã không hợp lệ.', 'discount' => 0, 'code' => $promoCode];
+            return ['valid' => false, 'message' => 'Mã giảm giá không tồn tại.', 'discount' => 0, 'code' => $promoCode];
         }
         if ((int)$promo['SoLuong'] <= 0) {
             return ['valid' => false, 'message' => 'Mã đã hết lượt dùng.', 'discount' => 0, 'code' => $promoCode];
@@ -164,8 +186,26 @@ class OrderModel extends Model
             return ['valid' => false, 'message' => 'Mã không áp dụng cho sản phẩm này.', 'discount' => 0, 'code' => $promoCode];
         }
 
-        $percent = (int)$promo['PhamTramGiam'];
+        $rule = self::PROMO_RULES[$promoCode] ?? null;
+        $percent = (int)($rule['percent'] ?? $promo['PhamTramGiam']);
+
+        if ($rule && $subtotalApDung < (float)$rule['min_subtotal']) {
+            return [
+                'valid' => false,
+                'message' => 'Đơn hàng chưa đủ điều kiện áp dụng mã giảm giá này.',
+                'discount' => 0,
+                'code' => $promoCode,
+                'percent' => $percent,
+                'min_subtotal' => (float)$rule['min_subtotal'],
+                'max_discount' => (float)$rule['max_discount'],
+            ];
+        }
+
         $discount = $subtotalApDung * ($percent / 100);
+        if ($rule) {
+            $discount = min($discount, (float)$rule['max_discount']);
+        }
+        $discount = max(0, min($discount, $subtotalApDung));
 
         return [
             'valid' => true,
@@ -173,6 +213,8 @@ class OrderModel extends Model
             'discount' => $discount,
             'code' => $promoCode,
             'percent' => $percent,
+            'min_subtotal' => $rule['min_subtotal'] ?? 0,
+            'max_discount' => $rule['max_discount'] ?? 0,
             'free_shipping' => false,
         ];
     }
@@ -343,16 +385,17 @@ class OrderModel extends Model
 
             $stmt = $this->db->prepare("
                 INSERT INTO donhang (
-                    MaDonHang, MaNguoiDung, TongTien, TrangThai, DiaChiGiaoHang,
+                    MaDonHang, MaNguoiDung, NgayDat, TongTien, TrangThai, DiaChiGiaoHang,
                     MaPTTT, MaPTVC, MaCode, TenNguoiNhan, SDTNguoiNhan,
                     SoTienGiam, PhiVanChuyen, ThanhTienCuoi
                 )
-                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
             ");
 
             $stmt->execute([
                 $orderId,
                 $_SESSION['user_id'] ?? null,
+                (new DateTimeImmutable('now', new DateTimeZone('Asia/Bangkok')))->format('Y-m-d H:i:s'),
                 (float)($summary['subtotal'] ?? 0),
                 '0',
                 $customer['address'] ?? '',
@@ -580,6 +623,13 @@ class OrderModel extends Model
     public function getAvailablePromos()
     {
         try {
+            $promoRuleDescriptions = [
+                'GIAM5' => 'Giảm 5% cho đơn từ 100.000đ, tối đa 20.000đ',
+                'GIAM10' => 'Giảm 10% cho đơn từ 300.000đ, tối đa 50.000đ',
+                'GIAM20' => 'Giảm 20% cho đơn từ 700.000đ, tối đa 120.000đ',
+                'GIAM26' => 'Giảm 26% cho đơn từ 1.000.000đ, tối đa 200.000đ',
+            ];
+
             try {
                 $sql = "SELECT
                             m.MaCode AS MaGiamGia,
@@ -601,7 +651,16 @@ class OrderModel extends Model
                 $stmt->execute();
             }
 
-            return $stmt->fetchAll(PDO::FETCH_ASSOC);
+            $promos = $stmt->fetchAll(PDO::FETCH_ASSOC);
+            foreach ($promos as &$promo) {
+                $code = strtoupper((string)($promo['MaGiamGia'] ?? ''));
+                if (isset($promoRuleDescriptions[$code])) {
+                    $promo['MoTa'] = $promoRuleDescriptions[$code];
+                }
+            }
+            unset($promo);
+
+            return $promos;
         } catch (Throwable $e) {
             return [];
         }

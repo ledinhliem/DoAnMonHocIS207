@@ -1,5 +1,5 @@
 document.addEventListener('DOMContentLoaded', function () {
-    const checkoutForm = document.querySelector('#checkout-form');
+    const checkoutForm = document.querySelector('#checkoutForm');
     const subtotalEl = document.querySelector('[data-checkout-subtotal]');
     const shippingEl = document.querySelector('[data-checkout-shipping]');
     const totalEl = document.querySelector('[data-checkout-total]');

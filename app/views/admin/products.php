@@ -227,11 +227,14 @@ if (!function_exists('productValue')) {
                             $brandName = productValue($product, ['brand', 'brand_name'], '—');
                             $categoryName = productValue($product, ['category', 'category_name'], '—');
                             $price = productValue($product, ['price'], 0);
+                            $maxPrice = productValue($product, ['max_price'], $price);
                             $stock = productValue($product, ['stock', 'quantity'], '—');
                             $sku = productValue($product, ['sku'], '—');
                             $image = productValue($product, ['image', 'image_url', 'thumbnail'], '');
                             $productStatus = (int) productValue($product, ['status'], 0);
                             $isVisible = $productStatus === 1;
+                            $coverImageCount = min(1, (int) productValue($product, ['cover_image_count'], productValue($product, ['image_count'], 0)));
+                            $detailImageCount = (int) productValue($product, ['detail_image_count'], max(0, ((int) productValue($product, ['image_count'], 0)) - $coverImageCount));
                             ?>
 
                             <tr class="border-t border-outline-variant/10 hover:bg-surface-container-low transition-colors">
@@ -256,6 +259,9 @@ if (!function_exists('productValue')) {
                                         <p class="text-xs text-on-surface-variant mt-1">
                                             ID: <?= e($id) ?>
                                         </p>
+                                        <p class="text-xs text-on-surface-variant mt-1">
+                                            Bìa <?= e($coverImageCount) ?>/1 · Chi tiết <?= e($detailImageCount) ?>/8
+                                        </p>
                                     <?php endif; ?>
                                 </td>
 
@@ -263,7 +269,13 @@ if (!function_exists('productValue')) {
                                 <td class="px-6 py-4 text-on-surface"><?= e($categoryName) ?></td>
 
                                 <td class="px-6 py-4 text-on-surface font-bold">
-                                    <?= is_numeric($price) ? number_format((float) $price, 0, ',', '.') . ' đ' : e($price) ?>
+                                    <?php if (is_numeric($price) && is_numeric($maxPrice)): ?>
+                                        <?= ((float) $price === (float) $maxPrice)
+                                            ? number_format((float) $price, 0, ',', '.') . ' đ'
+                                            : number_format((float) $price, 0, ',', '.') . ' đ - ' . number_format((float) $maxPrice, 0, ',', '.') . ' đ' ?>
+                                    <?php else: ?>
+                                        <?= e($price) ?>
+                                    <?php endif; ?>
                                 </td>
 
                                 <td class="px-6 py-4">
@@ -454,3 +466,4 @@ if (!function_exists('productValue')) {
 
 <!-- Footer -->
 <?php include __DIR__ . '/../layouts/admin_footer.php'; ?>
+

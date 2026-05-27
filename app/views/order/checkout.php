@@ -6,6 +6,7 @@ $availablePromos = $availablePromos ?? [];
 $errors = $errors ?? [];
 $success = $success ?? '';
 $error = $error ?? '';
+$appliedPromoCode = $summary['promo']['code'] ?? '';
 
 // Kiểm tra xem user đã có đủ thông tin nhận hàng cơ bản chưa
 $hasFullInfo = (!empty($checkoutData['full_name']) && !empty($checkoutData['phone']) && !empty($checkoutData['address']));
@@ -63,7 +64,7 @@ $hasFullInfo = (!empty($checkoutData['full_name']) && !empty($checkoutData['phon
 
                 <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                     <?php 
-                    $appliedCode = $summary['promo']['code'] ?? '';
+                    $appliedCode = $appliedPromoCode;
                     if (!empty($availablePromos)): 
                         foreach($availablePromos as $p): 
                             $code = $p['MaGiamGia'] ?? '';
@@ -302,6 +303,13 @@ $hasFullInfo = (!empty($checkoutData['full_name']) && !empty($checkoutData['phon
                     <span>Tạm tính</span>
                     <span data-checkout-subtotal><?= number_format($summary['subtotal'] ?? 0, 0, ',', '.') ?>₫</span>
                 </div>
+
+                <?php if (!empty($appliedPromoCode)): ?>
+                    <div class="flex justify-between">
+                        <span>Mã giảm giá đã dùng</span>
+                        <span class="font-semibold text-primary"><?= htmlspecialchars($appliedPromoCode) ?></span>
+                    </div>
+                <?php endif; ?>
 
                 <div class="flex justify-between text-green-700">
                     <span>Giảm giá</span>

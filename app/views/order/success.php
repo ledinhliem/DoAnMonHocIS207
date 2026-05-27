@@ -1,4 +1,5 @@
 <?php include __DIR__ . '/../layouts/header.php'; ?>
+<?php $successOrderId = $order['MaDonHang'] ?? $order['order_id'] ?? ''; ?>
 
 <main class="max-w-4xl mx-auto px-8 py-16">
     <div class="bg-white rounded-3xl border border-outline-variant/30 p-10 text-center">
@@ -57,7 +58,7 @@
         <?php endif; ?>
 
         <div class="flex flex-wrap justify-center gap-4">
-            <a href="?url=order/tracking"
+            <a href="?url=order/tracking<?= $successOrderId !== '' ? '&id=' . urlencode((string)$successOrderId) : '' ?>"
                class="px-5 py-3 rounded-xl bg-primary text-white font-semibold">
                 Theo dõi đơn hàng
             </a>

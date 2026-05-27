@@ -14,6 +14,7 @@ class ProductModel extends Model
     public function getAll(array $filters = []): array
     {
         [$where, $params] = $this->buildProductFilters($filters);
+        $imageAggregateSql = $this->productImageAggregateSql();
 
         $orderBy = match ($filters['sort'] ?? '') {
             'price_asc' => 'v.min_price ASC, sp.MaSanPham ASC',
@@ -53,11 +54,7 @@ class ProductModel extends Model
                 FROM bienthesanpham
                 GROUP BY MaSanPham
             ) v ON v.MaSanPham = sp.MaSanPham
-            LEFT JOIN (
-                SELECT MaSanPham, MIN(DuongDan) AS DuongDan
-                FROM hinhanhsanpham
-                GROUP BY MaSanPham
-            ) img ON img.MaSanPham = sp.MaSanPham
+            LEFT JOIN ({$imageAggregateSql}) img ON img.MaSanPham = sp.MaSanPham
             WHERE " . implode(' AND ', $where) . "
             ORDER BY {$orderBy}
         ";
@@ -109,12 +106,15 @@ class ProductModel extends Model
     public function getImages(string $productId): array
     {
         $productId = $this->normalizeProductId($productId);
+        $orderBy = $this->hasColumn('hinhanhsanpham', 'LoaiAnh')
+            ? "FIELD(LoaiAnh, 'cover', 'detail'), COALESCE(ThuTu, 99), MaHinhAnh ASC"
+            : "MaHinhAnh ASC";
 
         $stmt = $this->db->prepare("
             SELECT MaHinhAnh, DuongDan
             FROM hinhanhsanpham
             WHERE MaSanPham = ?
-            ORDER BY MaHinhAnh ASC
+            ORDER BY {$orderBy}
         ");
         $stmt->execute([$productId]);
 
@@ -124,17 +124,29 @@ class ProductModel extends Model
     public function getVariants(string $productId): array
     {
         $productId = $this->normalizeProductId($productId);
+        $extraColumns = [];
+        foreach (['TenBienThe', 'ThuocTinhJson', 'TrangThai'] as $column) {
+            if ($this->hasColumn('bienthesanpham', $column)) {
+                $extraColumns[] = $column;
+            }
+        }
+        $extraSelect = $extraColumns ? ', ' . implode(', ', $extraColumns) : '';
+        $statusSql = in_array('TrangThai', $extraColumns, true) ? ' AND TrangThai = 1' : '';
 
         $stmt = $this->db->prepare("
-            SELECT MaBienThe, MaSanPham, KichThuoc, MauSac, GiaTien, SoLuongTon
+            SELECT MaBienThe, MaSanPham, KichThuoc, MauSac, GiaTien, SoLuongTon{$extraSelect}
             FROM bienthesanpham
-            WHERE MaSanPham = ?
+            WHERE MaSanPham = ?{$statusSql}
             ORDER BY MaBienThe ASC
         ");
         $stmt->execute([$productId]);
 
         $variants = $stmt->fetchAll(PDO::FETCH_ASSOC);
+        $product = $this->getById($productId) ?? [];
         foreach ($variants as &$variant) {
+            $variant['attributes'] = $this->normalizeVariantAttributes($variant, $product);
+            $variant['TenBienThe'] = $variant['TenBienThe'] ?? $this->buildVariantName($variant['attributes']);
+
             $sale = $this->flashSaleModel?->getActiveSaleForVariant(
                 (string)($variant['MaSanPham'] ?? ''),
                 (string)($variant['MaBienThe'] ?? '')
@@ -149,6 +161,105 @@ class ProductModel extends Model
         }
 
         return $variants;
+    }
+
+    public function groupVariantOptions(array $variants, array $product): array
+    {
+        $groups = [];
+        foreach ($variants as $variant) {
+            $attributes = $variant['attributes'] ?? $this->normalizeVariantAttributes($variant, $product);
+            foreach ($attributes as $label => $value) {
+                $label = trim((string)$label);
+                $value = trim((string)$value);
+                if ($label === '' || $value === '') {
+                    continue;
+                }
+
+                if (!isset($groups[$label])) {
+                    $groups[$label] = [];
+                }
+                $groups[$label][$value] = $value;
+            }
+        }
+
+        $preferredOrder = ['Size', 'Màu sắc', 'Dung tích', 'Mùi hương', 'Khối lượng', 'Họa tiết', 'Chất liệu', 'Quy cách', 'Loại da', 'Loại/kiểu', 'Kích thước'];
+        uksort($groups, function ($a, $b) use ($preferredOrder) {
+            $posA = array_search($a, $preferredOrder, true);
+            $posB = array_search($b, $preferredOrder, true);
+            $posA = $posA === false ? 999 : $posA;
+            $posB = $posB === false ? 999 : $posB;
+            return $posA <=> $posB ?: strcmp((string)$a, (string)$b);
+        });
+
+        return array_map(fn($values) => array_values($values), $groups);
+    }
+
+    public function normalizeVariantAttributes(array $variant, array $product = []): array
+    {
+        $rawJson = $variant['ThuocTinhJson'] ?? $variant['attributes_json'] ?? '';
+        if (is_string($rawJson) && trim($rawJson) !== '') {
+            $decoded = json_decode($rawJson, true);
+            if (is_array($decoded)) {
+                return $this->cleanAttributes($decoded);
+            }
+        } elseif (is_array($rawJson)) {
+            return $this->cleanAttributes($rawJson);
+        }
+
+        $categoryName = (string)($product['TenDanhMuc'] ?? $product['category_name'] ?? '');
+        $productName = (string)($product['TenSanPham'] ?? $product['name'] ?? '');
+        $attributes = [];
+
+        foreach (['MauSac' => ($variant['MauSac'] ?? ''), 'KichThuoc' => ($variant['KichThuoc'] ?? '')] as $field => $value) {
+            $value = trim((string)$value);
+            if ($value === '') {
+                continue;
+            }
+            $label = $this->inferAttributeLabel($value, $categoryName, $productName, $field);
+            $cleanValue = $label === 'Họa tiết' ? preg_replace('/^họa\s*tiết\s*/iu', '', $value) : $value;
+            $attributes[$label] = trim((string)$cleanValue);
+        }
+
+        return $attributes;
+    }
+
+    public function inferAttributeLabel(string $value, string $categoryName = '', string $productName = '', string $fieldName = ''): string
+    {
+        $value = trim($value);
+        $haystack = mb_strtolower($categoryName . ' ' . $productName . ' ' . $value, 'UTF-8');
+        $fieldName = trim($fieldName);
+
+        if ($fieldName === 'MauSac') {
+            if (preg_match('/họa\s*tiết/iu', $value) || preg_match('/chăn|gối|quạt/iu', $haystack)) {
+                return 'Họa tiết';
+            }
+            if (preg_match('/lemon|lavender|ginger|sả|gừng|hoa|hương|mùi/iu', $value) || preg_match('/nến|care|xà phòng|dầu gội|sữa rửa mặt/iu', $haystack)) {
+                return 'Mùi hương';
+            }
+            return 'Màu sắc';
+        }
+
+        if ($fieldName === 'KichThuoc') {
+            if (preg_match('/fashion|áo|quần|giày|size/iu', $haystack)
+                && preg_match('/^(size\s*)?(EU\s*)?(XS|S|M|L|XL|XXL|3XL|[3-4][0-9])$/iu', $value)
+            ) {
+                return 'Size';
+            }
+            if (preg_match('/\b\d+(\.\d+)?\s*(ml|l)\b/iu', $value)) {
+                return 'Dung tích';
+            }
+            if (preg_match('/\b\d+(\.\d+)?\s*(g|kg|gram)\b/iu', $value)) {
+                return 'Khối lượng';
+            }
+            if (preg_match('/họa\s*tiết/iu', $value)) {
+                return 'Họa tiết';
+            }
+            if (preg_match('/bộ\s*\d+|\d+\s*cái|hộp|combo|set/iu', $value) || preg_match('/kitchen/iu', $haystack)) {
+                return 'Quy cách';
+            }
+        }
+
+        return 'Kích thước';
     }
 
     public function getReviews(string $productId): array
@@ -221,6 +332,7 @@ class ProductModel extends Model
 
     public function getSuggestions(string $keyword, int $limit = 8): array
     {
+        $imageAggregateSql = $this->productImageAggregateSql();
         // Lấy từ khóa từ keyword để tìm sản phẩm liên quan
         $keywords = array_filter(array_map('trim', explode(' ', strtolower($keyword))));
 
@@ -246,11 +358,7 @@ class ProductModel extends Model
                     FROM bienthesanpham
                     GROUP BY MaSanPham
                 ) v ON v.MaSanPham = sp.MaSanPham
-                LEFT JOIN (
-                    SELECT MaSanPham, MIN(DuongDan) AS DuongDan
-                    FROM hinhanhsanpham
-                    GROUP BY MaSanPham
-                ) img ON img.MaSanPham = sp.MaSanPham
+                LEFT JOIN ({$imageAggregateSql}) img ON img.MaSanPham = sp.MaSanPham
                 WHERE sp.TrangThai = 1
                 ORDER BY RAND()
                 LIMIT ?
@@ -289,11 +397,7 @@ class ProductModel extends Model
                     FROM bienthesanpham
                     GROUP BY MaSanPham
                 ) v ON v.MaSanPham = sp.MaSanPham
-                LEFT JOIN (
-                    SELECT MaSanPham, MIN(DuongDan) AS DuongDan
-                    FROM hinhanhsanpham
-                    GROUP BY MaSanPham
-                ) img ON img.MaSanPham = sp.MaSanPham
+                LEFT JOIN ({$imageAggregateSql}) img ON img.MaSanPham = sp.MaSanPham
                 WHERE sp.TrangThai = 1 AND ($whereClause)
                 ORDER BY RAND()
                 LIMIT ?
@@ -332,6 +436,7 @@ class ProductModel extends Model
 
     public function getVariantById(string $variantId): ?array
     {
+        $imageAggregateSql = $this->productImageAggregateSql();
         $stmt = $this->db->prepare("
             SELECT
                 bt.*,
@@ -339,11 +444,7 @@ class ProductModel extends Model
                 img.DuongDan AS image
             FROM bienthesanpham bt
             JOIN sanpham sp ON sp.MaSanPham = bt.MaSanPham
-            LEFT JOIN (
-                SELECT MaSanPham, MIN(DuongDan) AS DuongDan
-                FROM hinhanhsanpham
-                GROUP BY MaSanPham
-            ) img ON img.MaSanPham = bt.MaSanPham
+            LEFT JOIN ({$imageAggregateSql}) img ON img.MaSanPham = bt.MaSanPham
             WHERE bt.MaBienThe = ?
             LIMIT 1
         ");
@@ -351,6 +452,32 @@ class ProductModel extends Model
         $variant = $stmt->fetch(PDO::FETCH_ASSOC);
 
         return $variant ?: null;
+    }
+
+    private function productImageAggregateSql(): string
+    {
+        if ($this->hasColumn('hinhanhsanpham', 'LoaiAnh')) {
+            return "
+                SELECT
+                    MaSanPham,
+                    COALESCE(MIN(CASE WHEN LoaiAnh = 'cover' THEN DuongDan END), MIN(DuongDan)) AS DuongDan
+                FROM hinhanhsanpham
+                GROUP BY MaSanPham
+            ";
+        }
+
+        return "
+            SELECT MaSanPham, MIN(DuongDan) AS DuongDan
+            FROM hinhanhsanpham
+            GROUP BY MaSanPham
+        ";
+    }
+
+    private function hasColumn(string $table, string $column): bool
+    {
+        $stmt = $this->db->prepare('SHOW COLUMNS FROM ' . $table . ' LIKE ?');
+        $stmt->execute([$column]);
+        return (bool)$stmt->fetch(PDO::FETCH_ASSOC);
     }
 
     private function normalizeProductId(string $id): string
@@ -362,6 +489,24 @@ class ProductModel extends Model
         }
 
         return $id;
+    }
+
+    private function cleanAttributes(array $attributes): array
+    {
+        $clean = [];
+        foreach ($attributes as $label => $value) {
+            $label = trim((string)$label);
+            $value = trim((string)$value);
+            if ($label !== '' && $value !== '' && $value !== '0') {
+                $clean[$label] = $value;
+            }
+        }
+        return $clean;
+    }
+
+    private function buildVariantName(array $attributes): string
+    {
+        return implode(' / ', array_values($attributes));
     }
 
     private function formatImageUrl(string $path): string

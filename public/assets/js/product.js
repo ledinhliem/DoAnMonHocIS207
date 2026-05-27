@@ -197,22 +197,61 @@ document.addEventListener("DOMContentLoaded", function () {
 
   const selected = {};
 
+  function normalizeText(value) {
+    return String(value ?? "").trim();
+  }
+
+  function getVariantAttributes(variant) {
+    return variant && typeof variant.attributes === "object" && variant.attributes !== null
+      ? variant.attributes
+      : {};
+  }
+
   function findMatchingVariant() {
-    return variants.find(v =>
-      Object.entries(selected).every(([key, val]) => v[key] === val)
-    );
+    const selectedEntries = Object.entries(selected)
+      .filter(([, value]) => normalizeText(value) !== "");
+
+    if (selectedEntries.length === 0) {
+      return null;
+    }
+
+    const matches = variants.filter(variant => {
+      const attrs = getVariantAttributes(variant);
+      const attrEntries = Object.entries(attrs)
+        .filter(([, value]) => normalizeText(value) !== "");
+
+      if (attrEntries.length === 0) {
+        return selectedEntries.every(([type, value]) => normalizeText(variant[type]) === normalizeText(value));
+      }
+
+      return attrEntries.every(([type, value]) => {
+        const selectedValue = normalizeText(selected[type]);
+        const attrValue = normalizeText(value);
+        const legacyValue = normalizeText(variant[type]);
+
+        return selectedValue !== "" && (attrValue === selectedValue || legacyValue === selectedValue);
+      });
+    });
+
+    matches.sort((a, b) => {
+      const aCount = Object.keys(getVariantAttributes(a)).length;
+      const bCount = Object.keys(getVariantAttributes(b)).length;
+      return bCount - aCount;
+    });
+
+    return matches[0] || null;
   }
 
   function updateVariantInfo(variant) {
-    const priceEl      = document.getElementById("display-price");
-    const variantIdEl  = document.getElementById("selected-variant-id");
-    const qtyInput     = document.getElementById("quantity");
+    const priceEl = document.getElementById("display-price");
+    const variantIdEl = document.getElementById("selected-variant-id");
+    const qtyInput = document.getElementById("quantity");
+    const stockInfo = document.getElementById("stock-info");
+    const stockQty = document.getElementById("stock-qty");
 
-    // BUG FIX #3: đổi "stock-display" → đúng id trong detail.php là "stock-qty" + "stock-info"
-    const stockInfo    = document.getElementById("stock-info");
-    const stockQty     = document.getElementById("stock-qty");
-
-    if (!variant) return;
+    if (!variant) {
+      return;
+    }
 
     if (priceEl) {
       const salePrice = Number(variant.GiaSale || 0);
@@ -223,32 +262,27 @@ document.addEventListener("DOMContentLoaded", function () {
           `<span class="block text-base text-outline line-through">${originalPrice.toLocaleString("vi-VN")} ₫</span>` +
           `<span class="text-red-600">${salePrice.toLocaleString("vi-VN")} ₫</span>`;
       } else {
-        priceEl.textContent = originalPrice.toLocaleString("vi-VN") + " ₫";
+        priceEl.textContent = `${originalPrice.toLocaleString("vi-VN")} ₫`;
       }
     }
 
     if (variantIdEl) {
-      variantIdEl.value = variant.MaBienThe;
+      variantIdEl.value = variant.MaBienThe || "";
     }
 
     if (qtyInput) {
-      const tonKho = parseInt(variant.SoLuongTon) || 0;
-      qtyInput.max = tonKho;
+      const stock = Number.parseInt(variant.SoLuongTon, 10) || 0;
+      qtyInput.max = stock;
 
-      if (parseInt(qtyInput.value) > tonKho) {
-        qtyInput.value = tonKho > 0 ? tonKho : 1;
+      if ((Number.parseInt(qtyInput.value, 10) || 1) > stock) {
+        qtyInput.value = stock > 0 ? stock : 1;
       }
+    }
 
-      // BUG FIX #3: cập nhật đúng elements
-      if (stockInfo && stockQty) {
-        if (tonKho > 0) {
-          stockQty.textContent = tonKho;
-          stockInfo.classList.remove("hidden");
-        } else {
-          stockQty.textContent = "Hết hàng";
-          stockInfo.classList.remove("hidden");
-        }
-      }
+    if (stockInfo && stockQty) {
+      const stock = Number.parseInt(variant.SoLuongTon, 10) || 0;
+      stockQty.textContent = stock > 0 ? stock : "Hết hàng";
+      stockInfo.classList.remove("hidden");
     }
   }
 
@@ -265,14 +299,26 @@ document.addEventListener("DOMContentLoaded", function () {
       this.classList.remove("border-outline-variant");
 
       selected[type] = this.dataset.value;
+      document.querySelectorAll(".selected-variant-label").forEach(label => {
+        if (label.dataset.label === type) {
+          label.textContent = this.dataset.value;
+        }
+      });
 
       const match = findMatchingVariant();
-      if (match) updateVariantInfo(match);
+      if (match) {
+        updateVariantInfo(match);
+      }
     });
   });
 
-  // Auto-select button đầu tiên mỗi group
+  // Auto-select button ??u ti?n m?i group
   Object.values(variantGroups).forEach(group => {
     if (group.length > 0) group[0].click();
   });
+
+  const firstDirectVariant = document.querySelector(".variant-direct-btn");
+  if (firstDirectVariant) {
+    firstDirectVariant.click();
+  }
 });

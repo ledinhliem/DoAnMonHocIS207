@@ -51,8 +51,13 @@ $message = $message ?? null;
                             <td class="px-6 py-4 text-on-surface font-bold"><?= e($category['MaDanhMuc']) ?></td>
                             <td class="px-6 py-4 text-on-surface"><?= e($category['TenDanhMuc']) ?></td>
                             <td class="px-6 py-4">
-                                <?php if (!empty($category['HinhAnh'])): ?>
-                                    <img src="<?= e(BASE_URL . 'public/assets/images/categories/' . $category['HinhAnh']) ?>" alt="<?= e($category['TenDanhMuc']) ?>" class="w-16 h-16 rounded-lg object-cover border border-outline-variant/20">
+                                <?php
+                                    $categoryImage = trim((string)($category['HinhAnh'] ?? ''));
+                                    $categoryImageName = $categoryImage !== '' ? basename(str_replace('\\', '/', $categoryImage)) : '';
+                                    $categoryImagePath = $categoryImageName !== '' ? ROOT_PATH . '/public/assets/images/categories/' . $categoryImageName : '';
+                                ?>
+                                <?php if ($categoryImageName !== '' && is_file($categoryImagePath)): ?>
+                                    <img src="<?= e(BASE_URL . 'public/assets/images/categories/' . $categoryImageName) ?>" alt="<?= e($category['TenDanhMuc']) ?>" class="w-16 h-16 rounded-lg object-cover border border-outline-variant/20">
                                 <?php else: ?>
                                     <div class="w-16 h-16 rounded-lg bg-surface-container-high flex items-center justify-center text-outline">
                                         <span class="material-symbols-outlined">category</span>
@@ -72,10 +77,17 @@ $message = $message ?? null;
                                     <span class="material-symbols-outlined">edit</span>
                                     Sửa
                                 </a>
-                                <a href="index.php?url=admin/categories/delete&id=<?= urlencode($category['MaDanhMuc']) ?>" onclick="return confirm('Danh mục có thể đang chứa sản phẩm. Bạn có chắc muốn ẩn?')" class="inline-flex items-center gap-1 px-3 py-2 rounded-lg bg-red-50 hover:bg-red-100 text-red-700 text-sm font-medium transition-colors">
-                                    <span class="material-symbols-outlined">delete</span>
-                                    Ẩn
-                                </a>
+                                <?php if (($category['TrangThai'] ?? 1) == 1): ?>
+                                    <a href="index.php?url=admin/categories/hide&id=<?= urlencode($category['MaDanhMuc']) ?>" onclick="return confirm('Danh mục có thể đang chứa sản phẩm. Bạn có chắc muốn ẩn?')" class="inline-flex items-center gap-1 px-3 py-2 rounded-lg bg-red-50 hover:bg-red-100 text-red-700 text-sm font-medium transition-colors">
+                                        <span class="material-symbols-outlined">visibility_off</span>
+                                        Ẩn
+                                    </a>
+                                <?php else: ?>
+                                    <a href="index.php?url=admin/categories/show&id=<?= urlencode($category['MaDanhMuc']) ?>" class="inline-flex items-center gap-1 px-3 py-2 rounded-lg bg-green-50 hover:bg-green-100 text-green-700 text-sm font-medium transition-colors">
+                                        <span class="material-symbols-outlined">visibility</span>
+                                        Hiện
+                                    </a>
+                                <?php endif; ?>
                             </td>
                         </tr>
                     <?php endforeach; ?>

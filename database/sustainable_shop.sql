@@ -62,7 +62,10 @@ CREATE TABLE `bienthesanpham` (
   `KichThuoc` varchar(50) DEFAULT NULL,
   `MauSac` varchar(50) DEFAULT NULL,
   `GiaTien` decimal(15,2) NOT NULL DEFAULT 0.00,
-  `SoLuongTon` int(11) DEFAULT 0
+  `SoLuongTon` int(11) DEFAULT 0,
+  `TenBienThe` varchar(255) DEFAULT NULL,
+  `ThuocTinhJson` json DEFAULT NULL,
+  `TrangThai` tinyint(1) DEFAULT 1
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 --
@@ -363,7 +366,10 @@ INSERT INTO `giohang` (`MaGioHang`, `MaNguoiDung`, `NgayTao`, `NgayCapNhat`) VAL
 CREATE TABLE `hinhanhsanpham` (
   `MaHinhAnh` varchar(20) NOT NULL,
   `MaSanPham` varchar(20) DEFAULT NULL,
-  `DuongDan` varchar(255) NOT NULL
+  `DuongDan` varchar(255) NOT NULL,
+  `LoaiAnh` varchar(20) NOT NULL DEFAULT 'detail',
+  `ThuTu` tinyint(3) UNSIGNED DEFAULT 1,
+  `NgayTao` datetime DEFAULT current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 --
@@ -471,6 +477,14 @@ INSERT INTO `hinhanhsanpham` (`MaHinhAnh`, `MaSanPham`, `DuongDan`) VALUES
 ('IMG098', 'P029', 'P029_V046_PlaineTravelSet_2.webp'),
 ('IMG099', 'P029', 'P029_V046_PlaineTravelSet_3.webp'),
 ('IMG100', 'P029', 'P029_V046_PlaineTravelSet_4.webp');
+
+UPDATE `hinhanhsanpham` h
+JOIN (
+  SELECT `MaSanPham`, MIN(`MaHinhAnh`) AS `CoverImageId`
+  FROM `hinhanhsanpham`
+  GROUP BY `MaSanPham`
+) cover_image ON cover_image.`CoverImageId` = h.`MaHinhAnh`
+SET h.`LoaiAnh` = 'cover', h.`ThuTu` = 0;
 
 -- --------------------------------------------------------
 
@@ -1182,6 +1196,10 @@ CREATE TABLE IF NOT EXISTS `game_rewards` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 INSERT IGNORE INTO `magiamgia` (`MaCode`, `PhamTramGiam`, `SoLuong`, `NgayHetHan`) VALUES
+('GIAM5', 5, 100, '2026-12-31'),
+('GIAM10', 10, 100, '2026-12-31'),
+('GIAM20', 20, 100, '2026-12-31'),
+('GIAM26', 26, 100, '2026-12-31'),
 ('GAME5', 5, 100, '2026-12-31'),
 ('GAME10', 10, 100, '2026-12-31'),
 ('FREESHIP', 0, 100, '2026-12-31');

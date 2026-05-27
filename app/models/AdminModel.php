@@ -2,6 +2,10 @@
 
 class AdminModel extends Model
 {
+    private const LOW_STOCK_THRESHOLD = 5;
+    private const CANCELLED_ORDER_STATUS = '4';
+    public const PRODUCT_DETAIL_IMAGE_LIMIT = 8;
+
     /* =========================================================
        DASHBOARD + ORDERS — Phúc
        ========================================================= */
@@ -9,6 +13,8 @@ class AdminModel extends Model
     public function getDashboardStats()
     {
         $stats = [
+            'todayRevenue' => 0,
+            'monthRevenue' => 0,
             'totalRevenue' => 0,
             'totalOrders' => 0,
             'newOrders' => 0,
@@ -18,42 +24,244 @@ class AdminModel extends Model
             'preparingOrders' => 0,
             'shippingOrders' => 0,
             'totalProducts' => 0,
+            'activeProducts' => 0,
+            'totalCategories' => 0,
+            'lowStockProducts' => 0,
+            'lowStockItems' => 0,
+            'outOfStockItems' => 0,
+            'completionRate' => 0,
             'publishedPosts' => 0,
             'pendingReviews' => 0,
             'totalReviews' => 0,
+            'lowStockThreshold' => self::LOW_STOCK_THRESHOLD,
         ];
 
-        $stmt = $this->db->prepare("
-            SELECT
-                COALESCE(SUM(CASE WHEN TrangThai = '3' THEN ThanhTienCuoi ELSE 0 END), 0) AS totalRevenue,
-                COUNT(*) AS totalOrders,
-                SUM(CASE WHEN TrangThai = '0' THEN 1 ELSE 0 END) AS newOrders,
-                SUM(CASE WHEN TrangThai = '1' THEN 1 ELSE 0 END) AS preparingOrders,
-                SUM(CASE WHEN TrangThai = '2' THEN 1 ELSE 0 END) AS shippingOrders,
-                SUM(CASE WHEN TrangThai = '3' THEN 1 ELSE 0 END) AS completedOrders,
-                SUM(CASE WHEN TrangThai = '4' THEN 1 ELSE 0 END) AS cancelledOrders
-            FROM donhang
-        ");
-        $stmt->execute();
-        $orderStats = $stmt->fetch(PDO::FETCH_ASSOC);
+        if ($this->tableExists('donhang')) {
+            $now = new DateTimeImmutable('now', new DateTimeZone('Asia/Bangkok'));
+            $todayStart = $now->format('Y-m-d 00:00:00');
+            $todayEnd = $now->format('Y-m-d 23:59:59');
+            $monthStart = $now->format('Y-m-01 00:00:00');
 
-        if ($orderStats) {
-            foreach ($orderStats as $key => $value) {
-                $stats[$key] = $key === 'totalRevenue' ? (float)$value : (int)$value;
+            $stmt = $this->db->prepare("
+                SELECT
+                    COALESCE(SUM(CASE WHEN TrangThai <> :cancelledStatus THEN ThanhTienCuoi ELSE 0 END), 0) AS totalRevenue,
+                    COALESCE(SUM(CASE WHEN TrangThai <> :cancelledStatus AND NgayDat BETWEEN :todayStart AND :todayEnd THEN ThanhTienCuoi ELSE 0 END), 0) AS todayRevenue,
+                    COALESCE(SUM(CASE WHEN TrangThai <> :cancelledStatus AND NgayDat >= :monthStart THEN ThanhTienCuoi ELSE 0 END), 0) AS monthRevenue,
+                    COUNT(*) AS totalOrders,
+                    SUM(CASE WHEN TrangThai = '0' THEN 1 ELSE 0 END) AS newOrders,
+                    SUM(CASE WHEN TrangThai = '1' THEN 1 ELSE 0 END) AS preparingOrders,
+                    SUM(CASE WHEN TrangThai = '2' THEN 1 ELSE 0 END) AS shippingOrders,
+                    SUM(CASE WHEN TrangThai = '3' THEN 1 ELSE 0 END) AS completedOrders,
+                    SUM(CASE WHEN TrangThai = '4' THEN 1 ELSE 0 END) AS cancelledOrders
+                FROM donhang
+            ");
+            $stmt->bindValue(':cancelledStatus', self::CANCELLED_ORDER_STATUS);
+            $stmt->bindValue(':todayStart', $todayStart);
+            $stmt->bindValue(':todayEnd', $todayEnd);
+            $stmt->bindValue(':monthStart', $monthStart);
+            $stmt->execute();
+            $orderStats = $stmt->fetch(PDO::FETCH_ASSOC);
+
+            if ($orderStats) {
+                foreach ($orderStats as $key => $value) {
+                    $stats[$key] = in_array($key, ['totalRevenue', 'todayRevenue', 'monthRevenue'], true)
+                        ? (float)$value
+                        : (int)$value;
+                }
             }
+
+            $stats['completionRate'] = $stats['totalOrders'] > 0
+                ? round(($stats['completedOrders'] / $stats['totalOrders']) * 100)
+                : 0;
         }
 
-        $stats['totalUsers'] = (int)$this->db->query("SELECT COUNT(*) FROM nguoidung")->fetchColumn();
-        $stats['totalProducts'] = (int)$this->db->query("SELECT COUNT(*) FROM sanpham")->fetchColumn();
-        $stats['publishedPosts'] = (int)$this->db->query("SELECT COUNT(*) FROM baiviet")->fetchColumn();
-        $stats['pendingReviews'] = (int)$this->db->query("SELECT COUNT(*) FROM danhgia WHERE TrangThai = 0")->fetchColumn();
-        $stats['totalReviews'] = (int)$this->db->query("SELECT COUNT(*) FROM danhgia")->fetchColumn();
+        if ($this->tableExists('nguoidung')) {
+            $stats['totalUsers'] = (int)$this->db->query("SELECT COUNT(*) FROM nguoidung")->fetchColumn();
+        }
+
+        if ($this->tableExists('sanpham')) {
+            $stats['totalProducts'] = (int)$this->db->query("SELECT COUNT(*) FROM sanpham")->fetchColumn();
+            $stats['activeProducts'] = $this->hasColumn('sanpham', 'TrangThai')
+                ? (int)$this->db->query("SELECT COUNT(*) FROM sanpham WHERE TrangThai = 1")->fetchColumn()
+                : $stats['totalProducts'];
+        }
+
+        if ($this->tableExists('danhmuc')) {
+            $stats['totalCategories'] = (int)$this->db->query("SELECT COUNT(*) FROM danhmuc")->fetchColumn();
+        }
+
+        if ($this->tableExists('bienthesanpham')) {
+            $threshold = self::LOW_STOCK_THRESHOLD;
+            $stats['lowStockItems'] = (int)$this->db->query("
+                SELECT COUNT(*) FROM bienthesanpham
+                WHERE SoLuongTon > 0 AND SoLuongTon <= {$threshold}
+            ")->fetchColumn();
+            $stats['outOfStockItems'] = (int)$this->db->query("
+                SELECT COUNT(*) FROM bienthesanpham
+                WHERE SoLuongTon = 0
+            ")->fetchColumn();
+            $stats['lowStockProducts'] = (int)$this->db->query("
+                SELECT COUNT(*)
+                FROM (
+                    SELECT MaSanPham, COALESCE(SUM(SoLuongTon), 0) AS total_stock
+                    FROM bienthesanpham
+                    GROUP BY MaSanPham
+                ) stock_summary
+                WHERE total_stock > 0 AND total_stock <= {$threshold}
+            ")->fetchColumn();
+        }
+
+        if ($this->tableExists('baiviet')) {
+            $stats['publishedPosts'] = (int)$this->db->query("SELECT COUNT(*) FROM baiviet")->fetchColumn();
+        }
+
+        if ($this->tableExists('danhgia')) {
+            $stats['pendingReviews'] = $this->hasColumn('danhgia', 'TrangThai')
+                ? (int)$this->db->query("SELECT COUNT(*) FROM danhgia WHERE TrangThai = 0")->fetchColumn()
+                : 0;
+            $stats['totalReviews'] = (int)$this->db->query("SELECT COUNT(*) FROM danhgia")->fetchColumn();
+        }
 
         return $stats;
     }
 
+    public function getRevenueLast7Days(): array
+    {
+        $labels = [];
+        $valuesByDate = [];
+        $now = new DateTimeImmutable('now', new DateTimeZone('Asia/Bangkok'));
+
+        for ($i = 6; $i >= 0; $i--) {
+            $day = $now->modify("-{$i} days");
+            $date = $day->format('Y-m-d');
+            $labels[] = $day->format('d/m');
+            $valuesByDate[$date] = 0;
+        }
+
+        if (!$this->tableExists('donhang')) {
+            return [
+                'labels' => $labels,
+                'values' => array_values($valuesByDate),
+                'total' => 0
+            ];
+        }
+
+        $startDate = array_key_first($valuesByDate);
+        $endDate = array_key_last($valuesByDate);
+
+        $stmt = $this->db->prepare("
+            SELECT DATE(NgayDat) AS order_date, COALESCE(SUM(ThanhTienCuoi), 0) AS revenue
+            FROM donhang
+            WHERE TrangThai <> :cancelledStatus
+              AND DATE(NgayDat) BETWEEN :startDate AND :endDate
+            GROUP BY DATE(NgayDat)
+            ORDER BY order_date ASC
+        ");
+        $stmt->execute([
+            ':startDate' => $startDate,
+            ':endDate' => $endDate,
+            ':cancelledStatus' => self::CANCELLED_ORDER_STATUS
+        ]);
+
+        foreach ($stmt->fetchAll(PDO::FETCH_ASSOC) as $row) {
+            $date = (string)($row['order_date'] ?? '');
+            if (array_key_exists($date, $valuesByDate)) {
+                $valuesByDate[$date] = (float)$row['revenue'];
+            }
+        }
+
+        return [
+            'labels' => $labels,
+            'values' => array_values($valuesByDate),
+            'total' => array_sum($valuesByDate)
+        ];
+    }
+
+    public function getOrderStatusStats(): array
+    {
+        if (!$this->tableExists('donhang')) {
+            return [
+                'labels' => [],
+                'values' => [],
+                'total' => 0
+            ];
+        }
+
+        $statusLabels = [
+            '0' => 'Chờ xử lý',
+            '1' => 'Đang chuẩn bị',
+            '2' => 'Đang giao',
+            '3' => 'Hoàn thành',
+            '4' => 'Đã hủy'
+        ];
+
+        $stmt = $this->db->query("
+            SELECT COALESCE(TrangThai, '') AS status, COUNT(*) AS total
+            FROM donhang
+            GROUP BY TrangThai
+            ORDER BY TrangThai ASC
+        ");
+
+        $labels = [];
+        $values = [];
+        $total = 0;
+
+        foreach ($stmt->fetchAll(PDO::FETCH_ASSOC) as $row) {
+            $status = (string)($row['status'] ?? '');
+            $count = (int)($row['total'] ?? 0);
+            $labels[] = $statusLabels[$status] ?? ($status !== '' ? $status : 'Không rõ');
+            $values[] = $count;
+            $total += $count;
+        }
+
+        return [
+            'labels' => $labels,
+            'values' => $values,
+            'total' => $total
+        ];
+    }
+
+    public function getInventoryStockStats(): array
+    {
+        $labels = ['Còn hàng', 'Sắp hết', 'Hết hàng'];
+
+        if (!$this->tableExists('bienthesanpham')) {
+            return [
+                'labels' => $labels,
+                'values' => [0, 0, 0],
+                'total' => 0
+            ];
+        }
+
+        $threshold = self::LOW_STOCK_THRESHOLD;
+        $stmt = $this->db->query("
+            SELECT
+                SUM(CASE WHEN SoLuongTon > {$threshold} THEN 1 ELSE 0 END) AS in_stock,
+                SUM(CASE WHEN SoLuongTon > 0 AND SoLuongTon <= {$threshold} THEN 1 ELSE 0 END) AS low_stock,
+                SUM(CASE WHEN SoLuongTon = 0 THEN 1 ELSE 0 END) AS out_of_stock
+            FROM bienthesanpham
+        ");
+        $row = $stmt->fetch(PDO::FETCH_ASSOC) ?: [];
+        $values = [
+            (int)($row['in_stock'] ?? 0),
+            (int)($row['low_stock'] ?? 0),
+            (int)($row['out_of_stock'] ?? 0),
+        ];
+
+        return [
+            'labels' => $labels,
+            'values' => $values,
+            'total' => array_sum($values)
+        ];
+    }
+
     public function getRecentOrders($limit = 5)
     {
+        if (!$this->tableExists('donhang')) {
+            return [];
+        }
+
+        $limit = max(1, (int)$limit);
         $sql = "
             SELECT
                 dh.MaDonHang, dh.MaNguoiDung, dh.NgayDat, dh.TongTien, dh.TrangThai,
@@ -76,6 +284,85 @@ class AdminModel extends Model
         ";
         $stmt = $this->db->prepare($sql);
         $stmt->bindValue(':limit', (int)$limit, PDO::PARAM_INT);
+        $stmt->execute();
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    }
+
+    public function getLowStockItems($limit = 5): array
+    {
+        if (!$this->tableExists('bienthesanpham')) {
+            return [];
+        }
+
+        $limit = max(1, (int)$limit);
+        $threshold = self::LOW_STOCK_THRESHOLD;
+        $productJoin = $this->tableExists('sanpham')
+            ? 'LEFT JOIN sanpham sp ON sp.MaSanPham = bt.MaSanPham'
+            : '';
+        $productNameSelect = $this->tableExists('sanpham')
+            ? 'sp.TenSanPham'
+            : "bt.MaSanPham AS TenSanPham";
+
+        $sql = "
+            SELECT
+                bt.MaBienThe,
+                bt.MaSanPham,
+                {$productNameSelect},
+                bt.MauSac,
+                bt.KichThuoc,
+                bt.SoLuongTon,
+                bt.GiaTien
+            FROM bienthesanpham bt
+            {$productJoin}
+            WHERE bt.SoLuongTon > 0 AND bt.SoLuongTon <= :threshold
+            ORDER BY bt.SoLuongTon ASC, bt.MaBienThe ASC
+            LIMIT {$limit}
+        ";
+        $stmt = $this->db->prepare($sql);
+        $stmt->bindValue(':threshold', $threshold, PDO::PARAM_INT);
+        $stmt->execute();
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    }
+
+    public function getTopSellingProducts($limit = 5): array
+    {
+        if (!$this->tableExists('chitietdonhang') || !$this->tableExists('bienthesanpham')) {
+            return [];
+        }
+
+        $limit = max(1, (int)$limit);
+        $orderJoin = $this->tableExists('donhang')
+            ? "LEFT JOIN donhang dh ON dh.MaDonHang = ct.MaDonHang"
+            : '';
+        $orderWhere = $this->tableExists('donhang')
+            ? "WHERE dh.TrangThai <> '" . self::CANCELLED_ORDER_STATUS . "'"
+            : '';
+        $productJoin = $this->tableExists('sanpham')
+            ? 'LEFT JOIN sanpham sp ON sp.MaSanPham = bt.MaSanPham'
+            : '';
+        $productNameSelect = $this->tableExists('sanpham')
+            ? 'sp.TenSanPham'
+            : "bt.MaSanPham AS TenSanPham";
+        $productGroupBy = $this->tableExists('sanpham')
+            ? 'bt.MaSanPham, sp.TenSanPham'
+            : 'bt.MaSanPham';
+
+        $sql = "
+            SELECT
+                bt.MaSanPham,
+                {$productNameSelect},
+                SUM(ct.SoLuong) AS total_sold,
+                SUM(ct.SoLuong * ct.DonGia) AS revenue
+            FROM chitietdonhang ct
+            LEFT JOIN bienthesanpham bt ON bt.MaBienThe = ct.MaBienThe
+            {$productJoin}
+            {$orderJoin}
+            {$orderWhere}
+            GROUP BY {$productGroupBy}
+            ORDER BY total_sold DESC, revenue DESC
+            LIMIT {$limit}
+        ";
+        $stmt = $this->db->prepare($sql);
         $stmt->execute();
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
@@ -326,6 +613,30 @@ class AdminModel extends Model
 
         $limit = max(1, (int)$limit);
         $offset = max(0, (int)$offset);
+        $activeVariantWhere = $this->hasColumn('bienthesanpham', 'TrangThai') ? 'WHERE TrangThai = 1' : '';
+        $imageStatsJoin = $this->productImageRoleColumnsExist()
+            ? "
+        LEFT JOIN (
+            SELECT
+                MaSanPham,
+                COALESCE(MIN(CASE WHEN LoaiAnh = 'cover' THEN DuongDan END), MIN(DuongDan)) AS DuongDan,
+                COUNT(*) AS image_count,
+                CASE WHEN SUM(CASE WHEN LoaiAnh = 'cover' THEN 1 ELSE 0 END) > 0 THEN 1 WHEN COUNT(*) > 0 THEN 1 ELSE 0 END AS cover_count,
+                CASE WHEN SUM(CASE WHEN LoaiAnh = 'cover' THEN 1 ELSE 0 END) > 0 THEN SUM(CASE WHEN LoaiAnh = 'detail' THEN 1 ELSE 0 END) ELSE GREATEST(COUNT(*) - 1, 0) END AS detail_count
+            FROM hinhanhsanpham
+            GROUP BY MaSanPham
+        ) img ON img.MaSanPham = sp.MaSanPham"
+            : "
+        LEFT JOIN (
+            SELECT
+                MaSanPham,
+                MIN(DuongDan) AS DuongDan,
+                COUNT(*) AS image_count,
+                CASE WHEN COUNT(*) > 0 THEN 1 ELSE 0 END AS cover_count,
+                GREATEST(COUNT(*) - 1, 0) AS detail_count
+            FROM hinhanhsanpham
+            GROUP BY MaSanPham
+        ) img ON img.MaSanPham = sp.MaSanPham";
 
         $sql = "
         SELECT
@@ -340,24 +651,24 @@ class AdminModel extends Model
             sp.MaVatLieu AS material_id,
             vl.TenVatLieu AS material_name,
             COALESCE(v.min_price, 0) AS price,
+            COALESCE(v.max_price, 0) AS max_price,
             COALESCE(v.total_stock, 0) AS stock,
             COALESCE(img.DuongDan, '') AS image,
             COALESCE(img.image_count, 0) AS image_count,
+            COALESCE(img.cover_count, 0) AS cover_image_count,
+            COALESCE(img.detail_count, 0) AS detail_image_count,
             COALESCE(v.variant_count, 0) AS variant_count
         FROM sanpham sp
         LEFT JOIN danhmuc dm ON dm.MaDanhMuc = sp.MaDanhMuc
         LEFT JOIN thuonghieu th ON th.MaThuongHieu = sp.MaThuongHieu
         LEFT JOIN vatlieu vl ON vl.MaVatLieu = sp.MaVatLieu
         LEFT JOIN (
-            SELECT MaSanPham, MIN(GiaTien) AS min_price, SUM(SoLuongTon) AS total_stock, COUNT(*) AS variant_count
+            SELECT MaSanPham, MIN(GiaTien) AS min_price, MAX(GiaTien) AS max_price, SUM(SoLuongTon) AS total_stock, COUNT(*) AS variant_count
             FROM bienthesanpham
+            {$activeVariantWhere}
             GROUP BY MaSanPham
         ) v ON v.MaSanPham = sp.MaSanPham
-        LEFT JOIN (
-            SELECT MaSanPham, MIN(DuongDan) AS DuongDan, COUNT(*) AS image_count
-            FROM hinhanhsanpham
-            GROUP BY MaSanPham
-        ) img ON img.MaSanPham = sp.MaSanPham
+        {$imageStatsJoin}
         WHERE " . implode(' AND ', $where) . "
         ORDER BY sp.MaSanPham ASC
         LIMIT {$limit} OFFSET {$offset}
@@ -376,6 +687,28 @@ class AdminModel extends Model
 
     public function getProductById(string $id): ?array
     {
+        $imageStatsJoin = $this->productImageRoleColumnsExist()
+            ? "
+            LEFT JOIN (
+                SELECT
+                    MaSanPham,
+                    COUNT(*) AS image_count,
+                    CASE WHEN SUM(CASE WHEN LoaiAnh = 'cover' THEN 1 ELSE 0 END) > 0 THEN 1 WHEN COUNT(*) > 0 THEN 1 ELSE 0 END AS cover_count,
+                    CASE WHEN SUM(CASE WHEN LoaiAnh = 'cover' THEN 1 ELSE 0 END) > 0 THEN SUM(CASE WHEN LoaiAnh = 'detail' THEN 1 ELSE 0 END) ELSE GREATEST(COUNT(*) - 1, 0) END AS detail_count
+                FROM hinhanhsanpham
+                GROUP BY MaSanPham
+            ) img ON img.MaSanPham = sp.MaSanPham"
+            : "
+            LEFT JOIN (
+                SELECT
+                    MaSanPham,
+                    COUNT(*) AS image_count,
+                    CASE WHEN COUNT(*) > 0 THEN 1 ELSE 0 END AS cover_count,
+                    GREATEST(COUNT(*) - 1, 0) AS detail_count
+                FROM hinhanhsanpham
+                GROUP BY MaSanPham
+            ) img ON img.MaSanPham = sp.MaSanPham";
+
         $stmt = $this->db->prepare("
             SELECT
                 sp.*,
@@ -383,23 +716,32 @@ class AdminModel extends Model
                 th.TenThuongHieu AS brand_name,
                 vl.TenVatLieu AS material_name,
                 COALESCE(img.image_count, 0) AS image_count,
+                COALESCE(img.cover_count, 0) AS cover_image_count,
+                COALESCE(img.detail_count, 0) AS detail_image_count,
                 COALESCE(v.variant_count, 0) AS variant_count,
                 COALESCE(v.min_price, 0) AS min_price,
+                COALESCE(v.primary_price, v.min_price, 0) AS GiaTien,
+                COALESCE(v.primary_size, '') AS KichThuoc,
+                COALESCE(v.primary_color, '') AS MauSac,
                 COALESCE(v.total_stock, 0) AS total_stock
             FROM sanpham sp
             LEFT JOIN danhmuc dm ON dm.MaDanhMuc = sp.MaDanhMuc
             LEFT JOIN thuonghieu th ON th.MaThuongHieu = sp.MaThuongHieu
             LEFT JOIN vatlieu vl ON vl.MaVatLieu = sp.MaVatLieu
             LEFT JOIN (
-                SELECT MaSanPham, COUNT(*) AS variant_count, MIN(GiaTien) AS min_price, SUM(SoLuongTon) AS total_stock
-                FROM bienthesanpham
-                GROUP BY MaSanPham
+                SELECT
+                    b.MaSanPham,
+                    COUNT(*) AS variant_count,
+                    MIN(b.GiaTien) AS min_price,
+                    SUM(b.SoLuongTon) AS total_stock,
+                    SUBSTRING_INDEX(GROUP_CONCAT(b.GiaTien ORDER BY b.MaBienThe ASC), ',', 1) AS primary_price,
+                    SUBSTRING_INDEX(GROUP_CONCAT(COALESCE(b.KichThuoc, '') ORDER BY b.MaBienThe ASC SEPARATOR '||'), '||', 1) AS primary_size,
+                    SUBSTRING_INDEX(GROUP_CONCAT(COALESCE(b.MauSac, '') ORDER BY b.MaBienThe ASC SEPARATOR '||'), '||', 1) AS primary_color
+                FROM bienthesanpham b
+                {$activeVariantWhere}
+                GROUP BY b.MaSanPham
             ) v ON v.MaSanPham = sp.MaSanPham
-            LEFT JOIN (
-                SELECT MaSanPham, COUNT(*) AS image_count
-                FROM hinhanhsanpham
-                GROUP BY MaSanPham
-            ) img ON img.MaSanPham = sp.MaSanPham
+            {$imageStatsJoin}
             WHERE sp.MaSanPham = ?
         ");
         $stmt->execute([$id]);
@@ -443,6 +785,141 @@ class AdminModel extends Model
     {
         $stmt = $this->db->query('SELECT MaVatLieu, TenVatLieu FROM vatlieu ORDER BY MaVatLieu ASC');
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    }
+
+    public function categoryExists(string $id): bool
+    {
+        if ($id === '') {
+            return false;
+        }
+
+        $stmt = $this->db->prepare('SELECT COUNT(*) FROM danhmuc WHERE MaDanhMuc = ?');
+        $stmt->execute([$id]);
+        return (int)$stmt->fetchColumn() > 0;
+    }
+
+    public function brandExists(string $id): bool
+    {
+        if ($id === '') {
+            return true;
+        }
+
+        $stmt = $this->db->prepare('SELECT COUNT(*) FROM thuonghieu WHERE MaThuongHieu = ?');
+        $stmt->execute([$id]);
+        return (int)$stmt->fetchColumn() > 0;
+    }
+
+    public function createBrand(string $name, string $origin = ''): ?string
+    {
+        $name = trim($name);
+        $origin = trim($origin);
+
+        if ($name === '') {
+            return null;
+        }
+
+        $stmt = $this->db->prepare('SELECT MaThuongHieu FROM thuonghieu WHERE LOWER(TenThuongHieu) = LOWER(?) LIMIT 1');
+        $stmt->execute([$name]);
+        $existingId = $stmt->fetchColumn();
+        if ($existingId) {
+            return (string)$existingId;
+        }
+
+        $brandId = $this->generateNewId('thuonghieu', 'MaThuongHieu', 'B');
+        $insert = $this->db->prepare('INSERT INTO thuonghieu (MaThuongHieu, TenThuongHieu, XuatXu) VALUES (?, ?, ?)');
+
+        return $insert->execute([$brandId, $name, $origin ?: null]) ? $brandId : null;
+    }
+
+    public function materialExists(string $id): bool
+    {
+        if ($id === '') {
+            return true;
+        }
+
+        $stmt = $this->db->prepare('SELECT COUNT(*) FROM vatlieu WHERE MaVatLieu = ?');
+        $stmt->execute([$id]);
+        return (int)$stmt->fetchColumn() > 0;
+    }
+
+    public function findMaterialByName(string $name): ?string
+    {
+        $name = trim($name);
+        if ($name === '') {
+            return null;
+        }
+
+        $stmt = $this->db->prepare('SELECT MaVatLieu FROM vatlieu WHERE LOWER(TenVatLieu) = LOWER(?) LIMIT 1');
+        $stmt->execute([$name]);
+        $materialId = $stmt->fetchColumn();
+        return $materialId ? (string)$materialId : null;
+    }
+
+    public function createMaterial(string $name): ?string
+    {
+        $name = trim($name);
+        if ($name === '') {
+            return null;
+        }
+
+        $existingId = $this->findMaterialByName($name);
+        if ($existingId) {
+            return $existingId;
+        }
+
+        $materialId = $this->generateNewId('vatlieu', 'MaVatLieu', 'M');
+        $stmt = $this->db->prepare('INSERT INTO vatlieu (MaVatLieu, TenVatLieu, MoTa) VALUES (?, ?, NULL)');
+        return $stmt->execute([$materialId, $name]) ? $materialId : null;
+    }
+
+    public function resolveMaterialId(string $name): ?string
+    {
+        $name = trim($name);
+        if ($name === '') {
+            return null;
+        }
+
+        return $this->findMaterialByName($name) ?: $this->createMaterial($name);
+    }
+
+    public function isFashionCategory(string $categoryId): bool
+    {
+        if ($categoryId === '') {
+            return false;
+        }
+
+        $stmt = $this->db->prepare('SELECT TenDanhMuc FROM danhmuc WHERE MaDanhMuc = ? LIMIT 1');
+        $stmt->execute([$categoryId]);
+        $name = strtolower((string)$stmt->fetchColumn());
+        return str_contains($name, 'fashion');
+    }
+
+    public function getVariantSuggestionsByCategory(string $categoryId): array
+    {
+        $name = '';
+        if ($categoryId !== '') {
+            $stmt = $this->db->prepare('SELECT TenDanhMuc FROM danhmuc WHERE MaDanhMuc = ? LIMIT 1');
+            $stmt->execute([$categoryId]);
+            $name = strtolower((string)$stmt->fetchColumn());
+        }
+
+        if (str_contains($name, 'fashion')) {
+            return ['Size', 'Màu sắc'];
+        }
+
+        if (str_contains($name, 'care')) {
+            return ['Dung tích', 'Mùi hương', 'Loại/kiểu'];
+        }
+
+        if (str_contains($name, 'kitchen')) {
+            return ['Quy cách', 'Kích thước', 'Màu sắc'];
+        }
+
+        if (str_contains($name, 'decor')) {
+            return ['Kích thước', 'Màu sắc', 'Mùi hương', 'Họa tiết'];
+        }
+
+        return ['Kích thước', 'Màu sắc', 'Loại/kiểu'];
     }
 
     public function createProduct(array $data): bool
@@ -506,6 +983,37 @@ class AdminModel extends Model
             ':TrangThai' => $data['TrangThai'],
             ':MaSanPham' => $id
         ]);
+    }
+
+    public function upsertPrimaryVariant(string $productId, float $price, string $size = '', string $type = '', ?int $stock = null): bool
+    {
+        $stmt = $this->db->prepare('SELECT MaBienThe FROM bienthesanpham WHERE MaSanPham = ? ORDER BY MaBienThe ASC LIMIT 1');
+        $stmt->execute([$productId]);
+        $variantId = $stmt->fetchColumn();
+
+        if ($variantId) {
+            $stockSql = $stock !== null ? ', SoLuongTon = ?' : '';
+            $update = $this->db->prepare("
+                UPDATE bienthesanpham
+                SET GiaTien = ?, KichThuoc = CASE WHEN ? != '' THEN ? ELSE KichThuoc END,
+                    MauSac = CASE WHEN ? != '' THEN ? ELSE MauSac END
+                    {$stockSql}
+                WHERE MaBienThe = ?
+            ");
+            $params = [$price, $size, $size, $type, $type];
+            if ($stock !== null) {
+                $params[] = max(0, $stock);
+            }
+            $params[] = $variantId;
+            return $update->execute($params);
+        }
+
+        $variantId = $this->generateNewId('bienthesanpham', 'MaBienThe', 'V');
+        $insert = $this->db->prepare('
+            INSERT INTO bienthesanpham (MaBienThe, MaSanPham, KichThuoc, MauSac, GiaTien, SoLuongTon)
+            VALUES (?, ?, ?, ?, ?, ?)
+        ');
+        return $insert->execute([$variantId, $productId, $size ?: null, $type ?: null, $price, max(0, (int)($stock ?? 0))]);
     }
 
     public function hideProduct(string $id): bool
@@ -620,6 +1128,16 @@ class AdminModel extends Model
         return $stmt->execute([$id]);
     }
 
+    public function setCategoryStatus(string $id, int $status): bool
+    {
+        if (!$this->hasColumn('danhmuc', 'TrangThai')) {
+            return true;
+        }
+
+        $stmt = $this->db->prepare('UPDATE danhmuc SET TrangThai = ? WHERE MaDanhMuc = ?');
+        return $stmt->execute([$status === 1 ? 1 : 0, $id]);
+    }
+
     public function categoryHasProducts(string $id): bool
     {
         $stmt = $this->db->prepare('SELECT COUNT(*) FROM sanpham WHERE MaDanhMuc = ?');
@@ -629,26 +1147,129 @@ class AdminModel extends Model
 
     public function productCanBeVisible(string $productId): bool
     {
-        $stmt = $this->db->prepare('SELECT COUNT(*) FROM bienthesanpham WHERE MaSanPham = ? AND GiaTien > 0 AND SoLuongTon > 0');
+        $statusSql = $this->hasColumn('bienthesanpham', 'TrangThai') ? ' AND TrangThai = 1' : '';
+        $stmt = $this->db->prepare('SELECT COUNT(*) FROM bienthesanpham WHERE MaSanPham = ? AND GiaTien > 0 AND SoLuongTon > 0' . $statusSql);
         $stmt->execute([$productId]);
         if ((int)$stmt->fetchColumn() === 0) {
             return false;
         }
 
-        $stmt = $this->db->prepare('SELECT COUNT(*) FROM hinhanhsanpham WHERE MaSanPham = ?');
-        $stmt->execute([$productId]);
-        return (int)$stmt->fetchColumn() > 0;
+        return $this->countProductImages($productId, 'cover') > 0;
     }
 
-    public function addProductImage(string $productId, string $imageFileName): bool
+    public function addProductImage(string $productId, string $imageFileName, string $type = 'detail'): bool
     {
         $imageId = $this->generateImageId();
+        $type = $type === 'cover' ? 'cover' : 'detail';
+
+        if ($this->productImageRoleColumnsExist()) {
+            $stmt = $this->db->prepare('
+                INSERT INTO hinhanhsanpham (MaHinhAnh, MaSanPham, DuongDan, LoaiAnh, ThuTu)
+                VALUES (:MaHinhAnh, :MaSanPham, :DuongDan, :LoaiAnh, :ThuTu)
+            ');
+            return $stmt->execute([
+                ':MaHinhAnh' => $imageId,
+                ':MaSanPham' => $productId,
+                ':DuongDan' => $imageFileName,
+                ':LoaiAnh' => $type,
+                ':ThuTu' => $type === 'cover' ? 0 : $this->countProductImages($productId, 'detail') + 1
+            ]);
+        }
+
         $stmt = $this->db->prepare('INSERT INTO hinhanhsanpham (MaHinhAnh, MaSanPham, DuongDan) VALUES (:MaHinhAnh, :MaSanPham, :DuongDan)');
         return $stmt->execute([
             ':MaHinhAnh' => $imageId,
             ':MaSanPham' => $productId,
             ':DuongDan' => $imageFileName
         ]);
+    }
+
+    public function countProductImages(string $productId, ?string $type = null): int
+    {
+        if ($productId === '') {
+            return 0;
+        }
+
+        if ($this->productImageRoleColumnsExist() && in_array($type, ['cover', 'detail'], true)) {
+            $stmt = $this->db->prepare("
+                SELECT
+                    COUNT(*) AS total_count,
+                    SUM(CASE WHEN LoaiAnh = 'cover' THEN 1 ELSE 0 END) AS cover_count,
+                    SUM(CASE WHEN LoaiAnh = 'detail' THEN 1 ELSE 0 END) AS detail_count
+                FROM hinhanhsanpham
+                WHERE MaSanPham = ?
+            ");
+            $stmt->execute([$productId]);
+            $row = $stmt->fetch(PDO::FETCH_ASSOC) ?: [];
+            $total = (int)($row['total_count'] ?? 0);
+            $cover = (int)($row['cover_count'] ?? 0);
+            $detail = (int)($row['detail_count'] ?? 0);
+
+            if ($type === 'cover') {
+                return $cover > 0 ? 1 : ($total > 0 ? 1 : 0);
+            }
+
+            return $cover > 0 ? $detail : max(0, $total - 1);
+        }
+
+        $stmt = $this->db->prepare('SELECT COUNT(*) FROM hinhanhsanpham WHERE MaSanPham = ?');
+        $stmt->execute([$productId]);
+        $total = (int)$stmt->fetchColumn();
+
+        if ($type === 'cover') {
+            return $total > 0 ? 1 : 0;
+        }
+
+        if ($type === 'detail') {
+            return max(0, $total - 1);
+        }
+
+        return $total;
+    }
+
+    public function getProductImageSummary(string $productId): array
+    {
+        return [
+            'cover_count' => $this->countProductImages($productId, 'cover'),
+            'detail_count' => $this->countProductImages($productId, 'detail'),
+            'detail_limit' => self::PRODUCT_DETAIL_IMAGE_LIMIT,
+        ];
+    }
+
+    public function replaceProductCoverImage(string $productId, string $imageFileName): bool
+    {
+        if (!$this->productImageRoleColumnsExist()) {
+            return $this->addProductImage($productId, $imageFileName);
+        }
+
+        $this->db->beginTransaction();
+
+        try {
+            $stmt = $this->db->prepare("SELECT MaHinhAnh, DuongDan FROM hinhanhsanpham WHERE MaSanPham = ? AND LoaiAnh = 'cover'");
+            $stmt->execute([$productId]);
+            $oldImages = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+            $delete = $this->db->prepare("DELETE FROM hinhanhsanpham WHERE MaSanPham = ? AND LoaiAnh = 'cover'");
+            $delete->execute([$productId]);
+
+            if (!$this->addProductImage($productId, $imageFileName, 'cover')) {
+                $this->db->rollBack();
+                return false;
+            }
+
+            $this->db->commit();
+
+            foreach ($oldImages as $oldImage) {
+                $this->deleteProductImageFile((string)($oldImage['DuongDan'] ?? ''));
+            }
+
+            return true;
+        } catch (Throwable $e) {
+            if ($this->db->inTransaction()) {
+                $this->db->rollBack();
+            }
+            return false;
+        }
     }
 
     public function generateProductId(): string
@@ -727,7 +1348,7 @@ class AdminModel extends Model
         return $stmt->execute([trim($reply), $maDanhGia]);
     }
 
-    public function getInventory(string $keyword = ''): array
+    public function getInventory(string $keyword = '', string $stockStatus = ''): array
     {
         $sql = "
             SELECT bt.*, sp.TenSanPham
@@ -744,6 +1365,14 @@ class AdminModel extends Model
             $params[':kw3'] = "%$keyword%";
         }
 
+        if ($stockStatus === 'in_stock') {
+            $sql .= " AND bt.SoLuongTon > 5";
+        } elseif ($stockStatus === 'low_stock') {
+            $sql .= " AND bt.SoLuongTon BETWEEN 1 AND 5";
+        } elseif ($stockStatus === 'out_of_stock') {
+            $sql .= " AND bt.SoLuongTon = 0";
+        }
+
         $sql .= " ORDER BY sp.TenSanPham ASC, bt.MaBienThe ASC";
         $stmt = $this->db->prepare($sql);
         $stmt->execute($params);
@@ -752,8 +1381,35 @@ class AdminModel extends Model
 
     public function updateStock(string $maBienThe, int $soLuong): bool
     {
+        if ($soLuong < 0) {
+            return false;
+        }
+
         $stmt = $this->db->prepare("UPDATE bienthesanpham SET SoLuongTon = ? WHERE MaBienThe = ?");
         return $stmt->execute([$soLuong, $maBienThe]);
+    }
+
+    public function variantExists(string $maBienThe, ?string $excludeSku = null): bool
+    {
+        if ($maBienThe === '') {
+            return false;
+        }
+
+        $sql = 'SELECT COUNT(*) FROM bienthesanpham WHERE MaBienThe = ?';
+        $params = [$maBienThe];
+        if ($excludeSku !== null && $excludeSku !== '') {
+            $sql .= ' AND MaBienThe <> ?';
+            $params[] = $excludeSku;
+        }
+
+        $stmt = $this->db->prepare($sql);
+        $stmt->execute($params);
+        return (int)$stmt->fetchColumn() > 0;
+    }
+
+    public function generateVariantCode(): string
+    {
+        return $this->generateNewId('bienthesanpham', 'MaBienThe', 'BT');
     }
 
     public function variantHasOrders(string $maBienThe): bool
@@ -778,18 +1434,41 @@ class AdminModel extends Model
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
 
-    public function getImportReceipts(): array
+    public function getImportReceipts(string $status = ''): array
     {
         if (!$this->tableExists('phieunhap')) {
             return [];
         }
+
+        $where = '';
+        $params = [];
+        $statusColumn = '';
+
+        if ($this->hasColumn('phieunhap', 'TrangThai')) {
+            $statusColumn = 'pn.TrangThai';
+        } elseif ($this->hasColumn('phieunhap', 'status')) {
+            $statusColumn = 'pn.status';
+        }
+
+        if ($status !== '') {
+            if ($statusColumn !== '') {
+                $where = "WHERE {$statusColumn} = :status";
+                $params[':status'] = $status;
+            } elseif ($status !== 'verified') {
+                return [];
+            }
+        }
+
+        $statusSelect = $statusColumn !== '' ? "{$statusColumn} AS receipt_status" : "'verified' AS receipt_status";
         $sql = "
-            SELECT pn.*, ncc.TenNCC
+            SELECT pn.*, ncc.TenNCC, {$statusSelect}
             FROM phieunhap pn
             LEFT JOIN nhacungcap ncc ON pn.MaNCC = ncc.MaNCC
+            {$where}
             ORDER BY pn.NgayNhap DESC
         ";
-        $stmt = $this->db->query($sql);
+        $stmt = $this->db->prepare($sql);
+        $stmt->execute($params);
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
 
@@ -806,13 +1485,51 @@ class AdminModel extends Model
         return $stmt->execute([$maNCC, $tenNCC, $soDienThoai, $diaChi]);
     }
 
-    public function getVariantsByProduct(string $maSanPham): array
+    public function addImportReceipt(string $maBienThe, int $quantity, string $note = '', ?string $supplierId = null): bool
     {
+        if (!$this->tableExists('phieunhap') || !$this->tableExists('chitietphieunhap') || $quantity <= 0 || !$this->variantExists($maBienThe)) {
+            return false;
+        }
+
+        $priceStmt = $this->db->prepare('SELECT GiaTien FROM bienthesanpham WHERE MaBienThe = ? LIMIT 1');
+        $priceStmt->execute([$maBienThe]);
+        $price = (float)$priceStmt->fetchColumn();
+        $receiptId = $this->generateNewId('phieunhap', 'MaPhieuNhap', 'R');
+        $supplierId = $supplierId ?: null;
+
+        try {
+            $this->db->beginTransaction();
+
+            $receipt = $this->db->prepare('INSERT INTO phieunhap (MaPhieuNhap, MaNCC, TongTienNhap) VALUES (?, ?, ?)');
+            $receipt->execute([$receiptId, $supplierId, $price * $quantity]);
+
+            $detail = $this->db->prepare('INSERT INTO chitietphieunhap (MaPhieuNhap, MaBienThe, SoLuongNhap, GiaNhap) VALUES (?, ?, ?, ?)');
+            $detail->execute([$receiptId, $maBienThe, $quantity, $price]);
+
+            $stock = $this->db->prepare('UPDATE bienthesanpham SET SoLuongTon = SoLuongTon + ? WHERE MaBienThe = ?');
+            $stock->execute([$quantity, $maBienThe]);
+
+            return $this->db->commit();
+        } catch (Throwable $e) {
+            if ($this->db->inTransaction()) {
+                $this->db->rollBack();
+            }
+            return false;
+        }
+    }
+
+    public function getVariantsByProduct(string $maSanPham, bool $activeOnly = false): array
+    {
+        $statusSql = $activeOnly && $this->hasColumn('bienthesanpham', 'TrangThai')
+            ? ' AND bt.TrangThai = 1'
+            : '';
+
         $stmt = $this->db->prepare("
             SELECT bt.*, sp.TenSanPham
             FROM bienthesanpham bt
             LEFT JOIN sanpham sp ON bt.MaSanPham = sp.MaSanPham
             WHERE bt.MaSanPham = ?
+            {$statusSql}
             ORDER BY bt.MaBienThe ASC
         ");
         $stmt->execute([$maSanPham]);
@@ -821,13 +1538,172 @@ class AdminModel extends Model
 
     public function addVariant(string $maSanPham, string $mauSac, string $kichThuoc, float $giaTien, int $soLuong): bool
     {
-        $maBienThe = $this->generateNewId('bienthesanpham', 'MaBienThe', 'BT');
+        $maBienThe = $this->generateVariantCode();
 
         $stmt = $this->db->prepare("
             INSERT INTO bienthesanpham (MaBienThe, MaSanPham, MauSac, KichThuoc, GiaTien, SoLuongTon)
             VALUES (?, ?, ?, ?, ?, ?)
         ");
         return $stmt->execute([$maBienThe, $maSanPham, $mauSac, $kichThuoc, $giaTien, $soLuong]);
+    }
+
+    public function saveProductVariants(string $productId, array $variants): bool
+    {
+        $usedSkus = [];
+        foreach ($variants as $variant) {
+            $sku = trim((string)($variant['sku'] ?? ''));
+            if ($sku === '') {
+                $sku = $this->generateUniqueVariantCode($usedSkus);
+            }
+            $usedSkus[] = $sku;
+
+            $attributesJson = $variant['attributes_json'] ?? null;
+            if (is_array($attributesJson)) {
+                $attributesJson = json_encode($attributesJson, JSON_UNESCAPED_UNICODE);
+            }
+
+            $fields = ['MaBienThe', 'MaSanPham', 'KichThuoc', 'MauSac', 'GiaTien', 'SoLuongTon'];
+            $placeholders = ['?', '?', '?', '?', '?', '?'];
+            $values = [
+                $sku,
+                $productId,
+                $variant['kich_thuoc'] ?: null,
+                $variant['mau_sac'] ?: null,
+                (float)$variant['price'],
+                max(0, (int)$variant['stock']),
+            ];
+
+            if ($this->hasColumn('bienthesanpham', 'TenBienThe')) {
+                $fields[] = 'TenBienThe';
+                $placeholders[] = '?';
+                $values[] = $variant['name'] ?: null;
+            }
+
+            if ($this->hasColumn('bienthesanpham', 'ThuocTinhJson')) {
+                $fields[] = 'ThuocTinhJson';
+                $placeholders[] = '?';
+                $values[] = $attributesJson ?: null;
+            }
+
+            if ($this->hasColumn('bienthesanpham', 'TrangThai')) {
+                $fields[] = 'TrangThai';
+                $placeholders[] = '?';
+                $values[] = isset($variant['status']) ? (int)$variant['status'] : 1;
+            }
+
+            $stmt = $this->db->prepare(sprintf(
+                'INSERT INTO bienthesanpham (%s) VALUES (%s)',
+                implode(', ', $fields),
+                implode(', ', $placeholders)
+            ));
+
+            if (!$stmt->execute($values)) {
+                return false;
+            }
+        }
+
+        return true;
+    }
+
+    public function replaceProductVariants(string $productId, array $variants): bool
+    {
+        $existing = $this->getVariantsByProduct($productId);
+        $submittedSkus = array_values(array_filter(array_map(
+            fn($variant) => trim((string)($variant['sku'] ?? '')),
+            $variants
+        )));
+
+        foreach ($existing as $oldVariant) {
+            $oldSku = (string)($oldVariant['MaBienThe'] ?? '');
+            if ($oldSku === '' || in_array($oldSku, $submittedSkus, true)) {
+                continue;
+            }
+
+            if ($this->hasColumn('bienthesanpham', 'TrangThai')) {
+                $stmt = $this->db->prepare('UPDATE bienthesanpham SET TrangThai = 0, SoLuongTon = 0 WHERE MaBienThe = ?');
+                if (!$stmt->execute([$oldSku])) {
+                    return false;
+                }
+                continue;
+            }
+
+            if ($this->variantHasOrders($oldSku)) {
+                if (!$this->updateStock($oldSku, 0)) {
+                    return false;
+                }
+            } elseif (!$this->deleteVariant($oldSku)) {
+                return false;
+            }
+        }
+
+        $usedSkus = [];
+        foreach ($variants as $variant) {
+            $sku = trim((string)($variant['sku'] ?? ''));
+            if ($sku === '') {
+                $sku = $this->generateUniqueVariantCode($usedSkus);
+            }
+            $usedSkus[] = $sku;
+
+            $attributesJson = $variant['attributes_json'] ?? null;
+            if (is_array($attributesJson)) {
+                $attributesJson = json_encode($attributesJson, JSON_UNESCAPED_UNICODE);
+            }
+
+            if ($this->variantExists($sku)) {
+                $set = ['KichThuoc = ?', 'MauSac = ?', 'GiaTien = ?', 'SoLuongTon = ?'];
+                $values = [
+                    $variant['kich_thuoc'] ?: null,
+                    $variant['mau_sac'] ?: null,
+                    (float)$variant['price'],
+                    max(0, (int)$variant['stock']),
+                ];
+
+                if ($this->hasColumn('bienthesanpham', 'TenBienThe')) {
+                    $set[] = 'TenBienThe = ?';
+                    $values[] = $variant['name'] ?: null;
+                }
+                if ($this->hasColumn('bienthesanpham', 'ThuocTinhJson')) {
+                    $set[] = 'ThuocTinhJson = ?';
+                    $values[] = $attributesJson ?: null;
+                }
+                if ($this->hasColumn('bienthesanpham', 'TrangThai')) {
+                    $set[] = 'TrangThai = ?';
+                    $values[] = isset($variant['status']) ? (int)$variant['status'] : 1;
+                }
+
+                $values[] = $sku;
+                $values[] = $productId;
+                $stmt = $this->db->prepare('UPDATE bienthesanpham SET ' . implode(', ', $set) . ' WHERE MaBienThe = ? AND MaSanPham = ?');
+                if (!$stmt->execute($values)) {
+                    return false;
+                }
+            } else {
+                $variant['sku'] = $sku;
+                if (!$this->saveProductVariants($productId, [$variant])) {
+                    return false;
+                }
+            }
+        }
+
+        return true;
+    }
+
+    private function generateUniqueVariantCode(array $usedSkus = []): string
+    {
+        do {
+            $sku = $this->generateVariantCode();
+            if (!$this->variantExists($sku) && !in_array($sku, $usedSkus, true)) {
+                return $sku;
+            }
+
+            $max = (int)preg_replace('/\D+/', '', $sku);
+            do {
+                $max++;
+                $sku = 'BT' . str_pad($max, 3, '0', STR_PAD_LEFT);
+            } while ($this->variantExists($sku) || in_array($sku, $usedSkus, true));
+
+            return $sku;
+        } while (true);
     }
 
     public function updateVariant(string $maBienThe, string $mauSac, string $kichThuoc, float $giaTien, int $soLuong): bool
@@ -840,21 +1716,69 @@ class AdminModel extends Model
         return $stmt->execute([$mauSac, $kichThuoc, $giaTien, $soLuong, $maBienThe]);
     }
 
+    public function beginTransaction(): bool
+    {
+        return $this->db->beginTransaction();
+    }
+
+    public function commit(): bool
+    {
+        return $this->db->commit();
+    }
+
+    public function rollBack(): bool
+    {
+        return $this->db->inTransaction() ? $this->db->rollBack() : true;
+    }
+
     public function getGallery(string $maSanPham): array
     {
+        $roleSelect = $this->productImageRoleColumnsExist()
+            ? "CASE
+                    WHEN h.LoaiAnh = 'cover'
+                        OR (
+                            NOT EXISTS (
+                                SELECT 1 FROM hinhanhsanpham hc
+                                WHERE hc.MaSanPham = h.MaSanPham AND hc.LoaiAnh = 'cover'
+                            )
+                            AND h.MaHinhAnh = (
+                                SELECT MIN(h2.MaHinhAnh)
+                                FROM hinhanhsanpham h2
+                                WHERE h2.MaSanPham = h.MaSanPham
+                            )
+                        )
+                    THEN 'cover'
+                    ELSE 'detail'
+                END AS LoaiAnh,
+                COALESCE(h.ThuTu, 1) AS ThuTu"
+            : "CASE WHEN h.MaHinhAnh = (
+                    SELECT MIN(h2.MaHinhAnh)
+                    FROM hinhanhsanpham h2
+                    WHERE h2.MaSanPham = h.MaSanPham
+                ) THEN 'cover' ELSE 'detail' END AS LoaiAnh,
+                1 AS ThuTu";
+        $roleOrder = $this->productImageRoleColumnsExist()
+            ? "FIELD(LoaiAnh, 'cover', 'detail'), COALESCE(h.ThuTu, 99), h.MaHinhAnh ASC"
+            : "h.MaHinhAnh ASC";
+
         $stmt = $this->db->prepare("
-            SELECT h.*, sp.TenSanPham
+            SELECT h.MaHinhAnh, h.MaSanPham, h.DuongDan, {$roleSelect}, sp.TenSanPham
             FROM hinhanhsanpham h
             LEFT JOIN sanpham sp ON h.MaSanPham = sp.MaSanPham
             WHERE h.MaSanPham = ?
-            ORDER BY h.MaHinhAnh ASC
+            ORDER BY {$roleOrder}
         ");
         $stmt->execute([$maSanPham]);
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
 
-    public function uploadGalleryImage(string $maSanPham, array $file): bool
+    public function uploadGalleryImage(string $maSanPham, array $file, string $type = 'detail'): bool
     {
+        $type = $type === 'cover' ? 'cover' : 'detail';
+        if ($type === 'detail' && $this->countProductImages($maSanPham, 'detail') >= self::PRODUCT_DETAIL_IMAGE_LIMIT) {
+            return false;
+        }
+
         $allowed = ['jpg', 'jpeg', 'png', 'webp'];
         $ext = strtolower(pathinfo($file['name'], PATHINFO_EXTENSION));
         if (!in_array($ext, $allowed, true)) {
@@ -877,7 +1801,15 @@ class AdminModel extends Model
             return false;
         }
 
-        return $this->addProductImage($maSanPham, $filename);
+        $saved = $type === 'cover'
+            ? $this->replaceProductCoverImage($maSanPham, $filename)
+            : $this->addProductImage($maSanPham, $filename, 'detail');
+
+        if (!$saved) {
+            @unlink($dest);
+        }
+
+        return $saved;
     }
 
     public function deleteGalleryImage(string $maAnh): bool
@@ -887,18 +1819,7 @@ class AdminModel extends Model
         $row = $stmt->fetch(PDO::FETCH_ASSOC);
 
         if ($row) {
-            $path = $row['DuongDan'];
-            $fullPaths = [
-                ROOT_PATH . '/public/assets/images/products/' . ltrim($path, '/'),
-                ROOT_PATH . '/' . ltrim($path, '/'),
-            ];
-
-            foreach ($fullPaths as $fullPath) {
-                if (file_exists($fullPath) && is_file($fullPath)) {
-                    @unlink($fullPath);
-                    break;
-                }
-            }
+            $this->deleteProductImageFile((string)$row['DuongDan']);
         }
 
         $stmt = $this->db->prepare("DELETE FROM hinhanhsanpham WHERE MaHinhAnh = ?");
@@ -1157,6 +2078,25 @@ class AdminModel extends Model
         $stmt = $this->db->prepare("SHOW TABLES LIKE ?");
         $stmt->execute([$table]);
         return (bool)$stmt->fetch(PDO::FETCH_ASSOC);
+    }
+
+    private function productImageRoleColumnsExist(): bool
+    {
+        return $this->hasColumn('hinhanhsanpham', 'LoaiAnh')
+            && $this->hasColumn('hinhanhsanpham', 'ThuTu');
+    }
+
+    private function deleteProductImageFile(string $path): void
+    {
+        $fileName = basename($path);
+        if ($fileName === '') {
+            return;
+        }
+
+        $fullPath = ROOT_PATH . '/public/assets/images/products/' . $fileName;
+        if (file_exists($fullPath) && is_file($fullPath)) {
+            @unlink($fullPath);
+        }
     }
 
     private function formatImageUrl(string $path): string

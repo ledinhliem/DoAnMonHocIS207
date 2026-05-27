@@ -9,6 +9,7 @@ include __DIR__ . '/../layouts/header.php';
 $product = $product ?? [];
 $images = $images ?? [];
 $variants = $variants ?? [];
+$variantGroups = $variantGroups ?? [];
 $reviews = $reviews ?? [];
 
 
@@ -29,6 +30,7 @@ $defaultVariant = $variants[0] ?? null;
 $defaultSale = $defaultVariant['flash_sale'] ?? ($product['flash_sale'] ?? null);
 $isFlashSale = !empty($defaultSale);
 $salePrice = (float)($defaultVariant['GiaSale'] ?? $product['sale_price'] ?? 0);
+
 
 // ── Average rating ───────────────────────────────────────────────────────────
 $avgRating = 0;
@@ -168,52 +170,25 @@ if (!empty($reviews)) {
         <input type="hidden" name="MaSanPham"   value="<?= htmlspecialchars($product['MaSanPham']) ?>">
         <input type="hidden" name="MaBienThe"   id="selected-variant-id" value="<?= htmlspecialchars($defaultVariant['MaBienThe'] ?? '') ?>">
 
-        <?php
-          // Group variants: get unique colors and sizes
-          $colors = array_values(array_unique(array_filter(array_column($variants, 'MauSac'))));
-          $sizes  = array_values(array_unique(array_filter(array_column($variants, 'KichThuoc'))));
-        ?>
-
-        <!-- Color selector -->
-        <?php if (!empty($colors)): ?>
+        <?php foreach ($variantGroups as $label => $options): ?>
         <div>
           <span class="block text-sm font-label font-bold text-on-surface mb-3 uppercase tracking-wider">
-            Màu sắc: <span id="selected-color-label" class="text-primary normal-case font-semibold"></span>
+            <?= htmlspecialchars($label) ?>:
+            <span class="selected-variant-label text-primary normal-case font-semibold" data-label="<?= htmlspecialchars($label) ?>"></span>
           </span>
           <div class="flex flex-wrap gap-2">
-            <?php foreach ($colors as $color): ?>
+            <?php foreach ($options as $option): ?>
               <button type="button"
-                class="variant-btn color-btn px-4 py-2 border-2 rounded-lg text-sm font-medium transition-all
+                class="variant-btn px-4 py-2 border-2 rounded-lg text-sm font-medium transition-all
                        border-outline-variant hover:border-primary focus:outline-none"
-                data-type="MauSac"
-                data-value="<?= htmlspecialchars($color) ?>">
-                <?= htmlspecialchars($color) ?>
+                data-type="<?= htmlspecialchars($label) ?>"
+                data-value="<?= htmlspecialchars($option) ?>">
+                <?= htmlspecialchars($option) ?>
               </button>
             <?php endforeach; ?>
           </div>
         </div>
-        <?php endif; ?>
-
-        <!-- Size selector -->
-        <?php if (!empty($sizes)): ?>
-        <div>
-          <span class="block text-sm font-label font-bold text-on-surface mb-3 uppercase tracking-wider">
-            Kích thước: <span id="selected-size-label" class="text-primary normal-case font-semibold"></span>
-          </span>
-          <div class="flex flex-wrap gap-2">
-            <?php foreach ($sizes as $size): ?>
-              <button type="button"
-                class="variant-btn size-btn px-5 py-2.5 border-2 rounded-lg text-sm font-medium transition-all
-                       border-outline-variant hover:border-primary focus:outline-none"
-                data-type="KichThuoc"
-                data-value="<?= htmlspecialchars($size) ?>">
-                <?= htmlspecialchars($size) ?>
-              </button>
-            <?php endforeach; ?>
-          </div>
-        </div>
-        <?php endif; ?>
-
+        <?php endforeach; ?>
         <!-- Stock indicator -->
         <p id="stock-info" class="text-sm text-on-surface-variant <?= $defaultVariant ? '' : 'hidden' ?>">
           <span class="material-symbols-outlined text-sm align-middle text-green-600">inventory_2</span>
@@ -255,7 +230,7 @@ if (!empty($reviews)) {
 
         <!-- Error message -->
         <p id="variant-error" class="hidden text-red-500 text-sm font-medium bg-red-50 border border-red-200 rounded-lg px-4 py-3">
-          ⚠️ Vui lòng chọn đầy đủ màu sắc và kích thước trước khi thêm vào giỏ.
+          Vui lòng chọn đầy đủ phân loại sản phẩm trước khi thêm vào giỏ.
         </p>
       </form>
 
@@ -403,10 +378,9 @@ if (!empty($reviews)) {
 <!-- Pass variants data to JS -->
 <script>
 window.productVariants = <?= json_encode(array_values($variants), JSON_UNESCAPED_UNICODE) ?>;
-window.hasColors = <?= json_encode(!empty($colors)) ?>;
-window.hasSizes  = <?= json_encode(!empty($sizes)) ?>;
+window.productVariantGroups = <?= json_encode($variantGroups, JSON_UNESCAPED_UNICODE) ?>;
 </script>
-<script src="<?= BASE_URL ?>public/assets/js/product.js"></script>
+<script src="<?= BASE_URL ?>public/assets/js/product.js?v=<?= @filemtime(ROOT_PATH . '/public/assets/js/product.js') ?: time() ?>"></script>
 <script src="<?= BASE_URL ?>public/assets/js/flash-sale.js"></script>
 
 <?php include __DIR__ . '/../layouts/footer.php'; ?>

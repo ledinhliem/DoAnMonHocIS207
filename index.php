@@ -1,6 +1,12 @@
 <?php
+ini_set('default_charset', 'UTF-8');
+
 if (session_status() === PHP_SESSION_NONE) {
     session_start();
+}
+
+if (!headers_sent()) {
+    header('Content-Type: text/html; charset=UTF-8');
 }
 
 ini_set('display_errors', 1);

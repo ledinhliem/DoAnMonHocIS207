@@ -14,6 +14,10 @@ $isEdit = $isEdit ?? false;
 $status = $status ?? null;
 $message = $message ?? null;
 $actionUrl = $isEdit ? 'index.php?url=admin/categories/edit&id=' . urlencode($category['MaDanhMuc'] ?? '') : 'index.php?url=admin/categories/create';
+$categoryImage = trim((string)($category['HinhAnh'] ?? ''));
+$categoryImageName = $categoryImage !== '' ? basename(str_replace('\\', '/', $categoryImage)) : '';
+$categoryImagePath = $categoryImageName !== '' ? ROOT_PATH . '/public/assets/images/categories/' . $categoryImageName : '';
+$hasCategoryImage = $categoryImageName !== '' && is_file($categoryImagePath);
 ?>
 
 <main class="ml-64 p-8 lg:p-12">
@@ -43,8 +47,9 @@ $actionUrl = $isEdit ? 'index.php?url=admin/categories/edit&id=' . urlencode($ca
     <?php endif; ?>
 
     <section class="bg-surface-container-lowest rounded-xl p-8 shadow-sm">
-        <form action="<?= e($actionUrl) ?>" method="POST" class="space-y-6">
+        <form action="<?= e($actionUrl) ?>" method="POST" enctype="multipart/form-data" class="space-y-6">
             <input type="hidden" name="action" value="<?= $isEdit ? 'update_category' : 'create_category' ?>">
+            <input type="hidden" name="current_image" value="<?= e($category['HinhAnh'] ?? '') ?>">
 
             <?php if ($isEdit): ?>
                 <div class="grid gap-3">
@@ -63,12 +68,28 @@ $actionUrl = $isEdit ? 'index.php?url=admin/categories/edit&id=' . urlencode($ca
             </div>
 
             <div class="grid gap-3">
-                <label class="text-sm font-semibold">Ảnh danh mục (tên file đã upload)</label>
-                <input name="HinhAnh" type="text" value="<?= e($category['HinhAnh'] ?? '') ?>"
-                    class="w-full rounded-xl border border-outline px-4 py-3 bg-surface-container-lowest text-on-surface"
-                    placeholder="Ví dụ: c001-zen-kitchen.jpg">
-                <p class="text-sm text-on-surface-variant"> Nhập tên ảnh nếu muốn quản lý hình đại diện. File cần nằm
-                    trong public/assets/images/categories/.</p>
+                <label class="text-sm font-semibold">Ảnh danh mục</label>
+                <input name="category_image" type="file" accept="image/jpeg,image/png,image/webp"
+                    class="w-full rounded-xl border border-outline px-4 py-3 bg-surface-container-lowest text-on-surface">
+                <p class="text-sm text-on-surface-variant">Chỉ chấp nhận jpg, jpeg, png, webp. Khi sửa, nếu không chọn ảnh mới thì giữ ảnh cũ.</p>
+
+                <?php if ($isEdit): ?>
+                    <div class="flex items-center gap-4">
+                        <?php if ($hasCategoryImage): ?>
+                            <img src="<?= e(BASE_URL . 'public/assets/images/categories/' . $categoryImageName) ?>" alt="<?= e($category['TenDanhMuc'] ?? '') ?>" class="w-20 h-20 rounded-xl object-cover border border-outline-variant/30">
+                        <?php else: ?>
+                            <div class="w-20 h-20 rounded-xl bg-surface-container-high flex items-center justify-center text-outline border border-outline-variant/30">
+                                <span class="material-symbols-outlined">category</span>
+                            </div>
+                        <?php endif; ?>
+                        <div class="text-sm text-on-surface-variant">
+                            <p><?= $categoryImageName !== '' ? e($categoryImageName) : 'Chưa có ảnh danh mục' ?></p>
+                            <?php if ($categoryImageName !== '' && !$hasCategoryImage): ?>
+                                <p class="text-xs text-red-700">Không tìm thấy file ảnh trong public/assets/images/categories/.</p>
+                            <?php endif; ?>
+                        </div>
+                    </div>
+                <?php endif; ?>
             </div>
 
             <?php if ($isEdit): ?>

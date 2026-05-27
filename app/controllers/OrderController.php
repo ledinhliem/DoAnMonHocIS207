@@ -109,7 +109,7 @@ class OrderController extends Controller
                 $filtered[$key] = $item;
             }
         }
-        return $filtered;
+        return !empty($filtered) ? $filtered : $allItems;
     }
 
     // Tối ưu hàm tính toán hóa đơn: nhận danh sách món đã lọc để tính tiền chính xác
@@ -121,7 +121,16 @@ class OrderController extends Controller
             $subtotal += ($item['price'] ?? 0) * ($item['quantity'] ?? 1);
         }
 
-        $discount = $_SESSION['promo']['discount'] ?? 0;
+        if (!empty($_SESSION['promo']['code'])) {
+            $promoResult = $this->orderModel->calculateDiscount($items, (string)$_SESSION['promo']['code']);
+            if (!empty($promoResult['valid'])) {
+                $_SESSION['promo'] = $promoResult;
+            } else {
+                unset($_SESSION['promo']);
+            }
+        }
+
+        $discount = max(0, min((float)($_SESSION['promo']['discount'] ?? 0), $subtotal));
         $deliveryMethod = $_SESSION['checkout_data']['delivery_method'] ?? 'standard';
         $shipping = $this->orderModel->getShippingFee($deliveryMethod);
         if (!empty($_SESSION['promo']['free_shipping'])) {
@@ -143,6 +152,9 @@ class OrderController extends Controller
     {
         try {
             $items = $this->getFilteredCartItems();
+            if (empty($items)) {
+                throw new RuntimeException('Giỏ hàng thanh toán đang trống.');
+            }
 
             $orderData = [
                 'customer' => $_SESSION['checkout_data'] ?? [],
@@ -549,6 +561,13 @@ class OrderController extends Controller
 
     public function success()
     {
+        if (!empty($_SESSION['checkout_data']) && !empty($this->getFilteredCartItems()) && empty($_SESSION['latest_order_id'])) {
+            $this->completeOrder(
+                $_SESSION['checkout_data']['payment_method'] ?? 'Pending',
+                ['transfer_code' => $_SESSION['pending_transfer_order_code'] ?? null]
+            );
+        }
+
         $orderId = $_SESSION['latest_order_id'] ?? '';
         $userId = $_SESSION['user_id'] ?? null;
         $order = ($orderId !== '' && $userId)
