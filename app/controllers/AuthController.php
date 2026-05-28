@@ -1,4 +1,13 @@
 <?php
+
+$autoloadPath = __DIR__ . '/../../vendor/autoload.php';
+if (file_exists($autoloadPath)) {
+    require_once $autoloadPath;
+}
+
+use PHPMailer\PHPMailer\Exception as MailException;
+use PHPMailer\PHPMailer\PHPMailer;
+
 class AuthController extends Controller {
 
     public function login() {
@@ -105,16 +114,162 @@ class AuthController extends Controller {
         header("Location: index.php");
         exit;
     }
-    public function forgot() {
+public function forgot() {
     $data = ['title' => 'Quên mật khẩu'];
+
+    if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+        $email = trim($_POST['email'] ?? '');
+
+        if ($email === '' || !filter_var($email, FILTER_VALIDATE_EMAIL)) {
+            $data['error_message'] = 'Vui lòng nhập địa chỉ email hợp lệ.';
+        } else {
+            $userModel = $this->model('UserModel');
+            $user = $userModel->getUserByEmail($email);
+
+            if ($user) {
+                $token = bin2hex(random_bytes(32));
+                $tokenHash = hash('sha256', $token);
+
+                if ($userModel->createPasswordResetToken($email, $tokenHash)) {
+                    $resetUrl = $this->buildResetPasswordUrl($token);
+                    $sent = $this->sendPasswordResetEmail($email, $user['HoTen'] ?? 'bạn', $resetUrl);
+
+                    if ($sent) {
+                        $data['success_message'] = 'Hướng dẫn đặt lại mật khẩu đã được gửi đến email của bạn.';
+                    } else {
+                        $data['error_message'] = 'Không thể gửi email đặt lại mật khẩu. Vui lòng thử lại sau.';
+                    }
+                } else {
+                    $data['error_message'] = 'Có lỗi xảy ra, vui lòng thử lại sau.';
+                }
+            } else {
+                $data['success_message'] = 'Nếu email tồn tại trong hệ thống, chúng tôi sẽ gửi hướng dẫn đặt lại mật khẩu.';
+            }
+        }
+    }
 
     $this->view('auth/forgot', $data);
 }
 
 public function reset() {
-    $data = ['title' => 'Đặt lại mật khẩu'];
+    $token = trim($_GET['token'] ?? $_POST['token'] ?? '');
+    $data = [
+        'title' => 'Đặt lại mật khẩu',
+        'token' => $token
+    ];
+
+    if ($token === '') {
+        $data['error_message'] = 'Liên kết đặt lại mật khẩu không hợp lệ.';
+        $this->view('auth/reset', $data);
+        return;
+    }
+
+    $userModel = $this->model('UserModel');
+    $tokenHash = hash('sha256', $token);
+    $resetRecord = $userModel->getValidPasswordReset($tokenHash);
+
+    if (!$resetRecord) {
+        $data['error_message'] = 'Liên kết đặt lại mật khẩu không hợp lệ hoặc đã hết hạn.';
+        $this->view('auth/reset', $data);
+        return;
+    }
+
+    if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+        $password = $_POST['password'] ?? '';
+        $confirm = $_POST['confirm_password'] ?? '';
+
+        if (strlen($password) < 6) {
+            $data['error_message'] = 'Mật khẩu mới phải có ít nhất 6 ký tự.';
+        } elseif ($password !== $confirm) {
+            $data['error_message'] = 'Mật khẩu xác nhận không khớp.';
+        } elseif ($userModel->updatePasswordByEmail($resetRecord['email'], password_hash($password, PASSWORD_DEFAULT))) {
+            $userModel->deletePasswordResetToken($tokenHash);
+            $_SESSION['auth_message'] = 'Đặt lại mật khẩu thành công. Vui lòng đăng nhập bằng mật khẩu mới.';
+            header('Location: index.php?url=login');
+            exit;
+        } else {
+            $data['error_message'] = 'Không thể cập nhật mật khẩu. Vui lòng thử lại sau.';
+        }
+    }
 
     $this->view('auth/reset', $data);
+}
+
+private function buildResetPasswordUrl(string $token): string {
+    $baseUrl = defined('BASE_URL') ? rtrim(BASE_URL, '/') : '';
+
+    if ($baseUrl !== '') {
+        return $baseUrl . '/index.php?url=reset-password&token=' . urlencode($token);
+    }
+
+    $scheme = (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off') ? 'https' : 'http';
+    $host = $_SERVER['HTTP_HOST'] ?? 'localhost';
+    $path = rtrim(dirname($_SERVER['SCRIPT_NAME'] ?? '/index.php'), '/\\');
+
+    return $scheme . '://' . $host . $path . '/index.php?url=reset-password&token=' . urlencode($token);
+}
+
+private function sendPasswordResetEmail(string $email, string $name, string $resetUrl): bool {
+    $subject = 'Zentro - Đặt lại mật khẩu';
+    $body = implode("\r\n", [
+        'Xin chào ' . $name . ',',
+        '',
+        'Bạn vừa yêu cầu đặt lại mật khẩu cho tài khoản Zentro.',
+        'Bấm vào liên kết bên dưới để tạo mật khẩu mới:',
+        $resetUrl,
+        '',
+        'Liên kết này sẽ hết hạn sau 60 phút.',
+        'Nếu bạn không yêu cầu, hãy bỏ qua email này.',
+        '',
+        'Trân trọng,',
+        'Zentro',
+    ]);
+
+    return $this->sendPlainEmail($email, $subject, $body);
+}
+
+private function sendPlainEmail(string $to, string $subject, string $body): bool {
+    if (!class_exists(PHPMailer::class)) {
+        return false;
+    }
+
+    if (
+        !defined('SMTP_HOST') ||
+        !defined('SMTP_PORT') ||
+        !defined('SMTP_USERNAME') ||
+        !defined('SMTP_PASSWORD') ||
+        SMTP_USERNAME === '' ||
+        SMTP_PASSWORD === ''
+    ) {
+        return false;
+    }
+
+    try {
+        $mail = new PHPMailer(true);
+        $mail->CharSet = 'UTF-8';
+        $mail->isSMTP();
+        $mail->Host = SMTP_HOST;
+        $mail->SMTPAuth = true;
+        $mail->Username = SMTP_USERNAME;
+        $mail->Password = SMTP_PASSWORD;
+        $mail->SMTPSecure = PHPMailer::ENCRYPTION_STARTTLS;
+        $mail->Port = (int)SMTP_PORT;
+
+        $fromEmail = defined('SMTP_FROM_EMAIL') ? SMTP_FROM_EMAIL : SMTP_USERNAME;
+        $fromName = defined('SMTP_FROM_NAME') ? SMTP_FROM_NAME : 'Zentro';
+
+        $mail->setFrom($fromEmail, $fromName);
+        $mail->addAddress($to);
+        $mail->isHTML(false);
+        $mail->Subject = $subject;
+        $mail->Body = $body;
+
+        return $mail->send();
+    } catch (MailException $e) {
+        return false;
+    } catch (Throwable $e) {
+        return false;
+    }
 }
 
 public function googleLogin() {

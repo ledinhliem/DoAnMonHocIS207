@@ -46,6 +46,14 @@
                 </div>
             <?php endif; ?>
 
+            <?php if (!empty($_SESSION['auth_message'])): ?>
+                <div class="mb-6 p-4 rounded-lg bg-primary/10 border border-primary/20 flex items-start gap-3">
+                    <span class="material-symbols-outlined text-primary">check_circle</span>
+                    <p class="text-sm font-medium text-primary mt-0.5"><?php echo htmlspecialchars($_SESSION['auth_message']); ?></p>
+                </div>
+                <?php unset($_SESSION['auth_message']); ?>
+            <?php endif; ?>
+
             <form id="loginForm" action="index.php?url=login" method="POST" class="space-y-6 auth-form">
                 <div class="space-y-2">
                     <label class="block text-xs font-bold uppercase tracking-wider text-primary px-1">Địa chỉ email</label>

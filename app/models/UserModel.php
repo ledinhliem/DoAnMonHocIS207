@@ -30,6 +30,40 @@ class UserModel extends Model {
         ]);
     }
 
+    public function createPasswordResetToken(string $email, string $tokenHash): bool {
+        $this->db->prepare("DELETE FROM password_resets WHERE email = ?")->execute([$email]);
+
+        $stmt = $this->db->prepare("
+            INSERT INTO password_resets (email, token, created_at)
+            VALUES (?, ?, NOW())
+        ");
+
+        return $stmt->execute([$email, $tokenHash]);
+    }
+
+    public function getValidPasswordReset(string $tokenHash) {
+        $stmt = $this->db->prepare("
+            SELECT email, token, created_at
+            FROM password_resets
+            WHERE token = ?
+              AND created_at >= DATE_SUB(NOW(), INTERVAL 60 MINUTE)
+            LIMIT 1
+        ");
+        $stmt->execute([$tokenHash]);
+
+        return $stmt->fetch(PDO::FETCH_ASSOC);
+    }
+
+    public function deletePasswordResetToken(string $tokenHash): bool {
+        $stmt = $this->db->prepare("DELETE FROM password_resets WHERE token = ?");
+        return $stmt->execute([$tokenHash]);
+    }
+
+    public function updatePasswordByEmail(string $email, string $passwordHash): bool {
+        $stmt = $this->db->prepare("UPDATE nguoidung SET MatKhau = ? WHERE Email = ?");
+        return $stmt->execute([$passwordHash, $email]);
+    }
+
     public function getUserInfo($id) {
         // JOIN bảng nguoidung và diachi để lấy luôn địa chỉ mặc định (nếu có)
         $sql = "SELECT n.*, d.SoNha_Duong, d.PhuongXa, d.QuanHuyen, d.TinhThanh 

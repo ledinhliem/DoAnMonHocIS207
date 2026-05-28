@@ -38,7 +38,7 @@ if (!function_exists('renderNewsletterCta')) {
                         <?= htmlspecialchars($error) ?>
                     </div>
                 <?php endif; ?>
-                <form method="POST" action="?url=blog/subscribe" class="flex flex-col md:flex-row gap-4 justify-center">
+                <form method="POST" action="?url=newsletter/subscribe" class="flex flex-col md:flex-row gap-4 justify-center">
                     <input type="hidden" name="redirect_to" value="<?= htmlspecialchars($redirect) ?>">
                     <input
                         type="email"

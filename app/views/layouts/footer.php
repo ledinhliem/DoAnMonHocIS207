@@ -104,8 +104,8 @@
             <ul class="space-y-4 text-sm text-on-surface-variant/80">
                 <li>
                     <a class="hover:underline underline-offset-4 decoration-primary/30"
-                        href="mailto:contact@zentro.com">
-                        Email: contact@zentro.com
+                        href="mailto:zentroshop359@gmail.com">
+                        Email: zentroshop359@gmail.com
                     </a>
                 </li>
 

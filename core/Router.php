@@ -173,9 +173,9 @@ class Router
                 $controller->detail();
                 break;
 
-            case 'blog/subscribe':
-                require_once __DIR__ . '/../app/controllers/BlogController.php';
-                $controller = new BlogController();
+            case 'newsletter/subscribe':
+                require_once __DIR__ . '/../app/controllers/NewsletterController.php';
+                $controller = new NewsletterController();
                 $controller->subscribe();
                 break;
 

@@ -4,6 +4,41 @@
 /config/app.php
 /config/config.local.php
 
+# Local environment / secrets
+.env
+.env.*
+!.env.example
+
+# Node dependencies
+node_modules/
+
+# IDE / OS files
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
+
+# Logs / temp / backup files
+*.log
+*.tmp
+*.bak
+*.backup
+*_old.php
+*_test.php
+
+# Local maintenance scripts
+/check_categories.php
+/delete_duplicates.php
+/database/hash_sample_users.php
+
+# Non-runtime documents
+/docs/*.docx
+
+# Local test uploads
+/public/assets/images/products/P030_*
+/public/assets/images/products/P031_*
+/public/assets/images/products/P032_*
+
 /tmp/cache/models/*
 !/tmp/cache/models/empty
 /tmp/cache/persistent/*

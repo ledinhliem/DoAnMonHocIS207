@@ -7,7 +7,7 @@
             <p class="text-on-surface-variant">Danh sách blog và nút đăng ký đã hoạt động.</p>
         </div>
 
-        <form method="POST" action="?url=blog/subscribe" class="flex gap-3">
+        <form method="POST" action="?url=newsletter/subscribe" class="flex gap-3">
             <input
                 type="email"
                 name="email"

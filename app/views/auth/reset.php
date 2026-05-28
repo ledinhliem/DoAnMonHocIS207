@@ -30,7 +30,21 @@
             <p class="text-on-surface-variant text-sm">Please create a new secure password for your account.</p>
         </div>
 
+        <?php if (isset($success_message)): ?>
+            <div class="mb-6 p-4 bg-primary/10 border border-primary/20 rounded-lg text-primary text-sm text-center">
+                <?php echo htmlspecialchars($success_message); ?>
+            </div>
+        <?php endif; ?>
+
+        <?php if (isset($error_message)): ?>
+            <div class="mb-6 p-4 bg-red-50 border border-red-200 text-red-600 rounded-lg text-sm text-center font-bold">
+                <?php echo htmlspecialchars($error_message); ?>
+            </div>
+        <?php endif; ?>
+
+        <?php if (!isset($error_message) || ($_SERVER['REQUEST_METHOD'] ?? 'GET') === 'POST'): ?>
         <form id="resetForm" action="index.php?url=reset-password" method="POST" class="space-y-6 auth-form">
+            <input type="hidden" name="token" value="<?php echo htmlspecialchars($token ?? ''); ?>">
             <div class="space-y-2">
                 <label class="block text-xs font-bold uppercase tracking-wider text-primary px-1">New Password</label>
                 <div class="relative">
@@ -51,6 +65,11 @@
                 Update Password
             </button>
         </form>
+        <?php else: ?>
+            <a href="index.php?url=forgot-password" class="block w-full text-center bg-primary text-white font-bold py-4 rounded-lg hover:bg-primary-container transition-all">
+                Gửi lại liên kết đặt mật khẩu
+            </a>
+        <?php endif; ?>
     </div>
 </main>
 
