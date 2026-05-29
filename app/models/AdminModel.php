@@ -2038,8 +2038,26 @@ class AdminModel extends Model
 
     public function deletePromo($id)
     {
-        $stmt = $this->db->prepare("DELETE FROM magiamgia WHERE MaCode = ?");
-        return $stmt->execute([$id]);
+        try {
+            $stmt = $this->db->prepare("DELETE FROM magiamgia WHERE MaCode = ?");
+            return [
+                'success' => $stmt->execute([$id]),
+                'soft_deleted' => false,
+            ];
+        } catch (PDOException $e) {
+            if ($e->getCode() !== '23000') {
+                return [
+                    'success' => false,
+                    'soft_deleted' => false,
+                ];
+            }
+
+            $stmt = $this->db->prepare("UPDATE magiamgia SET TrangThai = 0 WHERE MaCode = ?");
+            return [
+                'success' => $stmt->execute([$id]),
+                'soft_deleted' => true,
+            ];
+        }
     }
 
     public function promoCodeExists($code, $ignoreId = null)

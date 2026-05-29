@@ -1,15 +1,17 @@
 <?php
 
+
 define('DB_HOST', 'localhost');
 define('DB_PORT', '3306');
-define('DB_NAME', 'nqfavpfs_sustainable_shop');
-define('DB_USER', 'nqfavpfs_zentro_user');
-define('DB_PASS', 'is207nhom7@');
+define('DB_NAME', 'sustainable_shop');
+define('DB_USER', 'root');
+define('DB_PASS', '');
+
 define('APP_PATH', __DIR__ . '/../app/');
 define('CORE_PATH', __DIR__ . '/../core/');
 define('ROOT_PATH', __DIR__ . '/..');
 
-define('BASE_URL', 'https://zentro.id.vn/');
+define('BASE_URL', 'http://localhost:8080/is207/');
 // SMTP Gmail config
 define('SMTP_HOST', 'smtp.gmail.com');
 define('SMTP_PORT', 587);
@@ -31,6 +33,18 @@ if (!defined('SEPAY_MERCHANT_ID')) {
 
 if (!defined('SEPAY_SECRET_KEY')) {
     define('SEPAY_SECRET_KEY', '');
+}
+
+if (!defined('GOOGLE_CLIENT_ID')) {
+    define('GOOGLE_CLIENT_ID', '');
+}
+
+if (!defined('GOOGLE_CLIENT_SECRET')) {
+    define('GOOGLE_CLIENT_SECRET', '');
+}
+
+if (!defined('GOOGLE_REDIRECT_URI')) {
+    define('GOOGLE_REDIRECT_URI', BASE_URL . 'index.php?url=auth/google/callback');
 }
 
 define('SMTP_FROM_EMAIL', 'zentroshop359@gmail.com');

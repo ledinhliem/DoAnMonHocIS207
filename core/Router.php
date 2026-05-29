@@ -217,16 +217,22 @@ class Router
                 $controller->forgot();
                 break;
 
-            case 'reset-password':
-                require_once __DIR__ . '/../app/controllers/AuthController.php';
-                $controller = new AuthController();
-                $controller->reset();
-                break;
-
             case 'auth/google':
                 require_once __DIR__ . '/../app/controllers/AuthController.php';
                 $controller = new AuthController();
                 $controller->googleLogin();
+                break;
+
+            case 'auth/google/callback':
+                require_once __DIR__ . '/../app/controllers/AuthController.php';
+                $controller = new AuthController();
+                $controller->googleCallback();
+                break;
+
+            case 'reset-password':
+                require_once __DIR__ . '/../app/controllers/AuthController.php';
+                $controller = new AuthController();
+                $controller->reset();
                 break;
 
             case 'auth/apple':

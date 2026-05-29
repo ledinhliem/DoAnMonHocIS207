@@ -12,12 +12,21 @@ class AdminController extends Controller
 
     private function checkAdminAccess()
     {
-        if (!isset($_SESSION['user_id'])) {
+        $userId = $_SESSION['user_id'] ?? null;
+        if (!$userId) {
             header('Location: index.php?url=login');
             exit;
         }
 
-        $role = $_SESSION['role'] ?? $_SESSION['MaQuyen'] ?? null;
+        $userModel = $this->model('UserModel');
+        $currentUser = method_exists($userModel, 'getUserById') ? $userModel->getUserById($userId) : null;
+        $role = $currentUser['MaQuyen'] ?? ($_SESSION['role'] ?? $_SESSION['MaQuyen'] ?? null);
+
+        if ($currentUser) {
+            $_SESSION['role'] = $role;
+            $_SESSION['MaQuyen'] = $role;
+            $_SESSION['user'] = array_merge($_SESSION['user'] ?? [], $currentUser);
+        }
 
         if ((string)$role !== '1') {
             header('Location: index.php');
@@ -400,21 +409,13 @@ class AdminController extends Controller
                         $message = 'Tên danh mục không được để trống.';
                         $category = $categoryData;
                     } else {
-                        $uploadResult = $this->handleCategoryImageUpload($_FILES['category_image'] ?? null);
-                        if ($uploadResult === false) {
-                            $status = 'error';
-                            $message = 'Ảnh danh mục không hợp lệ. Chỉ chấp nhận jpg, jpeg, png, webp.';
-                            $category = $categoryData;
-                        } else {
-                            $categoryData['HinhAnh'] = $uploadResult;
-                            if ($this->adminModel->createCategory($categoryData)) {
-                                $this->redirectWithFlash('index.php?url=admin/categories', 'success', 'Tạo danh mục thành công.');
-                            }
-
-                            $status = 'error';
-                            $message = 'Tạo danh mục thất bại, vui lòng thử lại.';
-                            $category = $categoryData;
+                        if ($this->adminModel->createCategory($categoryData)) {
+                            $this->redirectWithFlash('index.php?url=admin/categories', 'success', 'Tạo danh mục thành công.');
                         }
+
+                        $status = 'error';
+                        $message = 'Tạo danh mục thất bại, vui lòng thử lại.';
+                        $category = $categoryData;
                     }
                     break;
 
@@ -422,7 +423,7 @@ class AdminController extends Controller
                     $categoryId = trim($_POST['MaDanhMuc'] ?? '');
                     $categoryData = [
                         'TenDanhMuc' => trim($_POST['TenDanhMuc'] ?? ''),
-                        'HinhAnh' => trim($_POST['current_image'] ?? ''),
+                        'HinhAnh' => '',
                         'TrangThai' => isset($_POST['TrangThai']) && $_POST['TrangThai'] === '1' ? 1 : 0
                     ];
 
@@ -430,21 +431,13 @@ class AdminController extends Controller
                         $status = 'error';
                         $message = 'ID và tên danh mục là bắt buộc.';
                     } else {
-                        $uploadResult = $this->handleCategoryImageUpload($_FILES['category_image'] ?? null, $categoryData['HinhAnh']);
-                        if ($uploadResult === false) {
-                            $status = 'error';
-                            $message = 'Ảnh danh mục không hợp lệ. Chỉ chấp nhận jpg, jpeg, png, webp.';
-                            $category = array_merge(['MaDanhMuc' => $categoryId], $categoryData);
-                        } else {
-                            $categoryData['HinhAnh'] = $uploadResult;
-                            if ($this->adminModel->updateCategory($categoryId, $categoryData)) {
-                                $this->redirectWithFlash('index.php?url=admin/categories/edit&id=' . urlencode($categoryId), 'success', 'Cập nhật danh mục thành công.');
-                            }
-
-                            $status = 'error';
-                            $message = 'Cập nhật danh mục thất bại, vui lòng thử lại.';
-                            $category = array_merge(['MaDanhMuc' => $categoryId], $categoryData);
+                        if ($this->adminModel->updateCategory($categoryId, $categoryData)) {
+                            $this->redirectWithFlash('index.php?url=admin/categories/edit&id=' . urlencode($categoryId), 'success', 'Cập nhật danh mục thành công.');
                         }
+
+                        $status = 'error';
+                        $message = 'Cập nhật danh mục thất bại, vui lòng thử lại.';
+                        $category = array_merge(['MaDanhMuc' => $categoryId], $categoryData);
                     }
                     break;
             }
@@ -890,6 +883,13 @@ class AdminController extends Controller
 
             if (method_exists($userModel, 'updateRole') && $userModel->updateRole($userId, $roleId)) {
                 $_SESSION['success'] = 'Cập nhật quyền thành công!';
+                if ($userId !== '' && $userId === ($_SESSION['user_id'] ?? '') && (string)$roleId !== '1') {
+                    $_SESSION['role'] = $roleId;
+                    $_SESSION['MaQuyen'] = $roleId;
+                    $_SESSION['success'] = 'Bạn đã chuyển quyền tài khoản hiện tại sang khách hàng.';
+                    header('Location: index.php');
+                    exit;
+                }
             } else {
                 $_SESSION['error'] = 'Cập nhật quyền thất bại!';
             }
@@ -1100,8 +1100,13 @@ class AdminController extends Controller
         }
 
         if ($actionFromUrl === 'delete' && $idFromUrl) {
-            $ok = $this->adminModel->deletePromo($idFromUrl);
-            header('Location: index.php?url=admin/promo&status=' . ($ok ? 'success' : 'error') . '&message=' . urlencode($ok ? 'Đã xóa mã giảm giá thành công!' : 'Xóa mã giảm giá thất bại!'));
+            $result = $this->adminModel->deletePromo($idFromUrl);
+            $ok = is_array($result) ? (bool)($result['success'] ?? false) : (bool)$result;
+            $softDeleted = is_array($result) && !empty($result['soft_deleted']);
+            $successMessage = $softDeleted
+                ? 'Mã giảm giá đã từng được dùng trong đơn hàng nên hệ thống đã tắt mã thay vì xóa.'
+                : 'Đã xóa mã giảm giá thành công!';
+            header('Location: index.php?url=admin/promo&status=' . ($ok ? 'success' : 'error') . '&message=' . urlencode($ok ? $successMessage : 'Xóa mã giảm giá thất bại!'));
             exit;
         }
 

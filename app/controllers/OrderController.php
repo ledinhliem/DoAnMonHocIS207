@@ -148,6 +148,29 @@ class OrderController extends Controller
     }
 
     // Hàm dùng chung để lưu đơn hàng vào SQL và dọn dẹp Session
+    private function buildCheckoutDataFromUser(array $user): array
+    {
+        $fullAddress = '';
+        if (!empty($user['SoNha_Duong'])) {
+            $addressParts = array_filter([
+                $user['SoNha_Duong'] ?? '',
+                $user['PhuongXa'] ?? '',
+                $user['QuanHuyen'] ?? '',
+                $user['TinhThanh'] ?? '',
+            ]);
+            $fullAddress = implode(', ', $addressParts);
+        }
+
+        return [
+            'full_name' => $user['HoTen'] ?? '',
+            'email' => $user['Email'] ?? '',
+            'phone' => $user['SoDienThoai'] ?? '',
+            'address' => $fullAddress,
+            'delivery_method' => 'standard',
+            'payment_method' => 'cod',
+        ];
+    }
+
     private function completeOrder($paymentMethod, $extraData = [])
     {
         try {
@@ -230,25 +253,11 @@ class OrderController extends Controller
     $userId = $_SESSION['user_id'];
     $user = $this->userModel->getUserInfo($userId);
 
-    $fullAddress = '';
-    if (!empty($user['SoNha_Duong'])) {
-        $addressParts = array_filter([
-            $user['SoNha_Duong'] ?? '',
-            $user['PhuongXa'] ?? '',
-            $user['QuanHuyen'] ?? '',
-            $user['TinhThanh'] ?? ''
-        ]);
-        $fullAddress = implode(', ', $addressParts);
-    }
-
-    $checkoutData = $_SESSION['checkout_data'] ?? [
-        'full_name' => $user['HoTen'] ?? '',
-        'email' => $user['Email'] ?? '',
-        'phone' => $user['SoDienThoai'] ?? '',
-        'address' => $fullAddress,
-        'delivery_method' => 'standard',
-        'payment_method' => 'cod',
-    ];
+    $profileCheckoutData = $this->buildCheckoutDataFromUser($user ?: []);
+    $sessionCheckoutData = $_SESSION['checkout_data'] ?? [];
+    $checkoutData = $profileCheckoutData;
+    $checkoutData['delivery_method'] = $sessionCheckoutData['delivery_method'] ?? $profileCheckoutData['delivery_method'];
+    $checkoutData['payment_method'] = $sessionCheckoutData['payment_method'] ?? $profileCheckoutData['payment_method'];
 
     // Lấy danh sách Voucher từ DB để View render "Ví Voucher"
     $availablePromos = $this->orderModel->getAvailablePromos();
@@ -377,11 +386,14 @@ class OrderController extends Controller
         }
 
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+            $user = $this->userModel->getUserInfo($_SESSION['user_id']);
+            $profileCheckoutData = $this->buildCheckoutDataFromUser($user ?: []);
+
             $checkoutData = [
-                'full_name' => trim($_POST['full_name'] ?? ''),
-                'email' => trim($_POST['email'] ?? ''),
-                'phone' => trim($_POST['phone'] ?? ''),
-                'address' => trim($_POST['address'] ?? ''),
+                'full_name' => trim($_POST['full_name'] ?? $profileCheckoutData['full_name'] ?? ''),
+                'email' => trim($_POST['email'] ?? $profileCheckoutData['email'] ?? ''),
+                'phone' => trim($_POST['phone'] ?? $profileCheckoutData['phone'] ?? ''),
+                'address' => trim($_POST['address'] ?? $profileCheckoutData['address'] ?? ''),
                 'delivery_method' => trim($_POST['delivery_method'] ?? 'standard'),
                 'payment_method' => trim($_POST['payment_method'] ?? 'cod'),
             ];

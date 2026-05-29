@@ -33,12 +33,11 @@ $message = $message ?? null;
     <?php endif; ?>
 
     <section class="bg-surface-container-lowest rounded-xl p-6 shadow-sm overflow-x-auto">
-        <table class="w-full min-w-[900px] text-left">
+        <table class="w-full min-w-[760px] text-left">
             <thead class="bg-surface-container-high">
                 <tr>
                     <th class="px-6 py-4 text-xs font-black uppercase tracking-widest text-outline">Mã</th>
                     <th class="px-6 py-4 text-xs font-black uppercase tracking-widest text-outline">Tên danh mục</th>
-                    <th class="px-6 py-4 text-xs font-black uppercase tracking-widest text-outline">Ảnh</th>
                     <th class="px-6 py-4 text-xs font-black uppercase tracking-widest text-outline">Sản phẩm</th>
                     <th class="px-6 py-4 text-xs font-black uppercase tracking-widest text-outline">Trạng thái</th>
                     <th class="px-6 py-4 text-xs font-black uppercase tracking-widest text-outline text-right">Hành động</th>
@@ -50,20 +49,6 @@ $message = $message ?? null;
                         <tr class="border-t border-outline-variant/10 hover:bg-surface-container-low transition-colors">
                             <td class="px-6 py-4 text-on-surface font-bold"><?= e($category['MaDanhMuc']) ?></td>
                             <td class="px-6 py-4 text-on-surface"><?= e($category['TenDanhMuc']) ?></td>
-                            <td class="px-6 py-4">
-                                <?php
-                                    $categoryImage = trim((string)($category['HinhAnh'] ?? ''));
-                                    $categoryImageName = $categoryImage !== '' ? basename(str_replace('\\', '/', $categoryImage)) : '';
-                                    $categoryImagePath = $categoryImageName !== '' ? ROOT_PATH . '/public/assets/images/categories/' . $categoryImageName : '';
-                                ?>
-                                <?php if ($categoryImageName !== '' && is_file($categoryImagePath)): ?>
-                                    <img src="<?= e(BASE_URL . 'public/assets/images/categories/' . $categoryImageName) ?>" alt="<?= e($category['TenDanhMuc']) ?>" class="w-16 h-16 rounded-lg object-cover border border-outline-variant/20">
-                                <?php else: ?>
-                                    <div class="w-16 h-16 rounded-lg bg-surface-container-high flex items-center justify-center text-outline">
-                                        <span class="material-symbols-outlined">category</span>
-                                    </div>
-                                <?php endif; ?>
-                            </td>
                             <td class="px-6 py-4 text-on-surface"><?= e($category['product_count'] ?? 0) ?></td>
                             <td class="px-6 py-4">
                                 <?php if (($category['TrangThai'] ?? 1) == 1): ?>
@@ -93,7 +78,7 @@ $message = $message ?? null;
                     <?php endforeach; ?>
                 <?php else: ?>
                     <tr>
-                        <td colspan="6" class="px-6 py-16 text-center text-on-surface-variant">
+                        <td colspan="5" class="px-6 py-16 text-center text-on-surface-variant">
                             Chưa có danh mục nào. Hãy tạo danh mục mới để phân loại sản phẩm.
                         </td>
                     </tr>

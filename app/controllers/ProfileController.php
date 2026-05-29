@@ -122,7 +122,11 @@ class ProfileController extends Controller
         }
 
         if ($userModel->updateProfile($updateData)) {
-            $_SESSION['user_name'] = $updateData['HoTen'];
+            $updatedUser = $userModel->getUserInfo($updateData['id']);
+            $_SESSION['user_name'] = $updatedUser['HoTen'] ?? $updateData['HoTen'];
+            $_SESSION['user_email'] = $updatedUser['Email'] ?? ($_SESSION['user_email'] ?? '');
+            $_SESSION['user'] = $updatedUser ?: array_merge($currentUser, $updateData);
+            unset($_SESSION['checkout_data']);
             $_SESSION['success'] = 'Cập nhật thông tin thành công!';
             header('Location: index.php?url=profile');
         } else {

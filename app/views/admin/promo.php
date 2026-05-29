@@ -366,9 +366,6 @@ $expiredPromos = count(array_filter($promos, function ($promo) use ($today) {
                     Cấu hình 10 ô vòng quay
                 </h3>
             </div>
-            <p class="text-sm text-on-surface-variant max-w-xl">
-                Voucher code phải tồn tại trong danh sách mã giảm giá phía trên. Ô không trúng thì để trống voucher code.
-            </p>
         </div>
 
         <?php if (!empty($gameRewards)): ?>

@@ -34,6 +34,8 @@ $isNavActive = static function (array $item) use ($currentUrl): bool {
     return in_array($currentUrl, $item['matches'] ?? [], true);
 };
 
+$isAdminUser = isset($_SESSION['role']) && (string)$_SESSION['role'] === '1';
+
 $navItemClass = static function (bool $active, string $mode = 'desktop'): string {
     $base = 'font-headline text-sm font-bold uppercase tracking-tight transition-all';
     $state = $active ? 'text-primary' : 'text-on-surface/70 hover:text-primary';
@@ -123,6 +125,14 @@ $navItemClass = static function (bool $active, string $mode = 'desktop'): string
 
         <div class="flex items-center justify-end gap-4 sm:gap-6">
             <?php if (isset($_SESSION['user_id'])): ?>
+                <?php if ($isAdminUser): ?>
+                    <a href="index.php?url=admin/dashboard"
+                       class="hidden sm:inline-flex items-center gap-1.5 rounded-full border border-primary/25 bg-primary/10 px-3 py-2 text-xs font-bold uppercase text-primary hover:bg-primary hover:text-white transition-colors"
+                       aria-label="Vào trang quản trị">
+                        <span class="material-symbols-outlined text-base leading-none">admin_panel_settings</span>
+                        Admin
+                    </a>
+                <?php endif; ?>
                 <a href="index.php?url=profile" class="flex items-center gap-2 group" aria-label="Tài khoản">
                     <span class="material-symbols-outlined text-primary group-hover:scale-110 transition-transform">
                         account_circle
@@ -159,5 +169,11 @@ $navItemClass = static function (bool $active, string $mode = 'desktop'): string
                 <?= htmlspecialchars($item['label']) ?>
             </a>
         <?php endforeach; ?>
+        <?php if ($isAdminUser): ?>
+            <a class="<?= $navItemClass($currentUrl === 'admin/dashboard', 'mobile') ?>"
+               href="index.php?url=admin/dashboard">
+                Admin
+            </a>
+        <?php endif; ?>
     </nav>
 </header>

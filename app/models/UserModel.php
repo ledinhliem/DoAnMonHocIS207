@@ -13,6 +13,88 @@ class UserModel extends Model {
         return $stmt->fetch(PDO::FETCH_ASSOC);
     }
 
+    public function findByEmail(string $email) {
+        return $this->getUserByEmail($email);
+    }
+
+    public function findByGoogleId(string $googleId) {
+        if ($googleId === '' || !$this->columnExists('nguoidung', 'google_id')) {
+            return null;
+        }
+
+        $stmt = $this->db->prepare("SELECT * FROM nguoidung WHERE google_id = ? LIMIT 1");
+        $stmt->execute([$googleId]);
+        return $stmt->fetch(PDO::FETCH_ASSOC) ?: null;
+    }
+
+    public function createGoogleUser(array $googleUserData) {
+        $email = trim($googleUserData['email'] ?? '');
+        $name = trim($googleUserData['name'] ?? '');
+
+        if ($email === '') {
+            return false;
+        }
+
+        $created = $this->createUser([
+            'hoten' => $name !== '' ? $name : $email,
+            'email' => $email,
+            'matkhau' => password_hash(bin2hex(random_bytes(32)), PASSWORD_DEFAULT),
+            'maquyen' => '2'
+        ]);
+
+        if (!$created) {
+            return false;
+        }
+
+        $user = $this->getUserByEmail($email);
+        if (!$user) {
+            return false;
+        }
+
+        $this->linkGoogleAccount(
+            $user['MaNguoiDung'],
+            (string)($googleUserData['google_id'] ?? ''),
+            (string)($googleUserData['avatar'] ?? '')
+        );
+
+        return $this->getUserByEmail($email);
+    }
+
+    public function updateGoogleUserInfo(string $userId, array $googleUserData): bool {
+        $sets = [];
+        $params = [];
+
+        if ($this->columnExists('nguoidung', 'avatar') && !empty($googleUserData['avatar'])) {
+            $sets[] = 'avatar = ?';
+            $params[] = $googleUserData['avatar'];
+        }
+
+        if ($this->columnExists('nguoidung', 'provider')) {
+            $sets[] = 'provider = ?';
+            $params[] = 'google';
+        }
+
+        if ($this->columnExists('nguoidung', 'google_id') && !empty($googleUserData['google_id'])) {
+            $sets[] = 'google_id = ?';
+            $params[] = $googleUserData['google_id'];
+        }
+
+        if (empty($sets)) {
+            return true;
+        }
+
+        $params[] = $userId;
+        $stmt = $this->db->prepare('UPDATE nguoidung SET ' . implode(', ', $sets) . ' WHERE MaNguoiDung = ?');
+        return $stmt->execute($params);
+    }
+
+    public function linkGoogleAccount(string $userId, string $googleId, string $avatar = ''): bool {
+        return $this->updateGoogleUserInfo($userId, [
+            'google_id' => $googleId,
+            'avatar' => $avatar
+        ]);
+    }
+
     public function createUser($data) {
         // Tạo mã ID mới ngẫu nhiên dạng U + 4 số
         $newId = $this->generateUserId(); 
@@ -187,6 +269,31 @@ class UserModel extends Model {
         $nextNumber = $lastId ? ((int) substr($lastId, 2)) + 1 : 1;
 
         return 'DC' . str_pad($nextNumber, 3, '0', STR_PAD_LEFT);
+    }
+
+    private function columnExists(string $table, string $column): bool {
+        static $cache = [];
+        $key = $table . '.' . $column;
+
+        if (array_key_exists($key, $cache)) {
+            return $cache[$key];
+        }
+
+        try {
+            $stmt = $this->db->prepare("
+                SELECT COUNT(*)
+                FROM INFORMATION_SCHEMA.COLUMNS
+                WHERE TABLE_SCHEMA = DATABASE()
+                  AND TABLE_NAME = ?
+                  AND COLUMN_NAME = ?
+            ");
+            $stmt->execute([$table, $column]);
+            $cache[$key] = ((int)$stmt->fetchColumn()) > 0;
+        } catch (Throwable $e) {
+            $cache[$key] = false;
+        }
+
+        return $cache[$key];
     }
 
     // Lấy toàn bộ danh sách người dùng kèm tên nhóm quyền

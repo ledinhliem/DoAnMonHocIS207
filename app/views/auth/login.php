@@ -54,6 +54,14 @@
                 <?php unset($_SESSION['auth_message']); ?>
             <?php endif; ?>
 
+            <?php if (!empty($_SESSION['auth_error'])): ?>
+                <div class="mb-6 p-4 rounded-lg bg-red-50 border border-red-200 flex items-start gap-3">
+                    <span class="material-symbols-outlined text-red-500">error</span>
+                    <p class="text-sm font-medium text-red-600 mt-0.5"><?php echo htmlspecialchars($_SESSION['auth_error']); ?></p>
+                </div>
+                <?php unset($_SESSION['auth_error']); ?>
+            <?php endif; ?>
+
             <form id="loginForm" action="index.php?url=login" method="POST" class="space-y-6 auth-form">
                 <div class="space-y-2">
                     <label class="block text-xs font-bold uppercase tracking-wider text-primary px-1">Địa chỉ email</label>
@@ -83,6 +91,17 @@
                     <span class="material-symbols-outlined text-sm group-hover:translate-x-1 transition-transform">arrow_forward</span>
                 </button>
             </form>
+
+            <div class="my-6 flex items-center gap-4">
+                <span class="h-px flex-1 bg-outline-variant/30"></span>
+                <span class="text-xs font-bold uppercase tracking-widest text-on-surface-variant/60">Hoặc</span>
+                <span class="h-px flex-1 bg-outline-variant/30"></span>
+            </div>
+
+            <a href="index.php?url=auth/google" class="w-full border border-outline-variant/40 bg-white text-on-surface font-bold py-4 rounded-lg hover:border-primary hover:text-primary transition-all flex justify-center items-center gap-3">
+                <span class="inline-flex h-6 w-6 items-center justify-center rounded-full bg-white border border-outline-variant/30 text-sm font-black text-primary">G</span>
+                <span>Đăng nhập bằng Google</span>
+            </a>
 
         </section>
 

@@ -9,7 +9,13 @@ $error = $error ?? '';
 $appliedPromoCode = $summary['promo']['code'] ?? '';
 
 // Kiểm tra xem user đã có đủ thông tin nhận hàng cơ bản chưa
-$hasFullInfo = (!empty($checkoutData['full_name']) && !empty($checkoutData['phone']) && !empty($checkoutData['address']));
+$hasFullInfo = (
+    !empty($checkoutData['full_name']) &&
+    !empty($checkoutData['phone']) &&
+    !empty($checkoutData['address']) &&
+    !empty($checkoutData['email']) &&
+    filter_var($checkoutData['email'], FILTER_VALIDATE_EMAIL)
+);
 ?>
 
 <?php include __DIR__ . '/../layouts/header.php'; ?>
@@ -31,12 +37,39 @@ $hasFullInfo = (!empty($checkoutData['full_name']) && !empty($checkoutData['phon
 
     <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
         <div class="lg:col-span-2 space-y-8">
-<form method="POST" action="?url=order/apply-promo" id="promo-form" class="bg-white rounded-2xl border border-outline-variant/30 p-6 shadow-sm">
+            <div class="bg-white rounded-2xl border border-outline-variant/30 shadow-sm overflow-hidden">
+                <button type="button" id="openVoucherModal" class="w-full flex items-center justify-between gap-4 px-6 py-5 text-left hover:bg-surface-container transition-colors">
+                    <span class="text-xl font-bold text-on-surface">Voucher của Shop</span>
+                    <span class="flex items-center gap-2 text-on-surface-variant">
+                        <?php if (!empty($summary['promo']['code'])): ?>
+                            <span class="rounded-lg bg-primary/10 px-3 py-1 text-sm font-bold text-primary">
+                                <?= htmlspecialchars($summary['promo']['code']) ?>
+                            </span>
+                        <?php else: ?>
+                            <span class="text-lg text-on-surface-variant/70">Chọn hoặc nhập mã</span>
+                        <?php endif; ?>
+                        <span class="material-symbols-outlined">chevron_right</span>
+                    </span>
+                </button>
+            </div>
+
+            <div id="voucherModal" class="fixed inset-0 z-50 hidden items-center justify-center bg-black/45 px-4 py-8">
+                <form method="POST" action="?url=order/apply-promo" id="promo-form" class="w-full max-w-3xl max-h-[86vh] overflow-y-auto bg-white rounded-3xl border border-outline-variant/30 p-6 shadow-2xl">
                 
                 <input type="hidden" name="promo_code" id="actual_promo_code" value="">
 
+                <div class="flex justify-between items-start gap-4 mb-4">
+                    <div>
+                        <h2 class="text-2xl font-black text-primary">Voucher của Shop</h2>
+                        <p class="text-sm text-on-surface-variant mt-1">Chọn voucher có sẵn hoặc nhập mã riêng của bạn.</p>
+                    </div>
+                    <button type="button" id="closeVoucherModal" class="w-10 h-10 rounded-full bg-surface-container flex items-center justify-center hover:bg-surface-container-high transition-colors" aria-label="Đóng">
+                        <span class="material-symbols-outlined">close</span>
+                    </button>
+                </div>
+
                 <div class="flex justify-between items-end mb-4">
-                    <h2 class="text-xl font-bold">🎟️ Mã dành riêng cho bạn</h2>
+                    <h3 class="text-xl font-bold">🎟️ Mã dành riêng cho bạn</h3>
                     <?php if (!empty($summary['promo']['code'])): ?>
                         <button type="button" onclick="document.getElementById('actual_promo_code').value=''; document.getElementById('promo-form').submit();" class="text-sm text-red-500 font-bold hover:underline">
                             ❌ Hủy mã đang dùng
@@ -115,7 +148,32 @@ $hasFullInfo = (!empty($checkoutData['full_name']) && !empty($checkoutData['phon
                         <button type="button" onclick="document.getElementById('actual_promo_code').value = document.getElementById('manual_code').value; document.getElementById('promo-form').submit();" class="px-4 py-2 bg-gray-200 text-gray-700 rounded-lg text-sm font-bold hover:bg-gray-300 transition-colors">Áp dụng</button>
                     </div>
                 </div>
-            </form>
+                </form>
+            </div>
+
+            <script>
+            document.addEventListener('DOMContentLoaded', function () {
+                const voucherModal = document.getElementById('voucherModal');
+                const openVoucherModal = document.getElementById('openVoucherModal');
+                const closeVoucherModal = document.getElementById('closeVoucherModal');
+
+                function openModal() {
+                    voucherModal.classList.remove('hidden');
+                    voucherModal.classList.add('flex');
+                }
+
+                function closeModal() {
+                    voucherModal.classList.add('hidden');
+                    voucherModal.classList.remove('flex');
+                }
+
+                openVoucherModal?.addEventListener('click', openModal);
+                closeVoucherModal?.addEventListener('click', closeModal);
+                voucherModal?.addEventListener('click', function (event) {
+                    if (event.target === voucherModal) closeModal();
+                });
+            });
+            </script>
 
             <form id="checkoutForm"
                   method="POST"
@@ -324,18 +382,6 @@ $hasFullInfo = (!empty($checkoutData['full_name']) && !empty($checkoutData['phon
                 </div>
             </div>
 
-            <div class="flex flex-col gap-3 mt-6 pt-5 border-t border-outline-variant/30">
-                <button type="submit"
-                        form="checkoutForm"
-                        class="w-full px-5 py-3 rounded-xl bg-primary text-white font-semibold text-center">
-                    Tiếp tục thanh toán
-                </button>
-
-                <a href="?url=cart"
-                   class="w-full px-5 py-3 rounded-xl border border-outline-variant font-semibold text-center">
-                    Quay lại giỏ hàng
-                </a>
-            </div>
         </div>
     </div>
 </main>

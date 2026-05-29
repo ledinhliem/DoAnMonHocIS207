@@ -265,7 +265,8 @@
                 <?php if ((string)$status === '0'): ?>
                     <form method="POST"
                           action="?url=order/cancel"
-                          onsubmit="return confirm('Bạn chắc chắn muốn hủy đơn <?= htmlspecialchars($orderId, ENT_QUOTES, 'UTF-8') ?>? Sau khi hủy, đơn sẽ không thể tiếp tục xử lý.');">
+                          class="js-cancel-order-form"
+                          data-order-id="<?= htmlspecialchars($orderId, ENT_QUOTES, 'UTF-8') ?>">
                         <input type="hidden" name="MaDonHang" value="<?= htmlspecialchars($orderId, ENT_QUOTES, 'UTF-8') ?>">
                         <input type="hidden" name="redirect" value="tracking">
                         <button type="submit"
@@ -284,5 +285,64 @@
         <?php endif; ?>
     </section>
 </main>
+
+<div id="cancelOrderModal" class="fixed inset-0 z-50 hidden items-center justify-center bg-black/45 px-4">
+    <div class="w-full max-w-md rounded-3xl bg-white p-6 shadow-2xl border border-[#E5E7D8]">
+        <div class="w-14 h-14 rounded-2xl bg-red-50 text-red-600 flex items-center justify-center mb-4">
+            <svg xmlns="http://www.w3.org/2000/svg" class="w-8 h-8" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M12 9v4m0 4h.01M10.29 3.86 1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0Z" />
+            </svg>
+        </div>
+        <h2 class="text-2xl font-black text-[#2F512A] mb-2">Bạn chắc chắn muốn hủy đơn?</h2>
+        <p class="text-gray-600 leading-relaxed">
+            Đơn <span id="cancelOrderIdText" class="font-bold text-[#2F512A]"></span> vẫn có thể được tiếp tục xử lý. Nếu bạn chỉ muốn đổi thông tin giao hàng, hãy giữ đơn và liên hệ hỗ trợ.
+        </p>
+        <p class="mt-3 text-sm text-red-600 font-semibold">
+            Sau khi hủy, đơn hàng sẽ không thể tiếp tục xử lý.
+        </p>
+        <div class="mt-6 grid grid-cols-1 sm:grid-cols-2 gap-3">
+            <button type="button" id="keepOrderBtn" class="px-5 py-3 rounded-xl border border-[#2F512A] text-[#2F512A] font-bold hover:bg-[#F3F6EF] transition-colors">
+                Tiếp tục giữ đơn
+            </button>
+            <button type="button" id="confirmCancelOrderBtn" class="px-5 py-3 rounded-xl bg-red-600 text-white font-bold hover:bg-red-700 transition-colors">
+                Xác nhận hủy
+            </button>
+        </div>
+    </div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+    const modal = document.getElementById('cancelOrderModal');
+    const orderText = document.getElementById('cancelOrderIdText');
+    const keepBtn = document.getElementById('keepOrderBtn');
+    const confirmBtn = document.getElementById('confirmCancelOrderBtn');
+    let pendingForm = null;
+
+    function closeModal() {
+        modal.classList.add('hidden');
+        modal.classList.remove('flex');
+        pendingForm = null;
+    }
+
+    document.querySelectorAll('.js-cancel-order-form').forEach(form => {
+        form.addEventListener('submit', function (event) {
+            event.preventDefault();
+            pendingForm = form;
+            orderText.textContent = form.dataset.orderId || '';
+            modal.classList.remove('hidden');
+            modal.classList.add('flex');
+        });
+    });
+
+    keepBtn?.addEventListener('click', closeModal);
+    modal?.addEventListener('click', event => {
+        if (event.target === modal) closeModal();
+    });
+    confirmBtn?.addEventListener('click', function () {
+        if (pendingForm) pendingForm.submit();
+    });
+});
+</script>
 
 <?php include __DIR__ . '/../layouts/footer.php'; ?>
