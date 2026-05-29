@@ -1897,6 +1897,94 @@ class AdminModel extends Model
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
 
+    public function getSupportQuestions(string $keyword = '', string $tab = 'all'): array
+    {
+        if (!$this->tableExists('hotrokhachhang')) {
+            return [];
+        }
+
+        $where = [];
+        $params = [];
+
+        if ($tab === 'pending') {
+            $where[] = 'ht.TrangThai = 0';
+        } elseif ($tab === 'answered') {
+            $where[] = 'ht.TrangThai = 1';
+        }
+
+        if ($keyword !== '') {
+            $where[] = "(
+                ht.MaHoTro LIKE :keyword
+                OR ht.TieuDe LIKE :keyword
+                OR ht.CauHoi LIKE :keyword
+                OR ht.CauTraLoi LIKE :keyword
+                OR nd.HoTen LIKE :keyword
+                OR nd.Email LIKE :keyword
+            )";
+            $params[':keyword'] = '%' . $keyword . '%';
+        }
+
+        $whereSql = $where ? 'WHERE ' . implode(' AND ', $where) : '';
+        $stmt = $this->db->prepare("
+            SELECT
+                ht.MaHoTro, ht.MaNguoiDung, ht.TieuDe, ht.CauHoi, ht.CauTraLoi,
+                ht.TrangThai, ht.NgayGui, ht.NgayTraLoi, ht.MaAdmin,
+                nd.HoTen, nd.Email, nd.SoDienThoai,
+                admin.HoTen AS TenAdmin
+            FROM hotrokhachhang ht
+            LEFT JOIN nguoidung nd ON nd.MaNguoiDung = ht.MaNguoiDung
+            LEFT JOIN nguoidung admin ON admin.MaNguoiDung = ht.MaAdmin
+            {$whereSql}
+            ORDER BY ht.TrangThai ASC, ht.NgayGui DESC, ht.MaHoTro DESC
+        ");
+
+        foreach ($params as $key => $value) {
+            $stmt->bindValue($key, $value);
+        }
+
+        $stmt->execute();
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    }
+
+    public function getSupportStats(): array
+    {
+        $stats = ['total' => 0, 'pending' => 0, 'answered' => 0];
+
+        if (!$this->tableExists('hotrokhachhang')) {
+            return $stats;
+        }
+
+        $stmt = $this->db->query("
+            SELECT
+                COUNT(*) AS total,
+                SUM(CASE WHEN TrangThai = 0 THEN 1 ELSE 0 END) AS pending,
+                SUM(CASE WHEN TrangThai = 1 THEN 1 ELSE 0 END) AS answered
+            FROM hotrokhachhang
+        ");
+        $row = $stmt->fetch(PDO::FETCH_ASSOC) ?: [];
+
+        return [
+            'total' => (int)($row['total'] ?? 0),
+            'pending' => (int)($row['pending'] ?? 0),
+            'answered' => (int)($row['answered'] ?? 0),
+        ];
+    }
+
+    public function replySupportQuestion(string $supportId, string $reply, string $adminId): bool
+    {
+        if (!$this->tableExists('hotrokhachhang')) {
+            return false;
+        }
+
+        $stmt = $this->db->prepare("
+            UPDATE hotrokhachhang
+            SET CauTraLoi = ?, TrangThai = 1, NgayTraLoi = NOW(), MaAdmin = ?
+            WHERE MaHoTro = ?
+        ");
+
+        return $stmt->execute([$reply, $adminId, $supportId]);
+    }
+
     public function getPromoById($id)
     {
         $stmt = $this->db->prepare("

@@ -1230,6 +1230,24 @@ INSERT IGNORE INTO `flash_sales`
 (5, 'P021', NULL, 199000.00, '2026-05-01 00:00:00', '2026-12-31 23:59:59', 35, 0, 1),
 (6, 'P025', NULL, 249000.00, '2026-05-01 00:00:00', '2026-12-31 23:59:59', 25, 0, 1);
 
+CREATE TABLE IF NOT EXISTS `hotrokhachhang` (
+  `MaHoTro` varchar(20) NOT NULL,
+  `MaNguoiDung` varchar(20) NOT NULL,
+  `TieuDe` varchar(255) DEFAULT NULL,
+  `CauHoi` text NOT NULL,
+  `CauTraLoi` text DEFAULT NULL,
+  `TrangThai` tinyint(1) NOT NULL DEFAULT 0,
+  `NgayGui` datetime DEFAULT current_timestamp(),
+  `NgayTraLoi` datetime DEFAULT NULL,
+  `MaAdmin` varchar(20) DEFAULT NULL,
+  PRIMARY KEY (`MaHoTro`),
+  KEY `idx_hotro_user` (`MaNguoiDung`),
+  KEY `idx_hotro_admin` (`MaAdmin`),
+  KEY `idx_hotro_status` (`TrangThai`),
+  CONSTRAINT `hotrokhachhang_user_fk` FOREIGN KEY (`MaNguoiDung`) REFERENCES `nguoidung` (`MaNguoiDung`) ON DELETE CASCADE,
+  CONSTRAINT `hotrokhachhang_admin_fk` FOREIGN KEY (`MaAdmin`) REFERENCES `nguoidung` (`MaNguoiDung`) ON DELETE SET NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
 /*!40101 SET CHARACTER_SET_RESULTS=@OLD_CHARACTER_SET_RESULTS */;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;

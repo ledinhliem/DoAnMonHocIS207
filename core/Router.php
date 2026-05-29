@@ -55,6 +55,8 @@ class Router
 
             'admin/inventory' => 'inventory',
             'admin/reviews' => 'reviews',
+            'admin/support' => 'support',
+            'admin/support/reply' => 'support',
 
             'admin/users' => 'users',
             'admin/users/detail' => 'userDetail',
@@ -171,6 +173,18 @@ class Router
                 require_once __DIR__ . '/../app/controllers/BlogController.php';
                 $controller = new BlogController();
                 $controller->detail();
+                break;
+
+            case 'support':
+                require_once __DIR__ . '/../app/controllers/SupportController.php';
+                $controller = new SupportController();
+                $controller->index();
+                break;
+
+            case 'support/submit':
+                require_once __DIR__ . '/../app/controllers/SupportController.php';
+                $controller = new SupportController();
+                $controller->submit();
                 break;
 
             case 'newsletter/subscribe':
@@ -322,6 +336,12 @@ class Router
                 require_once __DIR__ . '/../app/controllers/OrderController.php';
                 $controller = new OrderController();
                 $controller->tracking();
+                break;
+
+            case 'order/cancel':
+                require_once __DIR__ . '/../app/controllers/OrderController.php';
+                $controller = new OrderController();
+                $controller->cancel();
                 break;
 
             case 'order/help':

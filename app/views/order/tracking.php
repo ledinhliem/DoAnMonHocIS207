@@ -54,6 +54,12 @@
             </div>
         <?php endif; ?>
 
+        <?php if (!empty($orderMessage)): ?>
+            <div class="mb-6 rounded-2xl px-5 py-4 font-semibold <?= ($orderMessageStatus ?? '') === 'success' ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800' ?>">
+                <?= htmlspecialchars($orderMessage) ?>
+            </div>
+        <?php endif; ?>
+
         <?php if (empty($order)): ?>
             <div class="bg-white rounded-2xl border border-[#E5E7D8] p-8">
                 <p class="text-lg text-gray-700 mb-4">
@@ -255,6 +261,19 @@
                    class="px-5 py-3 rounded-xl border border-[#2F512A] text-[#2F512A] font-semibold">
                     Quay lại lịch sử
                 </a>
+
+                <?php if ((string)$status === '0'): ?>
+                    <form method="POST"
+                          action="?url=order/cancel"
+                          onsubmit="return confirm('Bạn chắc chắn muốn hủy đơn <?= htmlspecialchars($orderId, ENT_QUOTES, 'UTF-8') ?>? Sau khi hủy, đơn sẽ không thể tiếp tục xử lý.');">
+                        <input type="hidden" name="MaDonHang" value="<?= htmlspecialchars($orderId, ENT_QUOTES, 'UTF-8') ?>">
+                        <input type="hidden" name="redirect" value="tracking">
+                        <button type="submit"
+                                class="px-5 py-3 rounded-xl bg-red-600 text-white font-semibold hover:bg-red-700 transition-colors">
+                            Hủy đơn hàng
+                        </button>
+                    </form>
+                <?php endif; ?>
 
                 <a href="?url=product"
                    class="px-5 py-3 rounded-xl bg-[#2F512A] text-white font-semibold">

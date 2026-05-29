@@ -581,7 +581,10 @@ class OrderController extends Controller
         $this->view('order/history', [
             'title' => 'Lịch sử đơn hàng',
             'orders' => $orders,
+            'orderMessage' => $_SESSION['order_message'] ?? '',
+            'orderMessageStatus' => $_SESSION['order_message_status'] ?? '',
         ]);
+        unset($_SESSION['order_message'], $_SESSION['order_message_status']);
     }
 
     public function tracking()
@@ -607,9 +610,43 @@ class OrderController extends Controller
             'order' => $order,
             'helpMessage' => $_SESSION['help_message'] ?? '',
             'reviewMessage' => $_SESSION['review_message'] ?? '',
+            'orderMessage' => $_SESSION['order_message'] ?? '',
+            'orderMessageStatus' => $_SESSION['order_message_status'] ?? '',
         ]);
 
-        unset($_SESSION['help_message'], $_SESSION['review_message']);
+        unset($_SESSION['help_message'], $_SESSION['review_message'], $_SESSION['order_message'], $_SESSION['order_message_status']);
+    }
+
+    public function cancel()
+    {
+        $this->requireLogin();
+
+        if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
+            header('Location: ?url=order/history');
+            exit;
+        }
+
+        $orderId = trim($_POST['MaDonHang'] ?? '');
+        $redirect = trim($_POST['redirect'] ?? 'history');
+
+        if ($orderId === '') {
+            $_SESSION['order_message_status'] = 'error';
+            $_SESSION['order_message'] = 'Thiếu mã đơn hàng cần hủy.';
+            header('Location: ?url=order/history');
+            exit;
+        }
+
+        $result = $this->orderModel->cancelOrderByUser($orderId, (string)$_SESSION['user_id']);
+        $_SESSION['order_message_status'] = $result['success'] ? 'success' : 'error';
+        $_SESSION['order_message'] = $result['message'];
+
+        if ($redirect === 'tracking') {
+            header('Location: ?url=order/tracking&id=' . urlencode($orderId));
+            exit;
+        }
+
+        header('Location: ?url=order/history');
+        exit;
     }
 
     public function help()

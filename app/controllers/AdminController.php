@@ -812,6 +812,53 @@ class AdminController extends Controller
         ]);
     }
 
+    public function support()
+    {
+        $status = null;
+        $message = '';
+
+        if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+            $supportId = trim($_POST['support_id'] ?? '');
+            $reply = trim($_POST['reply_content'] ?? '');
+
+            if ($supportId === '') {
+                $status = 'error';
+                $message = 'Thiếu mã câu hỏi hỗ trợ.';
+            } elseif ($reply === '') {
+                $status = 'error';
+                $message = 'Nội dung trả lời không được để trống.';
+            } else {
+                $saved = $this->adminModel->replySupportQuestion(
+                    $supportId,
+                    $reply,
+                    (string)($_SESSION['user_id'] ?? '')
+                );
+
+                $status = $saved ? 'success' : 'error';
+                $message = $saved
+                    ? "Đã trả lời câu hỏi #{$supportId}."
+                    : 'Lưu câu trả lời thất bại. Vui lòng kiểm tra bảng hotrokhachhang.';
+            }
+        }
+
+        $keyword = trim($_GET['keyword'] ?? '');
+        $tab = $_GET['tab'] ?? 'all';
+        if (!in_array($tab, ['all', 'pending', 'answered'], true)) {
+            $tab = 'all';
+        }
+
+        $this->view('admin/support', [
+            'title' => 'Hỗ trợ khách hàng',
+            'currentPage' => 'support',
+            'status' => $status,
+            'message' => $message,
+            'questions' => $this->adminModel->getSupportQuestions($keyword, $tab),
+            'stats' => $this->adminModel->getSupportStats(),
+            'keyword' => $keyword,
+            'tab' => $tab
+        ]);
+    }
+
     /* =========================================================
        USERS — Ngọc Lan
        ========================================================= */

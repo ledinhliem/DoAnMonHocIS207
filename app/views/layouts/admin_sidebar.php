@@ -44,6 +44,11 @@ $navItemClass = function (string $page) use ($activePage): string {
             <span class="font-medium text-sm">Đánh giá</span>
         </a>
 
+        <a class="<?= $navItemClass('support') ?>" href="<?= BASE_URL ?>index.php?url=admin/support">
+            <span class="material-symbols-outlined">support_agent</span>
+            <span class="font-medium text-sm">Hỗ trợ khách hàng</span>
+        </a>
+
         <a class="<?= $navItemClass('users') ?>" href="<?= BASE_URL ?>index.php?url=admin/users">
             <span class="material-symbols-outlined">group</span>
             <span class="font-medium text-sm">Người dùng</span>

@@ -2,14 +2,14 @@
 
 define('DB_HOST', 'localhost');
 define('DB_PORT', '3306');
-define('DB_NAME', 'sustainable_shop');
-define('DB_USER', 'root');
-define('DB_PASS', '');
+define('DB_NAME', 'nqfavpfs_sustainable_shop');
+define('DB_USER', 'nqfavpfs_zentro_user');
+define('DB_PASS', 'is207nhom7@');
 define('APP_PATH', __DIR__ . '/../app/');
 define('CORE_PATH', __DIR__ . '/../core/');
 define('ROOT_PATH', __DIR__ . '/..');
 
-define('BASE_URL', 'http://localhost:8080/is207/');
+define('BASE_URL', 'https://zentro.id.vn/');
 // SMTP Gmail config
 define('SMTP_HOST', 'smtp.gmail.com');
 define('SMTP_PORT', 587);

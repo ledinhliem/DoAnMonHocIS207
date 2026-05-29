@@ -23,6 +23,11 @@ $navItems = [
         'url' => 'order/history',
         'matches' => ['order/history', 'order/tracking'],
     ],
+    [
+        'label' => 'Hỗ trợ',
+        'url' => 'support',
+        'matches' => ['support', 'support/submit'],
+    ],
 ];
 
 $isNavActive = static function (array $item) use ($currentUrl): bool {
@@ -49,7 +54,10 @@ $navItemClass = static function (bool $active, string $mode = 'desktop'): string
     <meta charset="utf-8" />
     <meta content="width=device-width, initial-scale=1.0" name="viewport" />
     <title><?php echo htmlspecialchars($pageTitle ?? 'Zentro - Sustainable Living'); ?></title>
-
+    <link rel="icon" type="image/png" sizes="32x32" href="<?= BASE_URL ?>public/assets/images/favicon-32.png?v=2">
+    <link rel="icon" type="image/png" sizes="64x64" href="<?= BASE_URL ?>public/assets/images/favicon-64.png?v=2">
+    <link rel="shortcut icon" href="<?= BASE_URL ?>favicon.ico?v=2" type="image/x-icon">
+    <link rel="apple-touch-icon" sizes="180x180" href="<?= BASE_URL ?>public/assets/images/apple-touch-icon.png?v=2">
     <link href="https://fonts.googleapis.com/css2?family=Epilogue:wght@400;600;700;800&family=Be+Vietnam+Pro:wght@300;400;500;600&display=swap" rel="stylesheet" />
     <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet" />
 

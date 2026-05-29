@@ -64,6 +64,61 @@ class OrderModel extends Model
         return $order ?: null;
     }
 
+    public function cancelOrderByUser(string $orderId, string $userId): array
+    {
+        if ($orderId === '' || $userId === '') {
+            return ['success' => false, 'message' => 'Thiếu thông tin đơn hàng cần hủy.'];
+        }
+
+        try {
+            $this->db->beginTransaction();
+
+            $stmt = $this->db->prepare("
+                SELECT MaDonHang, TrangThai
+                FROM donhang
+                WHERE MaDonHang = ? AND MaNguoiDung = ?
+                LIMIT 1
+                FOR UPDATE
+            ");
+            $stmt->execute([$orderId, $userId]);
+            $order = $stmt->fetch(PDO::FETCH_ASSOC);
+
+            if (!$order) {
+                $this->db->rollBack();
+                return ['success' => false, 'message' => 'Không tìm thấy đơn hàng hoặc bạn không có quyền hủy đơn này.'];
+            }
+
+            $currentStatus = (string)($order['TrangThai'] ?? '');
+            if ($currentStatus !== '0') {
+                $this->db->rollBack();
+                return ['success' => false, 'message' => 'Chỉ có thể hủy đơn hàng đang chờ xác nhận.'];
+            }
+
+            $this->restoreStockForOrder($orderId);
+
+            $update = $this->db->prepare("
+                UPDATE donhang
+                SET TrangThai = '4'
+                WHERE MaDonHang = ? AND MaNguoiDung = ? AND TrangThai = '0'
+            ");
+            $update->execute([$orderId, $userId]);
+
+            if ($update->rowCount() !== 1) {
+                $this->db->rollBack();
+                return ['success' => false, 'message' => 'Không thể hủy đơn hàng ở trạng thái hiện tại.'];
+            }
+
+            $this->db->commit();
+            return ['success' => true, 'message' => 'Đã hủy đơn hàng và hoàn kho thành công.'];
+        } catch (Throwable $e) {
+            if ($this->db->inTransaction()) {
+                $this->db->rollBack();
+            }
+
+            return ['success' => false, 'message' => 'Lỗi hủy đơn hàng: ' . $e->getMessage()];
+        }
+    }
+
     public function getOrderItems($orderId)
     {
         $stmt = $this->db->prepare("
@@ -92,6 +147,27 @@ class OrderModel extends Model
         $stmt->execute([$orderId]);
 
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    }
+
+    private function restoreStockForOrder(string $orderId): void
+    {
+        $items = $this->getOrderItems($orderId);
+        $stmt = $this->db->prepare("
+            UPDATE bienthesanpham
+            SET SoLuongTon = SoLuongTon + ?
+            WHERE MaBienThe = ?
+        ");
+
+        foreach ($items as $item) {
+            $variantId = (string)($item['MaBienThe'] ?? '');
+            $quantity = (int)($item['SoLuong'] ?? 0);
+
+            if ($variantId === '' || $quantity <= 0) {
+                continue;
+            }
+
+            $stmt->execute([$quantity, $variantId]);
+        }
     }
 
     public function calculateDiscount($items, $promoCode)

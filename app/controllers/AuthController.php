@@ -143,8 +143,7 @@ public function forgot() {
                     $data['error_message'] = 'Có lỗi xảy ra, vui lòng thử lại sau.';
                 }
             } else {
-                $data['success_message'] = 'Nếu email tồn tại trong hệ thống, chúng tôi sẽ gửi hướng dẫn đặt lại mật khẩu.';
-            }
+                    $data['error_message'] = 'Email không tồn tại trên hệ thống.';            }
         }
     }
 
