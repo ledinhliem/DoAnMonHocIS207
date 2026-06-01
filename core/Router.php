@@ -44,7 +44,6 @@ class Router
             'admin/products/delete' => 'products',
 
             'admin/categories' => 'categories',
-            'admin/categories/create' => 'categories',
             'admin/categories/edit' => 'categories',
             'admin/categories/hide' => 'categories',
             'admin/categories/show' => 'categories',

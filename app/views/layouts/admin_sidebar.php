@@ -29,11 +29,6 @@ $navItemClass = function (string $page) use ($activePage): string {
             <span class="font-medium text-sm">Sản phẩm</span>
         </a>
 
-        <a class="<?= $navItemClass('categories') ?>" href="<?= BASE_URL ?>index.php?url=admin/categories">
-            <span class="material-symbols-outlined">category</span>
-            <span class="font-medium text-sm">Danh mục</span>
-        </a>
-
         <a class="<?= $navItemClass('orders') ?>" href="<?= BASE_URL ?>index.php?url=admin/orders">
             <span class="material-symbols-outlined">shopping_basket</span>
             <span class="font-medium text-sm">Đơn hàng</span>

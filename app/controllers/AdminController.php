@@ -397,26 +397,7 @@ class AdminController extends Controller
 
             switch ($action) {
                 case 'create_category':
-                    $categoryData = [
-                        'MaDanhMuc' => $this->adminModel->generateCategoryId(),
-                        'TenDanhMuc' => trim($_POST['TenDanhMuc'] ?? ''),
-                        'HinhAnh' => '',
-                        'TrangThai' => 1
-                    ];
-
-                    if ($categoryData['TenDanhMuc'] === '') {
-                        $status = 'error';
-                        $message = 'Tên danh mục không được để trống.';
-                        $category = $categoryData;
-                    } else {
-                        if ($this->adminModel->createCategory($categoryData)) {
-                            $this->redirectWithFlash('index.php?url=admin/categories', 'success', 'Tạo danh mục thành công.');
-                        }
-
-                        $status = 'error';
-                        $message = 'Tạo danh mục thất bại, vui lòng thử lại.';
-                        $category = $categoryData;
-                    }
+                    $this->redirectWithFlash('index.php?url=admin/categories', 'error', 'Chức năng thêm danh mục đã được khóa.');
                     break;
 
                 case 'update_category':
@@ -462,15 +443,7 @@ class AdminController extends Controller
         }
 
         if ($url === 'admin/categories/create') {
-            $this->view('admin/categories_form', [
-                'title' => 'Thêm danh mục mới',
-                'currentPage' => 'categories',
-                'isEdit' => false,
-                'category' => $category ?? [],
-                'status' => $status,
-                'message' => $message
-            ]);
-            return;
+            $this->redirectWithFlash('index.php?url=admin/categories', 'error', 'Chức năng thêm danh mục đã được khóa.');
         }
 
         if ($url === 'admin/categories/edit') {

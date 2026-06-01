@@ -19,10 +19,6 @@ $message = $message ?? null;
             <p class="text-on-surface-variant text-lg max-w-2xl">Quản lý danh mục sản phẩm, ẩn/hiện khi cần và cập nhật thông tin cơ bản.</p>
         </div>
 
-        <a href="index.php?url=admin/categories/create" class="flex items-center gap-2 bg-primary text-on-primary px-8 py-4 rounded-lg font-bold text-lg hover:bg-primary-container transition-colors shadow-lg shadow-primary/10">
-            <span class="material-symbols-outlined">add</span>
-            Thêm danh mục mới
-        </a>
     </header>
 
     <?php if ($status): ?>
@@ -79,7 +75,7 @@ $message = $message ?? null;
                 <?php else: ?>
                     <tr>
                         <td colspan="5" class="px-6 py-16 text-center text-on-surface-variant">
-                            Chưa có danh mục nào. Hãy tạo danh mục mới để phân loại sản phẩm.
+                            Chưa có danh mục nào.
                         </td>
                     </tr>
                 <?php endif; ?>

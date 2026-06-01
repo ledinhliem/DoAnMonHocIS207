@@ -287,7 +287,13 @@ class ProductModel extends Model
         $categories = [];
 
         foreach ($stmt->fetchAll(PDO::FETCH_ASSOC) as $row) {
-            $categories[$row['MaDanhMuc']] = $row['TenDanhMuc'];
+            $categoryName = trim((string)($row['TenDanhMuc'] ?? ''));
+
+            if ($categoryName === '' || preg_match('/^C\d+$/i', $categoryName)) {
+                continue;
+            }
+
+            $categories[$row['MaDanhMuc']] = $categoryName;
         }
 
         return $categories;

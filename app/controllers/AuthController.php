@@ -272,9 +272,249 @@ private function sendPlainEmail(string $to, string $subject, string $body): bool
 }
 
 public function googleLogin() {
-    $_SESSION['auth_message'] = 'Chức năng đăng nhập Google chưa được cấu hình.';
-    header('Location: index.php?url=login');
+    $config = $this->getGoogleOAuthConfig();
+
+    if (!$config['ready']) {
+        $_SESSION['auth_error'] = 'Google Login chưa được cấu hình. Vui lòng kiểm tra GOOGLE_CLIENT_ID, GOOGLE_CLIENT_SECRET và GOOGLE_REDIRECT_URI.';
+        header('Location: index.php?url=login');
+        exit;
+    }
+
+    $state = bin2hex(random_bytes(32));
+    $_SESSION['google_oauth_state'] = $state;
+
+    $authUrl = 'https://accounts.google.com/o/oauth2/v2/auth?' . http_build_query([
+        'client_id' => $config['client_id'],
+        'redirect_uri' => $config['redirect_uri'],
+        'response_type' => 'code',
+        'scope' => 'openid email profile',
+        'state' => $state,
+        'access_type' => 'online',
+        'prompt' => 'select_account'
+    ]);
+
+    header('Location: ' . $authUrl);
     exit;
+}
+
+public function googleCallback() {
+    $config = $this->getGoogleOAuthConfig();
+
+    if (!$config['ready']) {
+        $_SESSION['auth_error'] = 'Google Login chưa được cấu hình đầy đủ.';
+        header('Location: index.php?url=login');
+        exit;
+    }
+
+    if (!empty($_GET['error'])) {
+        $_SESSION['auth_error'] = 'Google từ chối đăng nhập: ' . htmlspecialchars($_GET['error']);
+        header('Location: index.php?url=login');
+        exit;
+    }
+
+    $state = $_GET['state'] ?? '';
+    $sessionState = $_SESSION['google_oauth_state'] ?? '';
+    unset($_SESSION['google_oauth_state']);
+
+    if ($state === '' || $sessionState === '' || !hash_equals($sessionState, $state)) {
+        $_SESSION['auth_error'] = 'Phiên đăng nhập Google không hợp lệ. Vui lòng thử lại.';
+        header('Location: index.php?url=login');
+        exit;
+    }
+
+    $code = $_GET['code'] ?? '';
+    if ($code === '') {
+        $_SESSION['auth_error'] = 'Google không trả về mã xác thực.';
+        header('Location: index.php?url=login');
+        exit;
+    }
+
+    $tokenResponse = $this->httpPostForm('https://oauth2.googleapis.com/token', [
+        'code' => $code,
+        'client_id' => $config['client_id'],
+        'client_secret' => $config['client_secret'],
+        'redirect_uri' => $config['redirect_uri'],
+        'grant_type' => 'authorization_code'
+    ]);
+
+    if (!$tokenResponse['ok']) {
+        $_SESSION['auth_error'] = 'Không thể xác thực với Google. Vui lòng thử lại.';
+        header('Location: index.php?url=login');
+        exit;
+    }
+
+    $tokenData = json_decode($tokenResponse['body'], true);
+    $accessToken = $tokenData['access_token'] ?? '';
+
+    if ($accessToken === '') {
+        $_SESSION['auth_error'] = 'Google không trả về access token hợp lệ.';
+        header('Location: index.php?url=login');
+        exit;
+    }
+
+    $profileResponse = $this->httpGetJson('https://www.googleapis.com/oauth2/v3/userinfo', [
+        'Authorization: Bearer ' . $accessToken
+    ]);
+
+    if (!$profileResponse['ok']) {
+        $_SESSION['auth_error'] = 'Không thể lấy thông tin tài khoản Google.';
+        header('Location: index.php?url=login');
+        exit;
+    }
+
+    $googleProfile = json_decode($profileResponse['body'], true);
+    $email = trim($googleProfile['email'] ?? '');
+    $verified = filter_var($googleProfile['email_verified'] ?? false, FILTER_VALIDATE_BOOLEAN);
+
+    if ($email === '' || !$verified) {
+        $_SESSION['auth_error'] = 'Tài khoản Google cần có email đã xác minh.';
+        header('Location: index.php?url=login');
+        exit;
+    }
+
+    $googleUserData = [
+        'google_id' => (string)($googleProfile['sub'] ?? ''),
+        'email' => $email,
+        'name' => trim($googleProfile['name'] ?? ''),
+        'avatar' => (string)($googleProfile['picture'] ?? '')
+    ];
+
+    $userModel = $this->model('UserModel');
+    $user = $userModel->findByGoogleId($googleUserData['google_id']);
+
+    if (!$user) {
+        $user = $userModel->findByEmail($email);
+
+        if ($user) {
+            $userModel->linkGoogleAccount($user['MaNguoiDung'], $googleUserData['google_id'], $googleUserData['avatar']);
+            $user = $userModel->findByEmail($email);
+        } else {
+            $user = $userModel->createGoogleUser($googleUserData);
+        }
+    } else {
+        $userModel->updateGoogleUserInfo($user['MaNguoiDung'], $googleUserData);
+        $user = $userModel->getUserById($user['MaNguoiDung']) ?: $user;
+    }
+
+    if (!$user) {
+        $_SESSION['auth_error'] = 'Không thể tạo hoặc đăng nhập tài khoản Google.';
+        header('Location: index.php?url=login');
+        exit;
+    }
+
+    if (isset($user['TrangThai']) && (int)$user['TrangThai'] === 0) {
+        $_SESSION['auth_error'] = 'Tài khoản của bạn đang bị khóa.';
+        header('Location: index.php?url=login');
+        exit;
+    }
+
+    $this->setLoginSession($user);
+
+    if (($user['MaQuyen'] ?? '') == '1') {
+        header('Location: index.php?url=admin/dashboard');
+    } else {
+        header('Location: index.php');
+    }
+    exit;
+}
+
+private function getGoogleOAuthConfig(): array {
+    $clientId = defined('GOOGLE_CLIENT_ID') ? trim(GOOGLE_CLIENT_ID) : '';
+    $clientSecret = defined('GOOGLE_CLIENT_SECRET') ? trim(GOOGLE_CLIENT_SECRET) : '';
+    $redirectUri = defined('GOOGLE_REDIRECT_URI') ? trim(GOOGLE_REDIRECT_URI) : '';
+
+    return [
+        'client_id' => $clientId,
+        'client_secret' => $clientSecret,
+        'redirect_uri' => $redirectUri,
+        'ready' => $clientId !== '' && $clientSecret !== '' && $redirectUri !== ''
+    ];
+}
+
+private function setLoginSession(array $user): void {
+    $_SESSION['user_id'] = $user['MaNguoiDung'];
+    $_SESSION['user_name'] = $user['HoTen'];
+    $_SESSION['user_email'] = $user['Email'];
+    $_SESSION['role'] = $user['MaQuyen'];
+}
+
+private function httpPostForm(string $url, array $data): array {
+    $body = http_build_query($data);
+
+    if (function_exists('curl_init')) {
+        $ch = curl_init($url);
+        curl_setopt_array($ch, [
+            CURLOPT_POST => true,
+            CURLOPT_POSTFIELDS => $body,
+            CURLOPT_RETURNTRANSFER => true,
+            CURLOPT_HTTPHEADER => ['Content-Type: application/x-www-form-urlencoded'],
+            CURLOPT_TIMEOUT => 15
+        ]);
+
+        $response = curl_exec($ch);
+        $status = (int)curl_getinfo($ch, CURLINFO_HTTP_CODE);
+        $error = curl_error($ch);
+        curl_close($ch);
+
+        return [
+            'ok' => $response !== false && $status >= 200 && $status < 300,
+            'body' => $response !== false ? $response : '',
+            'error' => $error
+        ];
+    }
+
+    $context = stream_context_create([
+        'http' => [
+            'method' => 'POST',
+            'header' => "Content-Type: application/x-www-form-urlencoded\r\n",
+            'content' => $body,
+            'timeout' => 15
+        ]
+    ]);
+
+    $response = @file_get_contents($url, false, $context);
+    return [
+        'ok' => $response !== false,
+        'body' => $response !== false ? $response : '',
+        'error' => $response === false ? 'request_failed' : ''
+    ];
+}
+
+private function httpGetJson(string $url, array $headers = []): array {
+    if (function_exists('curl_init')) {
+        $ch = curl_init($url);
+        curl_setopt_array($ch, [
+            CURLOPT_RETURNTRANSFER => true,
+            CURLOPT_HTTPHEADER => array_merge(['Accept: application/json'], $headers),
+            CURLOPT_TIMEOUT => 15
+        ]);
+
+        $response = curl_exec($ch);
+        $status = (int)curl_getinfo($ch, CURLINFO_HTTP_CODE);
+        $error = curl_error($ch);
+        curl_close($ch);
+
+        return [
+            'ok' => $response !== false && $status >= 200 && $status < 300,
+            'body' => $response !== false ? $response : '',
+            'error' => $error
+        ];
+    }
+
+    $context = stream_context_create([
+        'http' => [
+            'method' => 'GET',
+            'header' => implode("\r\n", array_merge(['Accept: application/json'], $headers)) . "\r\n",
+            'timeout' => 15
+        ]
+    ]);
+
+    $response = @file_get_contents($url, false, $context);
+    return [
+        'ok' => $response !== false,
+        'body' => $response !== false ? $response : '',
+        'error' => $response === false ? 'request_failed' : ''
+    ];
 }
 
 public function appleLogin() {

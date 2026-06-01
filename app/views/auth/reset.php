@@ -26,8 +26,8 @@
         
         <div class="text-center mb-8">
             <span class="material-symbols-outlined text-5xl text-primary mb-4 bg-primary-container p-4 rounded-full">key</span>
-            <h2 class="font-headline text-3xl font-bold text-on-surface mb-2">New Password</h2>
-            <p class="text-on-surface-variant text-sm">Please create a new secure password for your account.</p>
+            <h2 class="font-headline text-3xl font-bold text-on-surface mb-2">Mật khẩu mới</h2>
+            <p class="text-on-surface-variant text-sm">Tạo mật khẩu mới an toàn cho tài khoản của bạn.</p>
         </div>
 
         <?php if (isset($success_message)): ?>
@@ -46,7 +46,7 @@
         <form id="resetForm" action="index.php?url=reset-password" method="POST" class="space-y-6 auth-form">
             <input type="hidden" name="token" value="<?php echo htmlspecialchars($token ?? ''); ?>">
             <div class="space-y-2">
-                <label class="block text-xs font-bold uppercase tracking-wider text-primary px-1">New Password</label>
+                <label class="block text-xs font-bold uppercase tracking-wider text-primary px-1">Mật khẩu mới</label>
                 <div class="relative">
                     <input id="reset_pass" name="password" required class="w-full bg-surface-container-high border-none rounded-lg p-4 pr-12 focus:ring-1 focus:ring-primary/30 focus:bg-surface-container-lowest transition-all placeholder:text-outline" placeholder="••••••••" type="password" />
                     <span class="z-10 material-symbols-outlined absolute right-4 top-1/2 -translate-y-1/2 text-outline-variant cursor-pointer hover:text-primary transition-colors toggle-password select-none" data-target="reset_pass">visibility_off</span>
@@ -54,7 +54,7 @@
             </div>
 
             <div class="space-y-2">
-                <label class="block text-xs font-bold uppercase tracking-wider text-primary px-1">Confirm New Password</label>
+                <label class="block text-xs font-bold uppercase tracking-wider text-primary px-1">Xác nhận mật khẩu mới</label>
                 <div class="relative">
                     <input id="reset_conf" name="confirm_password" required class="w-full bg-surface-container-high border-none rounded-lg p-4 pr-12 focus:ring-1 focus:ring-primary/30 focus:bg-surface-container-lowest transition-all placeholder:text-outline" placeholder="••••••••" type="password" />
                     <span class="z-10 material-symbols-outlined absolute right-4 top-1/2 -translate-y-1/2 text-outline-variant cursor-pointer hover:text-primary transition-colors toggle-password select-none" data-target="reset_conf">visibility_off</span>
@@ -62,7 +62,7 @@
             </div>
             
             <button type="submit" class="w-full bg-primary text-white font-bold py-4 rounded-lg hover:bg-primary-container transition-all">
-                Update Password
+                Cập nhật mật khẩu
             </button>
         </form>
         <?php else: ?>

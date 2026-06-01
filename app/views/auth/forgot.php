@@ -5,8 +5,8 @@
         
         <div class="text-center mb-8">
             <span class="material-symbols-outlined text-5xl text-primary mb-4 bg-primary-container p-4 rounded-full">lock_reset</span>
-            <h2 class="font-headline text-3xl font-bold text-on-surface mb-2">Reset Password</h2>
-            <p class="text-on-surface-variant text-sm">Enter your registered email address and we'll send you a link to reset your password.</p>
+            <h2 class="font-headline text-3xl font-bold text-on-surface mb-2">Đặt lại mật khẩu</h2>
+            <p class="text-on-surface-variant text-sm">Nhập địa chỉ email đã đăng ký, Zentro sẽ gửi liên kết để bạn đặt lại mật khẩu.</p>
         </div>
 
         <?php if (isset($success_message)): ?>
@@ -29,7 +29,7 @@
             </div>
             
             <button type="submit" class="w-full bg-primary text-on-primary font-bold py-4 rounded-lg hover:bg-primary-container transition-all shadow-lg shadow-primary/20">
-                Send Reset Link
+                Gửi liên kết đặt lại mật khẩu
             </button>
 
             <div class="text-center pt-4">
