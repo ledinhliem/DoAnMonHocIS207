@@ -4,7 +4,6 @@
     <div class="flex flex-col lg:flex-row lg:items-end lg:justify-between gap-6 mb-10">
         <div>
             <h1 class="text-4xl font-black font-headline text-primary mb-3">Our Journal</h1>
-            <p class="text-on-surface-variant">Danh sách blog và nút đăng ký đã hoạt động.</p>
         </div>
 
         <form method="POST" action="?url=newsletter/subscribe" class="flex gap-3">
