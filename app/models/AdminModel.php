@@ -688,6 +688,7 @@ class AdminModel extends Model
 
     public function getProductById(string $id): ?array
     {
+        $activeVariantWhere = $this->hasColumn('bienthesanpham', 'TrangThai') ? 'WHERE b.TrangThai = 1' : '';
         $imageStatsJoin = $this->productImageRoleColumnsExist()
             ? "
             LEFT JOIN (
