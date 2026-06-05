@@ -5,11 +5,7 @@
 
 Đề tài: website thương mại điện tử theo chủ đề sống xanh và sản phẩm bền vững.
 
-Tài liệu này là file README chung cho cả nhóm, đã gộp nội dung từ:
-
-- `README.md`
-- `TONG_QUAN_PROJECT.md`
-- `QUY_TAC_NGON_NGU.md`
+Tài liệu này là file README chung cho cả nhóm
 
 ## 1. Mục tiêu project
 
